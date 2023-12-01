@@ -1,0 +1,10 @@
+#!/bin/sh
+
+INCLUDE_PATH="/usr/include"
+INCLUDES="
+	${INCLUDE_PATH}/drm/drm.h
+	${INCLUDE_PATH}/drm/drm_mode.h
+	${INCLUDE_PATH}/drm/drm_fourcc.h
+"
+
+ctypesgen  --no-embed-preamble -I${INCLUDE_PATH} -D__volatile__= -D__signed__= -U__SIZEOF_INT128__ -o kms/kms_kernel.py ${INCLUDES}
