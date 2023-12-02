@@ -17,6 +17,8 @@ plane = res.reserve_generic_plane(crtc)
 mode = conn.get_default_mode()
 modeb = mode.to_blob(card)
 
+print("Using", conn, crtc, plane, mode, modeb)
+
 origfb = kms.DumbFramebuffer(card, mode.hdisplay, mode.vdisplay, "XR24");
 
 #if args.dmabuf:

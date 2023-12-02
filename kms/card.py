@@ -92,21 +92,40 @@ class DrmPropObject(DrmObject):
     def __init__(self, card: Card, id, type, idx) -> None:
         super().__init__(card, id, type, idx)
 
-
 class Connector(DrmPropObject):
     def __init__(self, card: Card, id, idx) -> None:
         super().__init__(card, id, kms.DRM_MODE_OBJECT_CONNECTOR, idx)
 
-        connector = kms.drm_mode_get_connector()
+        res = kms.drm_mode_get_connector(connector_id=id)
 
-        connector.connector_id = id
+        fcntl.ioctl(card.fd, kms.DRM_IOCTL_MODE_GETCONNECTOR, res, True)
 
-        fcntl.ioctl(card.fd, kms.DRM_IOCTL_MODE_GETCONNECTOR, connector, True)
+        encoder_ids = (kms.c_uint32 * res.count_encoders)()
+        res.encoders_ptr = ctypes.addressof(encoder_ids)
 
-        print(f"connector {id}: type: {connector.connector_type}")
+        modes = (kms.drm_mode_modeinfo * res.count_modes)()
+        res.modes_ptr = ctypes.addressof(modes)
+
+        prop_ids = (kms.c_uint32 * res.count_props)()
+        res.props_ptr = ctypes.addressof(prop_ids)
+
+        prop_values = (kms.c_uint64 * res.count_props)()
+        res.prop_values_ptr = ctypes.addressof(prop_values)
+
+        fcntl.ioctl(card.fd, kms.DRM_IOCTL_MODE_GETCONNECTOR, res, True)
+
+        self.connector_res = res
+        self.encoder_ids = encoder_ids
+        self.modes = modes
+
+        print(f"connector {id}: type: {res.connector_type}, num_modes: {len(self.modes)}")
 
     def get_default_mode(self):
-        return VideoMode()
+        return self.modes[0]
+
+    def __repr__(self) -> str:
+        return f'Connector({self.id})'
+
 
 class Crtc(DrmPropObject):
     def __init__(self, card: Card, id, idx) -> None:
@@ -119,6 +138,9 @@ class Crtc(DrmPropObject):
         fcntl.ioctl(card.fd, kms.DRM_IOCTL_MODE_GETCRTC, crtc, True)
 
         print(f"CRTC {id}: fb: {crtc.fb_id}")
+
+    def __repr__(self) -> str:
+        return f'Crtc({self.id})'
 
 
 class Encoder(DrmPropObject):
@@ -133,6 +155,10 @@ class Encoder(DrmPropObject):
 
         print(f"encoder {id}: type: {encoder.encoder_type}")
 
+    def __repr__(self) -> str:
+        return f'Encoder({self.id})'
+
+
 class Plane(DrmPropObject):
     def __init__(self, card: Card, id, idx) -> None:
         super().__init__(card, id, kms.DRM_MODE_OBJECT_PLANE, idx)
@@ -145,27 +171,35 @@ class Plane(DrmPropObject):
 
         print(f"plane {id}: fb: {plane.fb_id}")
 
-class VideoMode:
-    def __init__(self) -> None:
-        pass
+    def __repr__(self) -> str:
+        return f'Plane({self.id})'
 
-    def to_blob(self):
-        pass
 
 class DumbFramebuffer(DrmObject):
-    def __init__(self, card: Card, id, idx) -> None:
-        super().__init__(card, id, kms.DRM_MODE_OBJECT_FB, idx)
+    def __init__(self, card: Card, width, height, fourcc) -> None:
+        create_dumb = kms.drm_mode_create_dumb()
+        create_dumb.width = width
+        create_dumb.height = height
+        create_dumb.bpp = 32 # XXX
+        fcntl.ioctl(card.fd, kms.DRM_IOCTL_MODE_CREATE_DUMB, create_dumb, True)
+
+        super().__init__(card, -1, kms.DRM_MODE_OBJECT_FB, -1)
+
+        self.handle = create_dumb.handle
+
 
 class Blob(DrmObject):
-    def __init__(self, card: Card, id, idx) -> None:
-        super().__init__(card, id, kms.DRM_MODE_OBJECT_BLOB, idx)
-
+    def __init__(self, card: Card, ob) -> None:
         blob = kms.drm_mode_create_blob()
-        blob.length = 0
-        blob.data = 0
-        blob.blob_id = 0
+        blob.data = ctypes.addressof(ob)
+        blob.length = ctypes.sizeof(ob)
 
         fcntl.ioctl(card.fd, kms.DRM_IOCTL_MODE_CREATEPROPBLOB, blob, True)
+
+        super().__init__(card, blob.blob_id, kms.DRM_MODE_OBJECT_BLOB, -1)
+
+    def __repr__(self) -> str:
+        return f'Blob({self.id})'
 
 
 
@@ -174,7 +208,7 @@ class ResourceManager:
         self.card = card
 
     def reserve_connector(self, connector_str: str):
-        return self.card.connectors[0]
+        return self.card.connectors[3]
 
     def reserve_crtc(self, connector: Connector):
         return self.card.crtcs[0]
