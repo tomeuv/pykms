@@ -8,3 +8,6 @@ INCLUDES="
 "
 
 ctypesgen  --no-embed-preamble -I${INCLUDE_PATH} -D__volatile__= -D__signed__= -U__SIZEOF_INT128__ -o kms/kms_kernel.py ${INCLUDES}
+
+# Fix _IOC by using ord(type)
+sed --in-place s#"return ((((dir << _IOC_DIRSHIFT) | (type << _IOC_TYPESHIFT)) | (nr << _IOC_NRSHIFT)) | (size << _IOC_SIZESHIFT))"#"return ((((dir << _IOC_DIRSHIFT) | (ord(type) << _IOC_TYPESHIFT)) | (nr << _IOC_NRSHIFT)) | (size << _IOC_SIZESHIFT))"# kms/kms_kernel.py

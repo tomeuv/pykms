@@ -2094,7 +2094,7 @@ except:
 
 # /usr/include/asm-generic/ioctl.h: 69
 def _IOC(dir, type, nr, size):
-    return ((((dir << _IOC_DIRSHIFT) | (type << _IOC_TYPESHIFT)) | (nr << _IOC_NRSHIFT)) | (size << _IOC_SIZESHIFT))
+    return ((((dir << _IOC_DIRSHIFT) | (ord(type) << _IOC_TYPESHIFT)) | (nr << _IOC_NRSHIFT)) | (size << _IOC_SIZESHIFT))
 
 # /usr/include/asm-generic/ioctl.h: 75
 def _IOC_TYPECHECK(t):
