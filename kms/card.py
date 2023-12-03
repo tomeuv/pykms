@@ -1,7 +1,8 @@
-import os
-import fcntl
 import ctypes
+import fcntl
+import itertools
 import kms
+import os
 
 class Card:
     def __init__(self, dev_path='/dev/dri/card0') -> None:
@@ -350,8 +351,6 @@ class AtomicReq:
         props = sorted(self.props, key=lambda tuple: (tuple[0], tuple[1]))
 
         print(props)
-
-        import itertools
 
         obj_prop_counts = {}
         for k, g in itertools.groupby(props, lambda p: p[0]):
