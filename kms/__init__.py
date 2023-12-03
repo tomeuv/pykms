@@ -1,5 +1,5 @@
-from .kernel import *
-from .card import *
+from kms.kernel import *
+from kms.card import *
 
 # XXX compat
 def drm_mode_modeinfo_to_blob(self: drm_mode_modeinfo, card: kms.Card):
