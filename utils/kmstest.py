@@ -13,7 +13,7 @@ card = kms.Card()
 res = kms.ResourceManager(card)
 conn = res.reserve_connector(args.connector)
 crtc = res.reserve_crtc(conn)
-plane = res.reserve_generic_plane(crtc)
+plane = res.reserve_generic_plane(crtc, "XR24")
 mode = conn.get_default_mode()
 modeb = mode.to_blob(card)
 

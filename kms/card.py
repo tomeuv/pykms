@@ -103,6 +103,15 @@ class Card:
     def get_object(self, id):
         return next((ob for ob in [*self.crtcs, *self.connectors, *self.encoders] if ob.id == id))
 
+    def get_connector(self, id):
+        return next((ob for ob in self.connectors if ob.id == id))
+
+    def get_crtc(self, id):
+        return next((ob for ob in self.crtcs if ob.id == id))
+
+    def get_encoder(self, id):
+        return next((ob for ob in self.encoders if ob.id == id))
+
 
 class DrmObject:
     def __init__(self, card: Card, id, type, idx) -> None:
@@ -142,6 +151,27 @@ class DrmPropObject(DrmObject):
 
 
 class Connector(DrmPropObject):
+    connector_names = {
+        kms.DRM_MODE_CONNECTOR_Unknown: "Unknown",
+        kms.DRM_MODE_CONNECTOR_VGA: "VGA",
+        kms.DRM_MODE_CONNECTOR_DVII: "DVI-I",
+        kms.DRM_MODE_CONNECTOR_DVID: "DVI-D",
+        kms.DRM_MODE_CONNECTOR_DVIA: "DVI-A",
+        kms.DRM_MODE_CONNECTOR_Composite: "Composite",
+        kms.DRM_MODE_CONNECTOR_SVIDEO: "S-Video",
+        kms.DRM_MODE_CONNECTOR_LVDS: "LVDS",
+        kms.DRM_MODE_CONNECTOR_Component: "Component",
+        kms.DRM_MODE_CONNECTOR_9PinDIN: "9-Pin-DIN",
+        kms.DRM_MODE_CONNECTOR_DisplayPort: "DP",
+        kms.DRM_MODE_CONNECTOR_HDMIA: "HDMI-A",
+        kms.DRM_MODE_CONNECTOR_HDMIB: "HDMI-B",
+        kms.DRM_MODE_CONNECTOR_TV: "TV",
+        kms.DRM_MODE_CONNECTOR_eDP: "eDP",
+        kms.DRM_MODE_CONNECTOR_VIRTUAL: "Virtual",
+        kms.DRM_MODE_CONNECTOR_DSI: "DSI",
+        kms.DRM_MODE_CONNECTOR_DPI: "DPI",
+    }
+
     def __init__(self, card: Card, id, idx) -> None:
         super().__init__(card, id, kms.DRM_MODE_OBJECT_CONNECTOR, idx)
 
@@ -167,6 +197,8 @@ class Connector(DrmPropObject):
         self.encoder_ids = encoder_ids
         self.modes = modes
 
+        self.fullname = f'{Connector.connector_names[res.connector_type]}-{res.connector_type_id}'
+
         #print(f"connector {id}: type: {res.connector_type}, num_modes: {len(self.modes)}")
 
     @property
@@ -178,7 +210,7 @@ class Connector(DrmPropObject):
 
     def get_current_crtc(self):
         assert(self.connector_res.encoder_id)
-        enc = self.card.get_object(self.connector_res.encoder_id)
+        enc = self.card.get_encoder(self.connector_res.encoder_id)
         return enc.get_crtc()
 
     def __repr__(self) -> str:
@@ -224,7 +256,7 @@ class Encoder(DrmObject):
 
     def get_crtc(self):
         assert(self.encoder_res.crtc_id)
-        crtc = self.card.get_object(self.encoder_res.crtc_id)
+        crtc = self.card.get_crtc(self.encoder_res.crtc_id)
         return crtc
 
 
@@ -238,9 +270,15 @@ class Plane(DrmPropObject):
 
         fcntl.ioctl(card.fd, kms.DRM_IOCTL_MODE_GETPLANE, plane, True)
 
+        format_types = (kms.c_uint32 * plane.count_format_types)()
+        plane.format_type_ptr = ctypes.addressof(format_types)
+
+        fcntl.ioctl(card.fd, kms.DRM_IOCTL_MODE_GETPLANE, plane, True)
+
+        self.format_types = format_types
         self.res = plane
 
-        #print(f"plane {id}: fb: {plane.fb_id}")
+        print(f"plane {id}: fb: {plane.fb_id}")
 
     def __repr__(self) -> str:
         return f'Plane({self.id})'
@@ -251,6 +289,9 @@ class Plane(DrmPropObject):
     @property
     def plane_type(self):
         return self.get_prop_value('type')
+
+    def supports_format(self, format):
+        return format in self.format_types
 
 
 class DumbFramebuffer(DrmObject):
@@ -454,28 +495,96 @@ class AtomicReq:
 class ResourceManager:
     def __init__(self, card: Card) -> None:
         self.card = card
+        self.reserved_connectors = set()
+        self.reserved_crtcs = set()
+        self.reserved_planes = set()
 
-    def reserve_connector(self, connector_str: str):
+    def find_connector(self):
         for c in self.card.connectors:
-            if c.connected:
-                return c
+            if not c.connected:
+                continue
 
-        return None
+            if c in self.reserved_connectors:
+                continue
+
+            return c
+
+        raise Exception("Available connector not found")
+
+    def resolve_connector(self, name: str):
+        if name.startswith('@'):
+            id = int(name[1:])
+            conn = self.card.get_connector(id)
+
+            if conn in self.reserved_connectors:
+                raise Exception("Connector already reserved")
+
+            return conn
+
+        try:
+            idx = int(name)
+
+            if idx >= len(self.card.connectors):
+                raise Exception("Connector idx too high")
+
+            conn = self.card.connectors[idx]
+
+            if conn in self.reserved_connectors:
+                raise Exception("Connector already reserved")
+
+            return conn
+        except:
+            pass
+
+        name = name.lower()
+
+        for c in self.card.connectors:
+            if name not in c.fullname.lower():
+                continue
+
+            if c in self.reserved_connectors:
+                raise Exception("Connector already reserved")
+
+            return c
+
+        raise Exception("Connector not found")
+
+    def reserve_connector(self, name: str):
+        if not name:
+            conn = self.find_connector()
+        else:
+            conn = self.resolve_connector(name)
+
+        self.reserved_connectors.add(conn)
+
+        return conn
 
     def reserve_crtc(self, connector: Connector):
-        return connector.get_current_crtc()
+        crtc = connector.get_current_crtc()
 
-    def reserve_generic_plane(self, crtc: Crtc):
+        if crtc in self.reserved_crtcs:
+            raise Exception("Crtc not found")
+
+        self.reserved_crtcs.add(crtc)
+
+        return crtc
+
+    def reserve_generic_plane(self, crtc: Crtc, format=None):
+        if format and type(format) == str:
+            format = kms.str_to_fourcc(format)
 
         for plane in crtc.get_possible_planes():
+            if plane in self.reserved_planes:
+                continue
+
             if plane.plane_type == kms.DRM_PLANE_TYPE_CURSOR:
                 continue
 
-            #if (format != PixelFormat::Undefined && !plane->supports_format(format))
-            #    continue;
+            if format and not plane.supports_format(format):
+                continue;
 
-            #if (m_reserved_planes.count(plane))
-            #    continue;
+            self.reserved_planes.add(plane)
 
-            #m_reserved_planes.insert(plane);
             return plane
+
+        raise Exception("Plane not found")
