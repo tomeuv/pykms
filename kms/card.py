@@ -29,13 +29,17 @@ class Card:
 
         self.props: dict[str, int] = props
 
+    def find_property_id(self, prop_name):
+        return self.props[prop_name]
+
+    def find_property_name(self, prop_id):
+        return next(n for n in self.props if self.props[n] == prop_id)
 
     def set_defaults(self):
         try:
             fcntl.ioctl(self.fd, kms.DRM_IOCTL_SET_MASTER, 0, False)
         except:
             print("NOT MASTER")
-
 
         cap = kms.drm_get_cap(kms.DRM_CAP_DUMB_BUFFER)
         fcntl.ioctl(self.fd, kms.DRM_IOCTL_GET_CAP, cap, True)
@@ -96,6 +100,9 @@ class Card:
 
         self.planes = [Plane(self, id, idx) for idx,id in enumerate(plane_ids)]
 
+    def get_object(self, id):
+        return next((ob for ob in [*self.crtcs, *self.connectors, *self.encoders] if ob.id == id))
+
 
 class DrmObject:
     def __init__(self, card: Card, id, type, idx) -> None:
@@ -103,6 +110,7 @@ class DrmObject:
         self.id = id
         self.type = type
         self.idx = idx
+
 
 class DrmPropObject(DrmObject):
     def __init__(self, card: Card, id, type, idx) -> None:
@@ -125,6 +133,12 @@ class DrmPropObject(DrmObject):
         fcntl.ioctl(self.card.fd, kms.DRM_IOCTL_MODE_OBJ_GETPROPERTIES, props, True)
 
         self.prop_values = {int(prop_ids[i]): int(prop_values[i]) for i in range(props.count_props)}
+
+    def get_prop_value(self, prop_name: str):
+        assert(prop_name in self.card.props)
+        prop_id = self.card.props[prop_name]
+        assert(prop_id in self.prop_values)
+        return self.prop_values[prop_id]
 
 
 class Connector(DrmPropObject):
@@ -153,10 +167,19 @@ class Connector(DrmPropObject):
         self.encoder_ids = encoder_ids
         self.modes = modes
 
-        print(f"connector {id}: type: {res.connector_type}, num_modes: {len(self.modes)}")
+        #print(f"connector {id}: type: {res.connector_type}, num_modes: {len(self.modes)}")
+
+    @property
+    def connected(self):
+        return self.connector_res.connection in (kms.DRM_MODE_CONNECTED, kms.DRM_MODE_UNKNOWNCONNECTION)
 
     def get_default_mode(self):
         return self.modes[0]
+
+    def get_current_crtc(self):
+        assert(self.connector_res.encoder_id)
+        enc = self.card.get_object(self.connector_res.encoder_id)
+        return enc.get_crtc()
 
     def __repr__(self) -> str:
         return f'Connector({self.id})'
@@ -166,32 +189,43 @@ class Crtc(DrmPropObject):
     def __init__(self, card: Card, id, idx) -> None:
         super().__init__(card, id, kms.DRM_MODE_OBJECT_CRTC, idx)
 
-        crtc = kms.drm_mode_crtc()
+        res = kms.drm_mode_crtc()
 
-        crtc.crtc_id = id
+        res.crtc_id = id
 
-        fcntl.ioctl(card.fd, kms.DRM_IOCTL_MODE_GETCRTC, crtc, True)
+        fcntl.ioctl(card.fd, kms.DRM_IOCTL_MODE_GETCRTC, res, True)
+        self.crtc_res = res
 
-        print(f"CRTC {id}: fb: {crtc.fb_id}")
+        #print(f"CRTC {id}: fb: {res.fb_id}")
 
     def __repr__(self) -> str:
         return f'Crtc({self.id})'
+
+    def get_possible_planes(self):
+        return [p for p in self.card.planes if p.supports_crtc(self)]
 
 
 class Encoder(DrmObject):
     def __init__(self, card: Card, id, idx) -> None:
         super().__init__(card, id, kms.DRM_MODE_OBJECT_ENCODER, idx)
 
-        encoder = kms.drm_mode_get_encoder()
+        res = kms.drm_mode_get_encoder()
 
-        encoder.encoder_id = id
+        res.encoder_id = id
 
-        fcntl.ioctl(card.fd, kms.DRM_IOCTL_MODE_GETENCODER, encoder, True)
+        fcntl.ioctl(card.fd, kms.DRM_IOCTL_MODE_GETENCODER, res, True)
 
-        print(f"encoder {id}: type: {encoder.encoder_type}")
+        self.encoder_res = res
+
+        #print(f"encoder {id}: type: {res.encoder_type}")
 
     def __repr__(self) -> str:
         return f'Encoder({self.id})'
+
+    def get_crtc(self):
+        assert(self.encoder_res.crtc_id)
+        crtc = self.card.get_object(self.encoder_res.crtc_id)
+        return crtc
 
 
 class Plane(DrmPropObject):
@@ -204,25 +238,47 @@ class Plane(DrmPropObject):
 
         fcntl.ioctl(card.fd, kms.DRM_IOCTL_MODE_GETPLANE, plane, True)
 
-        print(f"plane {id}: fb: {plane.fb_id}")
+        self.res = plane
+
+        #print(f"plane {id}: fb: {plane.fb_id}")
 
     def __repr__(self) -> str:
         return f'Plane({self.id})'
 
+    def supports_crtc(self, crtc: Crtc):
+        return self.res.possible_crtcs & (1 << crtc.idx)
+
+    @property
+    def plane_type(self):
+        return self.get_prop_value('type')
+
 
 class DumbFramebuffer(DrmObject):
     def __init__(self, card: Card, width, height, fourcc) -> None:
+        bitspp = 32
+
+
         create_dumb = kms.drm_mode_create_dumb()
         create_dumb.width = width
         create_dumb.height = height
-        create_dumb.bpp = 32 # XXX
+        create_dumb.bpp = bitspp # XXX
         fcntl.ioctl(card.fd, kms.DRM_IOCTL_MODE_CREATE_DUMB, create_dumb, True)
-
-        super().__init__(card, -1, kms.DRM_MODE_OBJECT_FB, -1)
 
         self.width = width
         self.height = height
         self.handle = create_dumb.handle
+
+        fb2 = kms.struct_drm_mode_fb_cmd2()
+        fb2.width = width
+        fb2.height = height
+        fb2.pixel_format = kms.DRM_FORMAT_XRGB8888
+        fb2.handles[0] = self.handle
+        fb2.pitches[0] = width * bitspp // 8
+
+        fcntl.ioctl(card.fd, kms.DRM_IOCTL_MODE_ADDFB2, fb2, True)
+
+        super().__init__(card, fb2.fb_id, kms.DRM_MODE_OBJECT_FB, -1)
+
 
     def __repr__(self) -> str:
         return f'DumbFramebuffer({self.handle})'
@@ -240,21 +296,6 @@ class Blob(DrmObject):
 
     def __repr__(self) -> str:
         return f'Blob({self.id})'
-
-
-
-class ResourceManager:
-    def __init__(self, card: Card) -> None:
-        self.card = card
-
-    def reserve_connector(self, connector_str: str):
-        return self.card.connectors[3]
-
-    def reserve_crtc(self, connector: Connector):
-        return self.card.crtcs[0]
-
-    def reserve_generic_plane(self, crtc: Crtc):
-        return self.card.planes[0]
 
 
 class AtomicReq:
@@ -307,6 +348,23 @@ class AtomicReq:
 
         if allow_modeset:
             atomic.flags |= kms.DRM_MODE_ATOMIC_ALLOW_MODESET
+
+        pidx = 0
+        for oidx in range(len(objs)):
+            oid = objs[oidx]
+            prop_count = count_props[oidx]
+
+            print(f"== {oid}, {prop_count}")
+
+            for c in range(prop_count):
+                prop_id = prop_ids[pidx]
+                prop_value = prop_values[pidx]
+
+                print(f"  {self.card.find_property_name(prop_id)} = {prop_value}")
+
+                pidx += 1
+
+
 
         fcntl.ioctl(self.card.fd, kms.DRM_IOCTL_MODE_ATOMIC, atomic, True)
 
@@ -391,3 +449,33 @@ class AtomicReq:
         m.update(params)
 
         self.add(plane, m)
+
+
+class ResourceManager:
+    def __init__(self, card: Card) -> None:
+        self.card = card
+
+    def reserve_connector(self, connector_str: str):
+        for c in self.card.connectors:
+            if c.connected:
+                return c
+
+        return None
+
+    def reserve_crtc(self, connector: Connector):
+        return connector.get_current_crtc()
+
+    def reserve_generic_plane(self, crtc: Crtc):
+
+        for plane in crtc.get_possible_planes():
+            if plane.plane_type == kms.DRM_PLANE_TYPE_CURSOR:
+                continue
+
+            #if (format != PixelFormat::Undefined && !plane->supports_format(format))
+            #    continue;
+
+            #if (m_reserved_planes.count(plane))
+            #    continue;
+
+            #m_reserved_planes.insert(plane);
+            return plane

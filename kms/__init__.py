@@ -11,3 +11,12 @@ def drm_mode_modeinfo_to_blob(self: drm_mode_modeinfo, card: kms.Card):
     return kms.Blob(card, self)
 
 drm_mode_modeinfo.to_blob = drm_mode_modeinfo_to_blob
+
+DRM_MODE_CONNECTED         = 1
+DRM_MODE_DISCONNECTED      = 2
+DRM_MODE_UNKNOWNCONNECTION = 3
+
+
+DRM_PLANE_TYPE_OVERLAY = 0
+DRM_PLANE_TYPE_PRIMARY = 1
+DRM_PLANE_TYPE_CURSOR  = 2
