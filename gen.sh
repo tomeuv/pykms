@@ -7,7 +7,7 @@ INCLUDES="
 	${INCLUDE_PATH}/drm/drm_fourcc.h
 "
 
-OUT=kms/kernel/kms.py
+OUT=kms/uapi/kms.py
 
 ctypesgen  --no-embed-preamble -I${INCLUDE_PATH} -D__volatile__= -D__signed__= -U__SIZEOF_INT128__ -o ${OUT} ${INCLUDES}
 
