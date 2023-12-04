@@ -358,14 +358,15 @@ class DumbFramebuffer(DrmObject):
         self.height = height
         self.handle = create_dumb.handle
 
-        self.size = width * bitspp // 8 * height
+        self.pitch = width * bitspp // 8
+        self.size = self.pitch * height
 
         fb2 = kms.uapi.struct_drm_mode_fb_cmd2()
         fb2.width = width
         fb2.height = height
         fb2.pixel_format = fourcc
         fb2.handles[0] = self.handle
-        fb2.pitches[0] = width * bitspp // 8
+        fb2.pitches[0] = self.pitch
 
         fcntl.ioctl(card.fd, kms.uapi.DRM_IOCTL_MODE_ADDFB2, fb2, True)
 
@@ -382,8 +383,9 @@ class DumbFramebuffer(DrmObject):
 
         fcntl.ioctl(self.card.fd, kms.uapi.DRM_IOCTL_MODE_MAP_DUMB, map_dumb, True)
 
-        return mmap.mmap(self.card.fd, self.size, mmap.MAP_SHARED, mmap.PROT_READ | mmap.PROT_WRITE, offset=map_dumb.offset)
-
+        return mmap.mmap(self.card.fd, self.size,
+                         mmap.MAP_SHARED, mmap.PROT_READ | mmap.PROT_WRITE,
+                         offset=map_dumb.offset)
 
 
 class Blob(DrmObject):

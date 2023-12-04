@@ -24,14 +24,17 @@ modeb = mode.to_blob(card)
 
 fbs = []
 numpybufs = []
-
+mmaps = []
 for x in range(3):
     fb = kms.DumbFramebuffer(card, mode.hdisplay, mode.vdisplay, "XR24")
 
     mapped = fb.mmap()
+    mapped[:] = bytearray(fb.size)
+
     b = np.frombuffer(mapped, dtype=np.uint32).reshape(fb.height, fb.width)
 
     fbs.append(fb)
+    mmaps.append(mapped)
     numpybufs.append(b)
 
 
@@ -51,6 +54,10 @@ bar_y = 0
 last_ts = time.perf_counter()
 last_framenum = 0
 framenum = 0
+bar_step = 4
+
+line_0 = bytes([0] * (fb.width * 4))
+line_1 = bytes([0xff] * (fb.width * 4))
 
 def handle_pageflip():
     global current_fb, next_fb, bar_y
@@ -86,7 +93,7 @@ def handle_pageflip():
 
     req.commit(allow_modeset = False)
 
-    old_y = bar_y - len(fbs)
+    old_y = bar_y - len(fbs) * bar_step
     if old_y < 0:
         old_y = mode.vdisplay + old_y
 
@@ -94,16 +101,21 @@ def handle_pageflip():
 
         ts1 = time.perf_counter()
 
-        b = numpybufs[old_fb]
+        fb = fbs[old_fb]
 
-        b[old_y, :] = 0
-        b[bar_y, :] = 0xffffff
+        m = mmaps[old_fb]
+        m[old_y * fb.pitch:old_y * fb.pitch + fb.width * 4] = line_0
+        m[bar_y * fb.pitch:bar_y * fb.pitch + fb.width * 4] = line_1
+
+        #b = numpybufs[old_fb]
+        #b[old_y, :] = 0
+        #b[bar_y, :] = 0xffffff
 
         ts2 = time.perf_counter()
 
         print((ts2 - ts1) * 1000)
 
-        bar_y += 1
+        bar_y += bar_step
         if bar_y >= mode.vdisplay:
             bar_y = 0
 
