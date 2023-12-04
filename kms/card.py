@@ -2,19 +2,23 @@ from __future__ import annotations
 
 import ctypes
 import fcntl
+import io
 import os
 
 import kms.uapi
 
 class Card:
     def __init__(self, dev_path='/dev/dri/card0') -> None:
-        self.fd = os.open(dev_path, os.O_RDWR | os.O_NONBLOCK)
-        assert(self.fd != -1)
+        self.fio = io.FileIO(dev_path,
+                             opener=lambda name,f: os.open(name, os.O_RDWR | os.O_NONBLOCK))
+        self.fd = self.fio.fileno()
 
         self.set_defaults()
         self.get_res()
         self.get_plane_res()
         self.collect_props()
+
+        self.event_buf = bytearray(1024)
 
     def collect_props(self):
         prop_ids = set()
@@ -115,17 +119,12 @@ class Card:
     def get_encoder(self, id):
         return next((ob for ob in self.encoders if ob.id == id))
 
-    def read_events(self):
-        import io
+    def read_events(self) -> list[DrmEvent]:
+        buf = self.event_buf
 
-        # alloc once
-        buf = bytearray(1024)
-
-        # use fileio at __init__?
-        fio = io.FileIO(self.fd, closefd = False)
-        l = fio.readinto(buf)
+        l = self.fio.readinto(buf)
         if not l:
-            return
+            return []
 
         assert (l >= ctypes.sizeof(kms.uapi.drm_event))
 
@@ -138,17 +137,17 @@ class Card:
             #print(f'event type{ev.type}, len {ev.length}')
 
             if ev.type == kms.uapi.DRM_EVENT_VBLANK:
-                raise NotImplemented()
+                raise NotImplementedError()
             elif ev.type == kms.uapi.DRM_EVENT_FLIP_COMPLETE:
                 vblank = kms.uapi.drm_event_vblank.from_buffer(buf, i)
                 #print(vblank.sequence, vblank.tv_sec, vblank.tv_usec, vblank.crtc_id, vblank.user_data)
 
-                events.append(DrmEvent(ev.type))
+                events.append(DrmEvent(ev.type, vblank))
 
             elif ev.type == kms.uapi.DRM_EVENT_CRTC_SEQUENCE:
-                raise NotImplemented()
+                raise NotImplementedError()
             else:
-                raise NotImplemented()
+                raise NotImplementedError()
 
             i += ev.length
 
@@ -157,8 +156,9 @@ class Card:
 class DrmEvent:
     DRM_EVENT_FLIP_COMPLETE = kms.uapi.DRM_EVENT_FLIP_COMPLETE
 
-    def __init__(self, type) -> None:
+    def __init__(self, type, data) -> None:
         self.type = type
+        self.data = data
 
 class DrmObject:
     def __init__(self, card: Card, id, type, idx) -> None:
