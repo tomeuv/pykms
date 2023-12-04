@@ -45,6 +45,7 @@ class AtomicReq:
             prop_ids[idx] = prop_id
             prop_values[idx] = prop_value
 
+        atomic.count_objs = num_obs
         atomic.objs_ptr = ctypes.addressof(objs)
         atomic.count_props_ptr = ctypes.addressof(count_props)
         atomic.props_ptr = ctypes.addressof(prop_ids)
