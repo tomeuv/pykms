@@ -10,7 +10,7 @@ import kms.uapi
 class Card:
     def __init__(self, dev_path='/dev/dri/card0') -> None:
         self.fio = io.FileIO(dev_path,
-                             opener=lambda name,f: os.open(name, os.O_RDWR | os.O_NONBLOCK))
+                             opener=lambda name,flags: os.open(name, os.O_RDWR | os.O_NONBLOCK))
         self.fd = self.fio.fileno()
 
         self.set_defaults()
@@ -19,6 +19,10 @@ class Card:
         self.collect_props()
 
         self.event_buf = bytearray(1024)
+
+    def __del__(self):
+        self.fio = None
+        self.fd = -1
 
     def collect_props(self):
         prop_ids = set()
@@ -255,6 +259,10 @@ class Connector(DrmPropObject):
     def get_default_mode(self):
         return self.modes[0]
 
+    @property
+    def has_current_crtc(self):
+        return not not self.connector_res.encoder_id
+
     def get_current_crtc(self):
         assert(self.connector_res.encoder_id)
         enc = self.card.get_encoder(self.connector_res.encoder_id)
@@ -262,6 +270,15 @@ class Connector(DrmPropObject):
 
     def __repr__(self) -> str:
         return f'Connector({self.id})'
+
+    @property
+    def possible_crtcs(self):
+        crtcs = set()
+
+        for encoder_id in self.encoder_ids:
+            crtcs.update(self.card.get_encoder(encoder_id).possible_crtcs)
+
+        return crtcs
 
 
 class Crtc(DrmPropObject):
@@ -305,6 +322,10 @@ class Encoder(DrmObject):
         assert(self.encoder_res.crtc_id)
         crtc = self.card.get_crtc(self.encoder_res.crtc_id)
         return crtc
+
+    @property
+    def possible_crtcs(self):
+        return [crtc for crtc in self.card.crtcs if self.encoder_res.possible_crtcs & (1 << crtc.idx)]
 
 
 class Plane(DrmPropObject):
@@ -372,6 +393,18 @@ class DumbFramebuffer(DrmObject):
 
         super().__init__(card, fb2.fb_id, kms.uapi.DRM_MODE_OBJECT_FB, -1)
 
+    def __del__(self):
+        if self.card.fd == -1 or self.handle is None:
+            return
+
+        fcntl.ioctl(self.card.fd, kms.uapi.DRM_IOCTL_MODE_RMFB, ctypes.c_uint32(self.id), False)
+
+        dumb = kms.uapi.drm_mode_destroy_dumb()
+        dumb.handle = self.handle
+        fcntl.ioctl(self.card.fd, kms.uapi.DRM_IOCTL_MODE_DESTROY_DUMB, dumb, True)
+
+        self.handle = None
+
     def __repr__(self) -> str:
         return f'DumbFramebuffer({self.handle})'
 
@@ -397,6 +430,15 @@ class Blob(DrmObject):
         fcntl.ioctl(card.fd, kms.uapi.DRM_IOCTL_MODE_CREATEPROPBLOB, blob, True)
 
         super().__init__(card, blob.blob_id, kms.uapi.DRM_MODE_OBJECT_BLOB, -1)
+
+    def __del__(self):
+        if self.card.fd == -1 or self.id is None:
+            return
+
+        blob = kms.uapi.drm_mode_destroy_blob()
+        blob.blob_id = self.id
+        fcntl.ioctl(self.card.fd, kms.uapi.DRM_IOCTL_MODE_DESTROYPROPBLOB, blob, True)
+        self.id = None
 
     def __repr__(self) -> str:
         return f'Blob({self.id})'

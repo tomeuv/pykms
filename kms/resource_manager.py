@@ -73,14 +73,19 @@ class ResourceManager:
         return conn
 
     def reserve_crtc(self, connector: Connector):
-        crtc = connector.get_current_crtc()
+        if connector.has_current_crtc:
+            crtc = connector.get_current_crtc()
 
-        if crtc in self.reserved_crtcs:
-            raise Exception("Crtc not found")
+            if crtc not in self.reserved_crtcs:
+                self.reserved_crtcs.add(crtc)
+                return crtc
 
-        self.reserved_crtcs.add(crtc)
+        for crtc in connector.possible_crtcs:
+            if crtc not in self.reserved_crtcs:
+                self.reserved_crtcs.add(crtc)
+                return crtc
 
-        return crtc
+        raise Exception("Crtc not found")
 
     def reserve_generic_plane(self, crtc: Crtc, format=None):
         if format and type(format) == str:
