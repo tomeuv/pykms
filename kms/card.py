@@ -2,8 +2,9 @@ from __future__ import annotations
 
 import ctypes
 import fcntl
-import kms.uapi
 import os
+
+import kms.uapi
 
 class Card:
     def __init__(self, dev_path='/dev/dri/card0') -> None:
@@ -114,6 +115,50 @@ class Card:
     def get_encoder(self, id):
         return next((ob for ob in self.encoders if ob.id == id))
 
+    def read_events(self):
+        import io
+
+        # alloc once
+        buf = bytearray(1024)
+
+        # use fileio at __init__?
+        fio = io.FileIO(self.fd, closefd = False)
+        l = fio.readinto(buf)
+        if not l:
+            return
+
+        assert (l >= ctypes.sizeof(kms.uapi.drm_event))
+
+        events = []
+
+        i = 0
+        while i < l:
+            ev = kms.uapi.drm_event.from_buffer(buf, i)
+
+            #print(f'event type{ev.type}, len {ev.length}')
+
+            if ev.type == kms.uapi.DRM_EVENT_VBLANK:
+                raise NotImplemented()
+            elif ev.type == kms.uapi.DRM_EVENT_FLIP_COMPLETE:
+                vblank = kms.uapi.drm_event_vblank.from_buffer(buf, i)
+                #print(vblank.sequence, vblank.tv_sec, vblank.tv_usec, vblank.crtc_id, vblank.user_data)
+
+                events.append(DrmEvent(ev.type))
+
+            elif ev.type == kms.uapi.DRM_EVENT_CRTC_SEQUENCE:
+                raise NotImplemented()
+            else:
+                raise NotImplemented()
+
+            i += ev.length
+
+        return events
+
+class DrmEvent:
+    DRM_EVENT_FLIP_COMPLETE = kms.uapi.DRM_EVENT_FLIP_COMPLETE
+
+    def __init__(self, type) -> None:
+        self.type = type
 
 class DrmObject:
     def __init__(self, card: Card, id, type, idx) -> None:
@@ -280,7 +325,7 @@ class Plane(DrmPropObject):
         self.format_types = format_types
         self.res = plane
 
-        print(f"plane {id}: fb: {plane.fb_id}")
+        #print(f"plane {id}: fb: {plane.fb_id}")
 
     def __repr__(self) -> str:
         return f'Plane({self.id})'
@@ -313,6 +358,8 @@ class DumbFramebuffer(DrmObject):
         self.height = height
         self.handle = create_dumb.handle
 
+        self.size = width * bitspp // 8 * height
+
         fb2 = kms.uapi.struct_drm_mode_fb_cmd2()
         fb2.width = width
         fb2.height = height
@@ -326,6 +373,17 @@ class DumbFramebuffer(DrmObject):
 
     def __repr__(self) -> str:
         return f'DumbFramebuffer({self.handle})'
+
+    def mmap(self):
+        import mmap
+
+        map_dumb = kms.uapi.struct_drm_mode_map_dumb()
+        map_dumb.handle = self.handle
+
+        fcntl.ioctl(self.card.fd, kms.uapi.DRM_IOCTL_MODE_MAP_DUMB, map_dumb, True)
+
+        return mmap.mmap(self.card.fd, self.size, mmap.MAP_SHARED, mmap.PROT_READ | mmap.PROT_WRITE, offset=map_dumb.offset)
+
 
 
 class Blob(DrmObject):

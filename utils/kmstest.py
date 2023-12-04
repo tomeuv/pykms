@@ -1,7 +1,12 @@
 #!/usr/bin/python3
 
 import kms
+import kms.uapi
 import argparse
+import selectors
+import sys
+import time
+import numpy as np
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-c", "--connector", default="")
@@ -17,11 +22,18 @@ plane = res.reserve_generic_plane(crtc, "XR24")
 mode = conn.get_default_mode()
 modeb = mode.to_blob(card)
 
-fb = kms.DumbFramebuffer(card, mode.hdisplay, mode.vdisplay, "XR24");
+fbs = []
+numpybufs = []
 
-print("Using", conn, crtc, plane, mode, modeb, fb)
+for x in range(3):
+    fb = kms.DumbFramebuffer(card, mode.hdisplay, mode.vdisplay, "XR24")
 
-#kms.draw_test_pattern(fb);
+    mapped = fb.mmap()
+    b = np.frombuffer(mapped, dtype=np.uint32).reshape(fb.height, fb.width)
+
+    fbs.append(fb)
+    numpybufs.append(b)
+
 
 #card.disable_planes()
 
@@ -29,8 +41,89 @@ req = kms.AtomicReq(card)
 
 req.add_connector(conn, crtc)
 req.add_crtc(crtc, modeb)
-req.add_plane(plane, fb, crtc, dst=(0, 0, mode.hdisplay, mode.vdisplay))
+req.add_plane(plane, fbs[2], crtc, dst=(0, 0, mode.hdisplay, mode.vdisplay))
 
-req.commit_sync(allow_modeset = True)
+req.commit(allow_modeset = True)
 
-input("press enter to exit\n")
+current_fb = None
+next_fb = 0
+bar_y = 0
+last_ts = time.perf_counter()
+last_framenum = 0
+framenum = 0
+
+def handle_pageflip():
+    global current_fb, next_fb, bar_y
+    global last_ts, last_framenum
+    global framenum
+
+    framenum += 1
+
+    ts = time.perf_counter()
+    ts_diff = ts - last_ts
+
+    if ts_diff > 2:
+        num_frames = framenum - last_framenum
+
+        fps = num_frames / ts_diff
+
+        last_ts = ts
+        last_framenum = framenum
+
+        print(f'fps {fps:.2f}')
+
+    #print("FLIP, cur", current_fb, "next", next_fb)
+
+    old_fb = current_fb
+
+    current_fb = next_fb
+
+    next_fb = (current_fb + 1) % len(fbs)
+
+    req = kms.AtomicReq(card)
+
+    req.add_plane(plane, fbs[next_fb], crtc, dst=(0, 0, mode.hdisplay, mode.vdisplay))
+
+    req.commit(allow_modeset = False)
+
+    old_y = bar_y - len(fbs)
+    if old_y < 0:
+        old_y = mode.vdisplay + old_y
+
+    if old_fb != None:
+
+        ts1 = time.perf_counter()
+
+        b = numpybufs[old_fb]
+
+        b[old_y, :] = 0
+        b[bar_y, :] = 0xffffff
+
+        ts2 = time.perf_counter()
+
+        print((ts2 - ts1) * 1000)
+
+        bar_y += 1
+        if bar_y >= mode.vdisplay:
+            bar_y = 0
+
+
+def readdrm(fileobj, mask):
+    for ev in card.read_events():
+        if ev.type == kms.DrmEvent.DRM_EVENT_FLIP_COMPLETE:
+            handle_pageflip()
+
+def readkey(fileobj, mask):
+    print("Done")
+    sys.stdin.readline()
+    sys.exit(0)
+
+sel = selectors.DefaultSelector()
+sel.register(sys.stdin, selectors.EVENT_READ, readkey)
+sel.register(card.fd, selectors.EVENT_READ, readdrm)
+
+while True:
+    events = sel.select()
+    for key, mask in events:
+        callback = key.data
+        callback(key.fileobj, mask)

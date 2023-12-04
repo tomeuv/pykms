@@ -3,6 +3,7 @@ from __future__ import annotations
 import ctypes
 import fcntl
 import itertools
+
 import kms
 import kms.uapi
 
@@ -12,17 +13,29 @@ class AtomicReq:
         self.props = [] # (ob_id, prop_id, value)
 
     def commit(self, allow_modeset = False):
+        flags = kms.uapi.DRM_MODE_PAGE_FLIP_EVENT | kms.uapi.DRM_MODE_ATOMIC_NONBLOCK
+
+        if allow_modeset:
+            flags |= kms.uapi.DRM_MODE_ATOMIC_ALLOW_MODESET
+
+        self._commit(flags)
+
+    def commit_sync(self, allow_modeset = False):
+        flags = 0
+
+        if allow_modeset:
+            flags |= kms.uapi.DRM_MODE_ATOMIC_ALLOW_MODESET
+
+        self._commit(flags)
+
+    def _commit(self, flags):
 
         # Sort the list by object ID, then by property ID
         props = sorted(self.props, key=lambda tuple: (tuple[0], tuple[1]))
 
-        print(props)
-
         obj_prop_counts = {}
         for k, g in itertools.groupby(props, lambda p: p[0]):
             obj_prop_counts[k] = len(list(g))
-
-        print(obj_prop_counts)
 
         num_obs = len(obj_prop_counts)
         num_props = len(props)
@@ -50,33 +63,27 @@ class AtomicReq:
         atomic.count_props_ptr = ctypes.addressof(count_props)
         atomic.props_ptr = ctypes.addressof(prop_ids)
         atomic.prop_values_ptr = ctypes.addressof(prop_values)
-
-        atomic.flags = kms.uapi.DRM_MODE_PAGE_FLIP_EVENT | kms.uapi.DRM_MODE_ATOMIC_NONBLOCK
-
-        if allow_modeset:
-            atomic.flags |= kms.uapi.DRM_MODE_ATOMIC_ALLOW_MODESET
+        atomic.flags = flags
 
         pidx = 0
         for oidx in range(len(objs)):
             oid = objs[oidx]
-            prop_count = count_props[oidx]
 
-            print(f"== {oid}, {prop_count}")
+            try:
+                oid = self.card.get_object(oid)
+            except:
+                pass
+
+            prop_count = count_props[oidx]
 
             for _ in range(prop_count):
                 prop_id = prop_ids[pidx]
                 prop_value = prop_values[pidx]
 
-                print(f"  {self.card.find_property_name(prop_id)} = {prop_value}")
-
                 pidx += 1
-
-
 
         fcntl.ioctl(self.card.fd, kms.uapi.DRM_IOCTL_MODE_ATOMIC, atomic, True)
 
-    def commit_sync(self, allow_modeset = False):
-        self.commit(allow_modeset)
 
     def add_single(self, ob: kms.DrmObject | int, prop: str | int, value: int):
         if type(ob) == int:
