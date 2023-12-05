@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import NamedTuple
+from enum import Enum, auto
 import ctypes
 import fcntl
 import io
@@ -38,15 +38,16 @@ class Card:
         for prop_id in prop_ids:
             prop = kms.uapi.drm_mode_get_property(prop_id=prop_id)
             fcntl.ioctl(self.fd, kms.uapi.DRM_IOCTL_MODE_GETPROPERTY, prop, True)
-            props[prop.name.decode("ascii")] = prop_id
+            props[prop_id] = prop.name.decode("ascii")
 
-        self.props: dict[str, int] = props
+        self._props: dict[int, str] = props
 
-    def find_property_id(self, prop_name):
-        return self.props[prop_name]
+    def find_property_id(self, obj: DrmPropObject, prop_name: str):
+        # We may have duplicate names
+        return next(id for id in obj.prop_values if self._props[id] == prop_name)
 
     def find_property_name(self, prop_id):
-        return next(n for n in self.props if self.props[n] == prop_id)
+        return self._props[prop_id]
 
     def set_defaults(self):
         try:
@@ -65,6 +66,11 @@ class Card:
         client_cap = kms.uapi.drm_set_client_cap(kms.uapi.DRM_CLIENT_CAP_ATOMIC, 1)
         fcntl.ioctl(self.fd, kms.uapi.DRM_IOCTL_SET_CLIENT_CAP, client_cap, True)
         assert(client_cap.value)
+
+    # XXX deprecated
+    @property
+    def has_atomic(self):
+        return True
 
     def get_version(self):
         ver = kms.uapi.drm_version()
@@ -126,6 +132,8 @@ class Card:
         return next((ob for ob in self.encoders if ob.id == id))
 
     def read_events(self) -> list[DrmEvent]:
+        assert(self.fio)
+
         buf = self.event_buf
 
         l = self.fio.readinto(buf)
@@ -148,7 +156,9 @@ class Card:
                 vblank = kms.uapi.drm_event_vblank.from_buffer(buf, i)
                 #print(vblank.sequence, vblank.tv_sec, vblank.tv_usec, vblank.crtc_id, vblank.user_data)
 
-                events.append(DrmEvent(ev.type, vblank))
+                time = vblank.tv_sec + vblank.tv_usec / 1000000.0;
+
+                events.append(DrmEvent(DrmEventType.FLIP_COMPLETE, vblank.sequence, time, vblank.user_data))
 
             elif ev.type == kms.uapi.DRM_EVENT_CRTC_SEQUENCE:
                 raise NotImplementedError()
@@ -159,12 +169,20 @@ class Card:
 
         return events
 
-class DrmEvent:
-    DRM_EVENT_FLIP_COMPLETE = kms.uapi.DRM_EVENT_FLIP_COMPLETE
+    # XXX Deprecated
+    def disable_planes(self):
+        pass
 
-    def __init__(self, type, data) -> None:
+class DrmEventType(Enum):
+    FLIP_COMPLETE = auto()
+
+class DrmEvent:
+    def __init__(self, type, seq, time, data):
         self.type = type
+        self.seq = seq
+        self.time = time
         self.data = data
+
 
 class DrmObject:
     def __init__(self, card: Card, id, type, idx) -> None:
@@ -197,10 +215,23 @@ class DrmPropObject(DrmObject):
         self.prop_values = {int(prop_ids[i]): int(prop_values[i]) for i in range(props.count_props)}
 
     def get_prop_value(self, prop_name: str):
-        assert(prop_name in self.card.props)
-        prop_id = self.card.props[prop_name]
+        prop_id = self.card.find_property_id(self, prop_name)
         assert(prop_id in self.prop_values)
         return self.prop_values[prop_id]
+
+    def set_prop(self, prop, value):
+        import kms.atomicreq
+
+        areq = kms.atomicreq.AtomicReq(self.card)
+        areq.add(self, prop, value)
+        areq.commit_sync()
+
+    def set_props(self, map):
+        import kms.atomicreq
+
+        areq = kms.atomicreq.AtomicReq(self.card)
+        areq.add_many(self, map)
+        areq.commit_sync()
 
 
 class Connector(DrmPropObject):
@@ -302,6 +333,33 @@ class Crtc(DrmPropObject):
     def get_possible_planes(self):
         return [p for p in self.card.planes if p.supports_crtc(self)]
 
+    # XXX deprecated
+    def set_mode(self, connector, fb, mode):
+        modeb = kms.Blob(self.card, mode)
+        crtc = self
+        plane = crtc.get_possible_planes()[0]
+
+        req = kms.AtomicReq(self.card)
+
+        req.add_connector(connector, crtc)
+        req.add_crtc(crtc, modeb)
+        req.add_plane(plane, fb, crtc, dst=(0, 0, mode.hdisplay, mode.vdisplay))
+
+        req.commit_sync(allow_modeset = True)
+
+    @property
+    def primary_plane(self):
+        plane = next((p for p in self.get_possible_planes() if p.type == kms.PlaneTypePrimary and p.crtc_id == self.id), None)
+        if plane:
+            return plane
+        plane = next((p for p in self.get_possible_planes() if p.type == kms.PlaneTypePrimary), None)
+        if plane:
+            return plane
+        plane = next((p for p in self.get_possible_planes()), None)
+        if plane:
+            return plane
+        raise Exception("No primary plane")
+
 
 class Encoder(DrmObject):
     def __init__(self, card: Card, id, idx) -> None:
@@ -363,6 +421,11 @@ class Plane(DrmPropObject):
     def supports_format(self, format):
         return format in self.format_types
 
+    @property
+    def crtc_id(self):
+        return self.res.crtc_id
+
+
 class DumbFramebuffer(DrmObject):
     class DumbFramebufferPlane:
         def __init__(self, handle: int, stride: int, size: int) -> None:
@@ -423,6 +486,10 @@ class DumbFramebuffer(DrmObject):
         if self.card.fd == -1 or self._deleted:
             return
 
+        for p in self.planes:
+            if p.map:
+                p.map.close()
+
         fcntl.ioctl(self.card.fd, kms.uapi.DRM_IOCTL_MODE_RMFB, ctypes.c_uint32(self.id), False)
 
         for p in self.planes:
@@ -436,17 +503,25 @@ class DumbFramebuffer(DrmObject):
         return f'DumbFramebuffer({self.id})'
 
     def mmap(self):
+        return [self.map(pidx) for pidx in range(len(self.planes))]
+
+    def map(self, plane_idx):
         import mmap
 
-        for p in self.planes:
+        p = self.planes[plane_idx]
+
+        if p.offset == 0:
             map_dumb = kms.uapi.struct_drm_mode_map_dumb()
             map_dumb.handle = p.handle
             fcntl.ioctl(self.card.fd, kms.uapi.DRM_IOCTL_MODE_MAP_DUMB, map_dumb, True)
             p.offset = map_dumb.offset
 
-        return [mmap.mmap(self.card.fd, p.size,
-                          mmap.MAP_SHARED, mmap.PROT_READ | mmap.PROT_WRITE,
-                          offset=p.offset) for p in self.planes]
+        if p.map == 0:
+            p.map = mmap.mmap(self.card.fd, p.size,
+                              mmap.MAP_SHARED, mmap.PROT_READ | mmap.PROT_WRITE,
+                              offset=p.offset)
+
+        return p.map
 
 
 class Blob(DrmObject):

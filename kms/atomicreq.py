@@ -88,6 +88,7 @@ class AtomicReq:
     def add_single(self, ob: kms.DrmObject | int, prop: str | int, value: int):
         if type(ob) == int:
             ob_id = ob
+            ob = self.card.get_object(ob_id)
         elif isinstance(ob, kms.DrmObject):
             ob_id = ob.id
         else:
@@ -96,7 +97,7 @@ class AtomicReq:
         if type(prop) == int:
             prop_id = prop
         elif type(prop) == str:
-            prop_id = self.card.props[prop]
+            prop_id = self.card.find_property_id(ob, prop)
         else:
             raise Exception("Bad prop")
 

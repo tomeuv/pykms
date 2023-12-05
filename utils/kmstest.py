@@ -125,7 +125,7 @@ def handle_pageflip():
 
 def readdrm(fileobj, mask):
     for ev in card.read_events():
-        if ev.type == kms.DrmEvent.DRM_EVENT_FLIP_COMPLETE:
+        if ev.type == kms.DrmEventType.FLIP_COMPLETE:
             handle_pageflip()
 
 def readkey(fileobj, mask):

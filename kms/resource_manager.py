@@ -62,7 +62,7 @@ class ResourceManager:
 
         raise Exception("Connector not found")
 
-    def reserve_connector(self, name: str):
+    def reserve_connector(self, name=""):
         if not name:
             conn = self.find_connector()
         else:
