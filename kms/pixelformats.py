@@ -216,3 +216,8 @@ def get_pixel_format_info(fourcc) -> PixelFormatInfo:
             return info
 
     raise Exception("Pixel format not found")
+
+# XXX create PixelFormat "enum" dynamically
+# Do we need this? Create a static list?
+PixelFormat = type("PixelFormat", (object, ),
+                   {p[1]:p[0] for p in formats})

@@ -2,6 +2,7 @@ import kms.uapi
 from kms.card import *
 from kms.resource_manager import *
 from kms.atomicreq import *
+from kms.pixelformats import *
 
 # XXX compat
 def drm_mode_modeinfo_to_blob(self: kms.uapi.drm_mode_modeinfo, card: kms.Card):

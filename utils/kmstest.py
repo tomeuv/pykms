@@ -18,7 +18,7 @@ card = kms.Card()
 res = kms.ResourceManager(card)
 conn = res.reserve_connector(args.connector)
 crtc = res.reserve_crtc(conn)
-plane = res.reserve_generic_plane(crtc, "XR24")
+plane = res.reserve_generic_plane(crtc, kms.PixelFormat.XRGB8888)
 mode = conn.get_default_mode()
 modeb = mode.to_blob(card)
 
@@ -26,7 +26,7 @@ fbs = []
 numpybufs = []
 mmaps = []
 for x in range(3):
-    fb = kms.DumbFramebuffer(card, mode.hdisplay, mode.vdisplay, "XR24")
+    fb = kms.DumbFramebuffer(card, mode.hdisplay, mode.vdisplay, kms.PixelFormat.XRGB8888)
 
     fb_mmaps = fb.mmap()
     buf = fb_mmaps[0]
