@@ -487,6 +487,9 @@ class DumbFramebuffer(DrmObject):
             return
 
         for p in self.planes:
+            if p.prime_fd != -1:
+                os.close(p.prime_fd)
+
             if p.map:
                 p.map.close()
 
@@ -523,12 +526,31 @@ class DumbFramebuffer(DrmObject):
 
         return p.map
 
+    def size(self, plane_idx):
+        return self.planes[plane_idx].size
+
+    def fd(self, plane_idx):
+        p = self.planes[plane_idx]
+
+        if p.prime_fd != -1:
+            return p.prime_fd
+
+        args = kms.uapi.drm_prime_handle()
+        args.handle = self.planes[plane_idx].handle
+        args.fd = -1
+        args.flags = os.O_CLOEXEC | os.O_RDWR
+        fcntl.ioctl(self.card.fd, kms.uapi.DRM_IOCTL_PRIME_HANDLE_TO_FD, args, True)
+
+        p.prime_fd = args.fd
+
+        return p.prime_fd
+
 
 class Blob(DrmObject):
-    def __init__(self, card: Card, ob) -> None:
+    def __init__(self, card: Card, data) -> None:
         blob = kms.uapi.drm_mode_create_blob()
-        blob.data = ctypes.addressof(ob)
-        blob.length = ctypes.sizeof(ob)
+        blob.data = ctypes.addressof(data)
+        blob.length = ctypes.sizeof(data)
 
         fcntl.ioctl(card.fd, kms.uapi.DRM_IOCTL_MODE_CREATEPROPBLOB, blob, True)
 

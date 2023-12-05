@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-import kms as pykms
+import kms
 import argparse
 from PIL import Image
 import numpy as np
@@ -10,12 +10,12 @@ parser.add_argument("image")
 parser.add_argument("-f", "--fourcc", default="XR24")
 args = parser.parse_args()
 
-card = pykms.Card()
-res = pykms.ResourceManager(card)
+card = kms.Card()
+res = kms.ResourceManager(card)
 conn = res.reserve_connector()
 crtc = res.reserve_crtc(conn)
 mode = conn.get_default_mode()
-fb = pykms.DumbFramebuffer(card, mode.hdisplay, mode.vdisplay, args.fourcc)
+fb = kms.DumbFramebuffer(card, mode.hdisplay, mode.vdisplay, args.fourcc)
 crtc.set_mode(conn, fb, mode)
 
 image = Image.open(args.image)
@@ -27,4 +27,8 @@ map = fb.map(0)
 b = np.frombuffer(map, dtype=np.uint8).reshape(fb.height, fb.width, 4)
 b[:, :, :] = pixels
 
+print("Press enter to exit")
 input()
+
+# We need to release the numpy array, as it references the mmap
+b = None

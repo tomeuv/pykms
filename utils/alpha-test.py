@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-import kms as pykms
+import kms
 import time
 import argparse
 
@@ -15,8 +15,8 @@ args = parser.parse_args()
 
 max_planes = 4
 
-card = pykms.Card()
-res = pykms.ResourceManager(card)
+card = kms.Card()
+res = kms.ResourceManager(card)
 conn = res.reserve_connector(args.connector)
 crtc = res.reserve_crtc(conn)
 if args.modename == None:
@@ -42,12 +42,12 @@ h = mode.vdisplay
 fbs=[]
 
 for i in range(max_planes):
-    fbs.append(pykms.DumbFramebuffer(card, w, h, "AR24"))
+    fbs.append(kms.DumbFramebuffer(card, w, h, "AR24"))
 
-pykms.draw_rect(fbs[0], 50, 50, 200, 200, pykms.RGB(128, 255, 0, 0))
-pykms.draw_rect(fbs[1], 150, 50, 200, 200, pykms.RGB(128, 0, 255, 0))
-pykms.draw_rect(fbs[2], 50, 150, 200, 200, pykms.RGB(128, 0, 0, 255))
-pykms.draw_rect(fbs[3], 150, 150, 200, 200, pykms.RGB(128, 128, 128, 128))
+kms.draw_rect(fbs[0], 50, 50, 200, 200, kms.RGB(128, 255, 0, 0))
+kms.draw_rect(fbs[1], 150, 50, 200, 200, kms.RGB(128, 0, 255, 0))
+kms.draw_rect(fbs[2], 50, 150, 200, 200, kms.RGB(128, 0, 0, 255))
+kms.draw_rect(fbs[3], 150, 150, 200, 200, kms.RGB(128, 128, 128, 128))
 
 card.disable_planes()
 

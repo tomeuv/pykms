@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 import sys
-import kms as pykms
+import kms
 import selectors
 
 bar_width = 20
@@ -12,8 +12,8 @@ class FlipHandler():
         super().__init__()
         self.bar_xpos = 0
         self.front_buf = 0
-        self.fb1 = pykms.DumbFramebuffer(card, mode.hdisplay, mode.vdisplay, "XR24");
-        self.fb2 = pykms.DumbFramebuffer(card, mode.hdisplay, mode.vdisplay, "XR24");
+        self.fb1 = kms.DumbFramebuffer(card, mode.hdisplay, mode.vdisplay, "XR24");
+        self.fb2 = kms.DumbFramebuffer(card, mode.hdisplay, mode.vdisplay, "XR24");
         self.flips = 0
         self.frames = 0
         self.time = 0
@@ -47,10 +47,10 @@ class FlipHandler():
 
         self.bar_xpos = new_xpos
 
-        pykms.draw_color_bar(fb, old_xpos, new_xpos, bar_width)
+        kms.draw_color_bar(fb, old_xpos, new_xpos, bar_width)
 
         if card.has_atomic:
-            ctx = pykms.AtomicReq(card)
+            ctx = kms.AtomicReq(card)
             ctx.add(crtc.primary_plane, "FB_ID", fb.id)
             ctx.commit()
         else:
@@ -61,8 +61,8 @@ if len(sys.argv) > 1:
 else:
     conn_name = ''
 
-card = pykms.Card()
-res = pykms.ResourceManager(card)
+card = kms.Card()
+res = kms.ResourceManager(card)
 conn = res.reserve_connector(conn_name)
 crtc = res.reserve_crtc(conn)
 mode = conn.get_default_mode()
@@ -75,7 +75,7 @@ fliphandler.handle_page_flip(0, 0)
 
 def readdrm(fileobj, mask):
     for ev in card.read_events():
-        if ev.type == pykms.DrmEventType.FLIP_COMPLETE:
+        if ev.type == kms.DrmEventType.FLIP_COMPLETE:
             fliphandler.handle_page_flip(ev.seq, ev.time)
 
 
