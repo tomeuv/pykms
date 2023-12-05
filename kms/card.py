@@ -1,11 +1,13 @@
 from __future__ import annotations
 
+from typing import NamedTuple
 import ctypes
 import fcntl
 import io
 import os
 
 import kms.uapi
+import kms.pixelformats
 
 class Card:
     def __init__(self, dev_path='/dev/dri/card0') -> None:
@@ -361,49 +363,76 @@ class Plane(DrmPropObject):
     def supports_format(self, format):
         return format in self.format_types
 
-
 class DumbFramebuffer(DrmObject):
-    def __init__(self, card: Card, width, height, fourcc: str | int) -> None:
-        bitspp = 32 # XXX
+    class DumbFramebufferPlane(NamedTuple):
+        handle: int
+        stride: int
+        size: int
+        prime_fd: int
+        offset: int
+        map: int
 
+    def __init__(self, card: Card, width, height, fourcc: str | int) -> None:
         if type(fourcc) is str:
             fourcc = kms.str_to_fourcc(fourcc)
 
-        create_dumb = kms.uapi.drm_mode_create_dumb()
-        create_dumb.width = width
-        create_dumb.height = height
-        create_dumb.bpp = bitspp # XXX
-        fcntl.ioctl(card.fd, kms.uapi.DRM_IOCTL_MODE_CREATE_DUMB, create_dumb, True)
-
         self.width = width
         self.height = height
-        self.handle = create_dumb.handle
+        self.format = fourcc
+        self.planes = []
 
-        self.pitch = width * bitspp // 8
-        self.size = self.pitch * height
+        format_info = kms.pixelformats.get_pixel_format_info(fourcc)
+
+        for pi in format_info.planes:
+            creq = kms.uapi.drm_mode_create_dumb()
+            creq.width = width
+            creq.height = height // pi.ysub
+
+            # For fully planar YUV buffers, the chroma planes don't combine
+            # U and V components, their width must thus be divided by the
+            # horizontal subsampling factor.
+
+            if format_info.colortype == kms.pixelformats.PixelColorType.YUV and len(format_info.planes) == 3:
+                creq.width //= pi.xsub
+            creq.bpp = pi.bitspp
+
+            fcntl.ioctl(card.fd, kms.uapi.DRM_IOCTL_MODE_CREATE_DUMB, creq, True)
+
+            plane = DumbFramebuffer.DumbFramebufferPlane(handle=creq.handle,
+                                                         stride=creq.pitch,
+                                                         size=creq.height * creq.pitch,
+                                                         prime_fd=-1,
+                                                         offset=0,
+                                                         map=0)
+
+            self.planes.append(plane)
 
         fb2 = kms.uapi.struct_drm_mode_fb_cmd2()
         fb2.width = width
         fb2.height = height
         fb2.pixel_format = fourcc
-        fb2.handles[0] = self.handle
-        fb2.pitches[0] = self.pitch
+        fb2.handles = (ctypes.c_uint * 4)(*[p.handle for p in self.planes])
+        fb2.pitches = (ctypes.c_uint * 4)(*[p.stride for p in self.planes])
+        fb2.offsets = (ctypes.c_uint * 4)(*[p.offset for p in self.planes])
 
         fcntl.ioctl(card.fd, kms.uapi.DRM_IOCTL_MODE_ADDFB2, fb2, True)
 
         super().__init__(card, fb2.fb_id, kms.uapi.DRM_MODE_OBJECT_FB, -1)
 
+        self._deleted = False
+
     def __del__(self):
-        if self.card.fd == -1 or self.handle is None:
+        if self.card.fd == -1 and self._deleted:
             return
 
         fcntl.ioctl(self.card.fd, kms.uapi.DRM_IOCTL_MODE_RMFB, ctypes.c_uint32(self.id), False)
 
-        dumb = kms.uapi.drm_mode_destroy_dumb()
-        dumb.handle = self.handle
-        fcntl.ioctl(self.card.fd, kms.uapi.DRM_IOCTL_MODE_DESTROY_DUMB, dumb, True)
+        for p in self.planes:
+            dumb = kms.uapi.drm_mode_destroy_dumb()
+            dumb.handle = p.handle
+            fcntl.ioctl(self.card.fd, kms.uapi.DRM_IOCTL_MODE_DESTROY_DUMB, dumb, True)
 
-        self.handle = None
+        self._deleted = True
 
     def __repr__(self) -> str:
         return f'DumbFramebuffer({self.handle})'
@@ -411,14 +440,15 @@ class DumbFramebuffer(DrmObject):
     def mmap(self):
         import mmap
 
-        map_dumb = kms.uapi.struct_drm_mode_map_dumb()
-        map_dumb.handle = self.handle
+        for p in self.planes:
+            map_dumb = kms.uapi.struct_drm_mode_map_dumb()
+            map_dumb.handle = p.handle
+            fcntl.ioctl(self.card.fd, kms.uapi.DRM_IOCTL_MODE_MAP_DUMB, map_dumb, True)
+            p.offset = map_dumb.offset
 
-        fcntl.ioctl(self.card.fd, kms.uapi.DRM_IOCTL_MODE_MAP_DUMB, map_dumb, True)
-
-        return mmap.mmap(self.card.fd, self.size,
-                         mmap.MAP_SHARED, mmap.PROT_READ | mmap.PROT_WRITE,
-                         offset=map_dumb.offset)
+        return [mmap.mmap(self.card.fd, p.size,
+                          mmap.MAP_SHARED, mmap.PROT_READ | mmap.PROT_WRITE,
+                          offset=p.offset) for p in self.planes]
 
 
 class Blob(DrmObject):

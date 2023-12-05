@@ -29,7 +29,7 @@ for x in range(3):
     fb = kms.DumbFramebuffer(card, mode.hdisplay, mode.vdisplay, "XR24")
 
     mapped = fb.mmap()
-    mapped[:] = bytearray(fb.size)
+    mapped[:] = bytearray(fb.planes[0].size)
 
     b = np.frombuffer(mapped, dtype=np.uint32).reshape(fb.height, fb.width)
 
