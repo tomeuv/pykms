@@ -28,13 +28,14 @@ mmaps = []
 for x in range(3):
     fb = kms.DumbFramebuffer(card, mode.hdisplay, mode.vdisplay, "XR24")
 
-    mapped = fb.mmap()
-    mapped[:] = bytearray(fb.planes[0].size)
+    fb_mmaps = fb.mmap()
+    buf = fb_mmaps[0]
+    buf[:] = bytearray(fb.planes[0].size)
 
-    b = np.frombuffer(mapped, dtype=np.uint32).reshape(fb.height, fb.width)
+    b = np.frombuffer(buf, dtype=np.uint32).reshape(fb.height, fb.width)
 
     fbs.append(fb)
-    mmaps.append(mapped)
+    mmaps.append(fb_mmaps)
     numpybufs.append(b)
 
 
@@ -103,9 +104,11 @@ def handle_pageflip():
 
         fb = fbs[old_fb]
 
-        m = mmaps[old_fb]
-        m[old_y * fb.pitch:old_y * fb.pitch + fb.width * 4] = line_0
-        m[bar_y * fb.pitch:bar_y * fb.pitch + fb.width * 4] = line_1
+        m = mmaps[old_fb][0]
+        stride = fb.planes[0].stride
+
+        m[old_y * stride:old_y * stride + fb.width * 4] = line_0
+        m[bar_y * stride:bar_y * stride + fb.width * 4] = line_1
 
         #b = numpybufs[old_fb]
         #b[old_y, :] = 0

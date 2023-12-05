@@ -364,13 +364,14 @@ class Plane(DrmPropObject):
         return format in self.format_types
 
 class DumbFramebuffer(DrmObject):
-    class DumbFramebufferPlane(NamedTuple):
-        handle: int
-        stride: int
-        size: int
-        prime_fd: int
-        offset: int
-        map: int
+    class DumbFramebufferPlane:
+        def __init__(self, handle: int, stride: int, size: int) -> None:
+            self.handle = handle
+            self.stride = stride
+            self.size = size
+            self.prime_fd = -1
+            self.offset = 0
+            self.map = 0
 
     def __init__(self, card: Card, width, height, fourcc: str | int) -> None:
         if type(fourcc) is str:
@@ -400,10 +401,7 @@ class DumbFramebuffer(DrmObject):
 
             plane = DumbFramebuffer.DumbFramebufferPlane(handle=creq.handle,
                                                          stride=creq.pitch,
-                                                         size=creq.height * creq.pitch,
-                                                         prime_fd=-1,
-                                                         offset=0,
-                                                         map=0)
+                                                         size=creq.height * creq.pitch)
 
             self.planes.append(plane)
 
@@ -422,7 +420,7 @@ class DumbFramebuffer(DrmObject):
         self._deleted = False
 
     def __del__(self):
-        if self.card.fd == -1 and self._deleted:
+        if self.card.fd == -1 or self._deleted:
             return
 
         fcntl.ioctl(self.card.fd, kms.uapi.DRM_IOCTL_MODE_RMFB, ctypes.c_uint32(self.id), False)
