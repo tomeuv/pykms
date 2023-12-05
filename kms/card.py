@@ -435,7 +435,7 @@ class DumbFramebuffer(DrmObject):
         self._deleted = True
 
     def __repr__(self) -> str:
-        return f'DumbFramebuffer({self.handle})'
+        return f'DumbFramebuffer({self.id})'
 
     def mmap(self):
         import mmap
