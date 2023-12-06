@@ -12,7 +12,7 @@ OUT=kms/uapi/kms.py
 #CTYPESGEN=ctypesgen
 CTYPESGEN=/home/tomba/work/ctypesgen/run.py
 
-CTYPESGEN_OPTS="--no-embed-preamble --no-macro-try-except -D__volatile__= -D__signed__= -U__SIZEOF_INT128__"
+CTYPESGEN_OPTS="--no-embed-preamble --no-macro-try-except --no-source-comments -D__volatile__= -D__signed__= -U__SIZEOF_INT128__"
 
 ${CTYPESGEN} ${CTYPESGEN_OPTS} -I${INCLUDE_PATH} -o ${OUT} ${INCLUDES}
 
