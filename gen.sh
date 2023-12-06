@@ -9,7 +9,12 @@ INCLUDES="
 
 OUT=kms/uapi/kms.py
 
-ctypesgen  --no-embed-preamble -I${INCLUDE_PATH} -D__volatile__= -D__signed__= -U__SIZEOF_INT128__ -o ${OUT} ${INCLUDES}
+CTYPESGEN=ctypesgen
+#CTYPESGEN=/home/tomba/work/ctypesgen/run.py
+
+CTYPESGEN_OPTS="--no-embed-preamble -D__volatile__= -D__signed__= -U__SIZEOF_INT128__"
+
+${CTYPESGEN} ${CTYPESGEN_OPTS} -I${INCLUDE_PATH} -o ${OUT} ${INCLUDES}
 
 # Fix _IOC by using ord(type)
 sed --in-place s#"return ((((dir << _IOC_DIRSHIFT) | (type << _IOC_TYPESHIFT)) | (nr << _IOC_NRSHIFT)) | (size << _IOC_SIZESHIFT))"#"return ((((dir << _IOC_DIRSHIFT) | (ord(type) << _IOC_TYPESHIFT)) | (nr << _IOC_NRSHIFT)) | (size << _IOC_SIZESHIFT))"# ${OUT}
