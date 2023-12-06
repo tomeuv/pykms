@@ -57,8 +57,8 @@ last_framenum = 0
 framenum = 0
 bar_step = 4
 
-line_0 = bytes([0] * (fb.width * 4))
-line_1 = bytes([0xff] * (fb.width * 4))
+line_0 = bytes([0] * (mode.hdisplay * 4))
+line_1 = bytes([0xff] * (mode.hdisplay * 4))
 
 def handle_pageflip():
     global current_fb, next_fb, bar_y
@@ -123,12 +123,12 @@ def handle_pageflip():
             bar_y = 0
 
 
-def readdrm(fileobj, mask):
+def readdrm():
     for ev in card.read_events():
         if ev.type == kms.DrmEventType.FLIP_COMPLETE:
             handle_pageflip()
 
-def readkey(fileobj, mask):
+def readkey():
     print("Done")
     sys.stdin.readline()
     sys.exit(0)
@@ -141,4 +141,4 @@ while True:
     events = sel.select()
     for key, mask in events:
         callback = key.data
-        callback(key.fileobj, mask)
+        callback()

@@ -84,12 +84,12 @@ class AtomicReq:
 
         fcntl.ioctl(self.card.fd, kms.uapi.DRM_IOCTL_MODE_ATOMIC, atomic, True)
 
-
-    def add_single(self, ob: kms.DrmObject | int, prop: str | int, value: int):
+    def add_single(self, ob: kms.DrmPropObject | int, prop: str | int, value: int):
         if type(ob) == int:
             ob_id = ob
             ob = self.card.get_object(ob_id)
-        elif isinstance(ob, kms.DrmObject):
+            assert(isinstance(ob, kms.DrmPropObject))
+        elif isinstance(ob, kms.DrmPropObject):
             ob_id = ob.id
         else:
             raise Exception("Bad object")
@@ -103,11 +103,11 @@ class AtomicReq:
 
         self.props.append((ob_id, prop_id, value))
 
-    def add_many(self, ob: kms.DrmObject | int, map: dict):
+    def add_many(self, ob: kms.DrmPropObject | int, map: dict):
         for prop, value in map.items():
             self.add_single(ob, prop, value)
 
-    def add(self, ob: kms.DrmObject | int, *argv):
+    def add(self, ob: kms.DrmPropObject | int, *argv):
         if len(argv) == 2:
             self.add_single(ob, *argv)
         elif len(argv) == 1:

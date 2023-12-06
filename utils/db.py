@@ -49,12 +49,9 @@ class FlipHandler():
 
         kms.draw_color_bar(fb, old_xpos, new_xpos, bar_width)
 
-        if card.has_atomic:
-            ctx = kms.AtomicReq(card)
-            ctx.add(crtc.primary_plane, "FB_ID", fb.id)
-            ctx.commit()
-        else:
-            crtc.page_flip(fb)
+        ctx = kms.AtomicReq(card)
+        ctx.add(crtc.primary_plane, "FB_ID", fb.id)
+        ctx.commit()
 
 if len(sys.argv) > 1:
     conn_name = sys.argv[1]
@@ -73,13 +70,13 @@ crtc.set_mode(conn, fliphandler.fb1, mode)
 
 fliphandler.handle_page_flip(0, 0)
 
-def readdrm(fileobj, mask):
+def readdrm():
     for ev in card.read_events():
         if ev.type == kms.DrmEventType.FLIP_COMPLETE:
             fliphandler.handle_page_flip(ev.seq, ev.time)
 
 
-def readkey(fileobj, mask):
+def readkey():
     #print("KEY EVENT");
     sys.stdin.readline()
     exit(0)
@@ -92,4 +89,4 @@ while True:
     events = sel.select()
     for key, mask in events:
         callback = key.data
-        callback(key.fileobj, mask)
+        callback()

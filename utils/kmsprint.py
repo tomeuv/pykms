@@ -1,6 +1,15 @@
 #!/usr/bin/python3
+import time
 
-import kms
+ts1 = time.perf_counter()
+
+import kms.uapi
+
+ts2 = time.perf_counter()
+
+print(ts2 - ts1)
+
+exit(0)
 
 card = kms.Card()
 

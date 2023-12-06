@@ -12,7 +12,7 @@ import kms.pixelformats
 class Card:
     def __init__(self, dev_path='/dev/dri/card0') -> None:
         self.fio = io.FileIO(dev_path,
-                             opener=lambda name,flags: os.open(name, os.O_RDWR | os.O_NONBLOCK))
+                             opener=lambda name,_: os.open(name, os.O_RDWR | os.O_NONBLOCK))
         self.fd = self.fio.fileno()
 
         self.set_defaults()
