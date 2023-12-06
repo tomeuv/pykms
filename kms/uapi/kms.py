@@ -1,7 +1,7 @@
 r"""Wrapper for drm.h
 
 Generated with:
-/home/tomba/work/ctypesgen/run.py --no-embed-preamble -D__volatile__= -D__signed__= -U__SIZEOF_INT128__ -I/usr/include -o kms/uapi/kms.py /usr/include/drm/drm.h /usr/include/drm/drm_mode.h /usr/include/drm/drm_fourcc.h
+/home/tomba/work/ctypesgen/run.py --no-embed-preamble --no-macro-try-except -D__volatile__= -D__signed__= -U__SIZEOF_INT128__ -I/usr/include -o kms/uapi/kms.py /usr/include/drm/drm.h /usr/include/drm/drm_mode.h /usr/include/drm/drm_fourcc.h
 
 Do not modify this file.
 """
@@ -2022,64 +2022,34 @@ drm_scatter_gather_t = struct_drm_scatter_gather# /usr/include/drm/drm.h: 1186
 drm_set_version_t = struct_drm_set_version# /usr/include/drm/drm.h: 1187
 
 # /usr/include/asm-generic/ioctl.h: 23
-try:
-    _IOC_NRBITS = 8
-except:
-    pass
+_IOC_NRBITS = 8
 
 # /usr/include/asm-generic/ioctl.h: 24
-try:
-    _IOC_TYPEBITS = 8
-except:
-    pass
+_IOC_TYPEBITS = 8
 
 # /usr/include/asm-generic/ioctl.h: 32
-try:
-    _IOC_SIZEBITS = 14
-except:
-    pass
+_IOC_SIZEBITS = 14
 
 # /usr/include/asm-generic/ioctl.h: 44
-try:
-    _IOC_NRSHIFT = 0
-except:
-    pass
+_IOC_NRSHIFT = 0
 
 # /usr/include/asm-generic/ioctl.h: 45
-try:
-    _IOC_TYPESHIFT = (_IOC_NRSHIFT + _IOC_NRBITS)
-except:
-    pass
+_IOC_TYPESHIFT = (_IOC_NRSHIFT + _IOC_NRBITS)
 
 # /usr/include/asm-generic/ioctl.h: 46
-try:
-    _IOC_SIZESHIFT = (_IOC_TYPESHIFT + _IOC_TYPEBITS)
-except:
-    pass
+_IOC_SIZESHIFT = (_IOC_TYPESHIFT + _IOC_TYPEBITS)
 
 # /usr/include/asm-generic/ioctl.h: 47
-try:
-    _IOC_DIRSHIFT = (_IOC_SIZESHIFT + _IOC_SIZEBITS)
-except:
-    pass
+_IOC_DIRSHIFT = (_IOC_SIZESHIFT + _IOC_SIZEBITS)
 
 # /usr/include/asm-generic/ioctl.h: 58
-try:
-    _IOC_NONE = 0
-except:
-    pass
+_IOC_NONE = 0
 
 # /usr/include/asm-generic/ioctl.h: 62
-try:
-    _IOC_WRITE = 1
-except:
-    pass
+_IOC_WRITE = 1
 
 # /usr/include/asm-generic/ioctl.h: 66
-try:
-    _IOC_READ = 2
-except:
-    pass
+_IOC_READ = 2
 
 # /usr/include/asm-generic/ioctl.h: 69
 def _IOC(dir, type, nr, size):
@@ -2106,40 +2076,22 @@ def _IOWR(type, nr, size):
     return (_IOC ((_IOC_READ | _IOC_WRITE), type, nr, (_IOC_TYPECHECK (size))))
 
 # /usr/include/drm/drm.h: 66
-try:
-    DRM_NAME = 'drm'
-except:
-    pass
+DRM_NAME = 'drm'
 
 # /usr/include/drm/drm.h: 67
-try:
-    DRM_MIN_ORDER = 5
-except:
-    pass
+DRM_MIN_ORDER = 5
 
 # /usr/include/drm/drm.h: 68
-try:
-    DRM_MAX_ORDER = 22
-except:
-    pass
+DRM_MAX_ORDER = 22
 
 # /usr/include/drm/drm.h: 69
-try:
-    DRM_RAM_PERCENT = 10
-except:
-    pass
+DRM_RAM_PERCENT = 10
 
 # /usr/include/drm/drm.h: 71
-try:
-    _DRM_LOCK_HELD = 0x80000000
-except:
-    pass
+_DRM_LOCK_HELD = 0x80000000
 
 # /usr/include/drm/drm.h: 72
-try:
-    _DRM_LOCK_CONT = 0x40000000
-except:
-    pass
+_DRM_LOCK_CONT = 0x40000000
 
 # /usr/include/drm/drm.h: 73
 def _DRM_LOCK_IS_HELD(lock):
@@ -2154,1130 +2106,569 @@ def _DRM_LOCKING_CONTEXT(lock):
     return (lock & (~(_DRM_LOCK_HELD | _DRM_LOCK_CONT)))
 
 # /usr/include/drm/drm.h: 482
-try:
-    _DRM_VBLANK_HIGH_CRTC_SHIFT = 1
-except:
-    pass
+_DRM_VBLANK_HIGH_CRTC_SHIFT = 1
 
 # /usr/include/drm/drm.h: 484
-try:
-    _DRM_VBLANK_TYPES_MASK = (_DRM_VBLANK_ABSOLUTE | _DRM_VBLANK_RELATIVE)
-except:
-    pass
+_DRM_VBLANK_TYPES_MASK = (_DRM_VBLANK_ABSOLUTE | _DRM_VBLANK_RELATIVE)
 
 # /usr/include/drm/drm.h: 485
-try:
-    _DRM_VBLANK_FLAGS_MASK = (((_DRM_VBLANK_EVENT | _DRM_VBLANK_SIGNAL) | _DRM_VBLANK_SECONDARY) | _DRM_VBLANK_NEXTONMISS)
-except:
-    pass
+_DRM_VBLANK_FLAGS_MASK = (((_DRM_VBLANK_EVENT | _DRM_VBLANK_SIGNAL) | _DRM_VBLANK_SECONDARY) | _DRM_VBLANK_NEXTONMISS)
 
 # /usr/include/drm/drm.h: 511
-try:
-    _DRM_PRE_MODESET = 1
-except:
-    pass
+_DRM_PRE_MODESET = 1
 
 # /usr/include/drm/drm.h: 512
-try:
-    _DRM_POST_MODESET = 2
-except:
-    pass
+_DRM_POST_MODESET = 2
 
 # /usr/include/drm/drm.h: 628
-try:
-    DRM_CAP_DUMB_BUFFER = 0x1
-except:
-    pass
+DRM_CAP_DUMB_BUFFER = 0x1
 
 # /usr/include/drm/drm.h: 637
-try:
-    DRM_CAP_VBLANK_HIGH_CRTC = 0x2
-except:
-    pass
+DRM_CAP_VBLANK_HIGH_CRTC = 0x2
 
 # /usr/include/drm/drm.h: 651
-try:
-    DRM_CAP_DUMB_PREFERRED_DEPTH = 0x3
-except:
-    pass
+DRM_CAP_DUMB_PREFERRED_DEPTH = 0x3
 
 # /usr/include/drm/drm.h: 663
-try:
-    DRM_CAP_DUMB_PREFER_SHADOW = 0x4
-except:
-    pass
+DRM_CAP_DUMB_PREFER_SHADOW = 0x4
 
 # /usr/include/drm/drm.h: 673
-try:
-    DRM_CAP_PRIME = 0x5
-except:
-    pass
+DRM_CAP_PRIME = 0x5
 
 # /usr/include/drm/drm.h: 680
-try:
-    DRM_PRIME_CAP_IMPORT = 0x1
-except:
-    pass
+DRM_PRIME_CAP_IMPORT = 0x1
 
 # /usr/include/drm/drm.h: 687
-try:
-    DRM_PRIME_CAP_EXPORT = 0x2
-except:
-    pass
+DRM_PRIME_CAP_EXPORT = 0x2
 
 # /usr/include/drm/drm.h: 699
-try:
-    DRM_CAP_TIMESTAMP_MONOTONIC = 0x6
-except:
-    pass
+DRM_CAP_TIMESTAMP_MONOTONIC = 0x6
 
 # /usr/include/drm/drm.h: 705
-try:
-    DRM_CAP_ASYNC_PAGE_FLIP = 0x7
-except:
-    pass
+DRM_CAP_ASYNC_PAGE_FLIP = 0x7
 
 # /usr/include/drm/drm.h: 717
-try:
-    DRM_CAP_CURSOR_WIDTH = 0x8
-except:
-    pass
+DRM_CAP_CURSOR_WIDTH = 0x8
 
 # /usr/include/drm/drm.h: 723
-try:
-    DRM_CAP_CURSOR_HEIGHT = 0x9
-except:
-    pass
+DRM_CAP_CURSOR_HEIGHT = 0x9
 
 # /usr/include/drm/drm.h: 730
-try:
-    DRM_CAP_ADDFB2_MODIFIERS = 0x10
-except:
-    pass
+DRM_CAP_ADDFB2_MODIFIERS = 0x10
 
 # /usr/include/drm/drm.h: 739
-try:
-    DRM_CAP_PAGE_FLIP_TARGET = 0x11
-except:
-    pass
+DRM_CAP_PAGE_FLIP_TARGET = 0x11
 
 # /usr/include/drm/drm.h: 749
-try:
-    DRM_CAP_CRTC_IN_VBLANK_EVENT = 0x12
-except:
-    pass
+DRM_CAP_CRTC_IN_VBLANK_EVENT = 0x12
 
 # /usr/include/drm/drm.h: 756
-try:
-    DRM_CAP_SYNCOBJ = 0x13
-except:
-    pass
+DRM_CAP_SYNCOBJ = 0x13
 
 # /usr/include/drm/drm.h: 763
-try:
-    DRM_CAP_SYNCOBJ_TIMELINE = 0x14
-except:
-    pass
+DRM_CAP_SYNCOBJ_TIMELINE = 0x14
 
 # /usr/include/drm/drm.h: 781
-try:
-    DRM_CLIENT_CAP_STEREO_3D = 1
-except:
-    pass
+DRM_CLIENT_CAP_STEREO_3D = 1
 
 # /usr/include/drm/drm.h: 792
-try:
-    DRM_CLIENT_CAP_UNIVERSAL_PLANES = 2
-except:
-    pass
+DRM_CLIENT_CAP_UNIVERSAL_PLANES = 2
 
 # /usr/include/drm/drm.h: 808
-try:
-    DRM_CLIENT_CAP_ATOMIC = 3
-except:
-    pass
+DRM_CLIENT_CAP_ATOMIC = 3
 
 # /usr/include/drm/drm.h: 819
-try:
-    DRM_CLIENT_CAP_ASPECT_RATIO = 4
-except:
-    pass
+DRM_CLIENT_CAP_ASPECT_RATIO = 4
 
 # /usr/include/drm/drm.h: 831
-try:
-    DRM_CLIENT_CAP_WRITEBACK_CONNECTORS = 5
-except:
-    pass
+DRM_CLIENT_CAP_WRITEBACK_CONNECTORS = 5
 
 # /usr/include/drm/drm.h: 853
-try:
-    DRM_SYNCOBJ_CREATE_SIGNALED = (1 << 0)
-except:
-    pass
+DRM_SYNCOBJ_CREATE_SIGNALED = (1 << 0)
 
 # /usr/include/drm/drm.h: 862
-try:
-    DRM_SYNCOBJ_FD_TO_HANDLE_FLAGS_IMPORT_SYNC_FILE = (1 << 0)
-except:
-    pass
+DRM_SYNCOBJ_FD_TO_HANDLE_FLAGS_IMPORT_SYNC_FILE = (1 << 0)
 
 # /usr/include/drm/drm.h: 863
-try:
-    DRM_SYNCOBJ_HANDLE_TO_FD_FLAGS_EXPORT_SYNC_FILE = (1 << 0)
-except:
-    pass
+DRM_SYNCOBJ_HANDLE_TO_FD_FLAGS_EXPORT_SYNC_FILE = (1 << 0)
 
 # /usr/include/drm/drm.h: 881
-try:
-    DRM_SYNCOBJ_WAIT_FLAGS_WAIT_ALL = (1 << 0)
-except:
-    pass
+DRM_SYNCOBJ_WAIT_FLAGS_WAIT_ALL = (1 << 0)
 
 # /usr/include/drm/drm.h: 882
-try:
-    DRM_SYNCOBJ_WAIT_FLAGS_WAIT_FOR_SUBMIT = (1 << 1)
-except:
-    pass
+DRM_SYNCOBJ_WAIT_FLAGS_WAIT_FOR_SUBMIT = (1 << 1)
 
 # /usr/include/drm/drm.h: 883
-try:
-    DRM_SYNCOBJ_WAIT_FLAGS_WAIT_AVAILABLE = (1 << 2)
-except:
-    pass
+DRM_SYNCOBJ_WAIT_FLAGS_WAIT_AVAILABLE = (1 << 2)
 
 # /usr/include/drm/drm.h: 913
-try:
-    DRM_SYNCOBJ_QUERY_FLAGS_LAST_SUBMITTED = (1 << 0)
-except:
-    pass
+DRM_SYNCOBJ_QUERY_FLAGS_LAST_SUBMITTED = (1 << 0)
 
 # /usr/include/drm/drm.h: 934
-try:
-    DRM_CRTC_SEQUENCE_RELATIVE = 0x00000001
-except:
-    pass
+DRM_CRTC_SEQUENCE_RELATIVE = 0x00000001
 
 # /usr/include/drm/drm.h: 935
-try:
-    DRM_CRTC_SEQUENCE_NEXT_ON_MISS = 0x00000002
-except:
-    pass
+DRM_CRTC_SEQUENCE_NEXT_ON_MISS = 0x00000002
 
 # /usr/include/drm/drm_mode.h: 45
-try:
-    DRM_CONNECTOR_NAME_LEN = 32
-except:
-    pass
+DRM_CONNECTOR_NAME_LEN = 32
 
 # /usr/include/drm/drm_mode.h: 46
-try:
-    DRM_DISPLAY_MODE_LEN = 32
-except:
-    pass
+DRM_DISPLAY_MODE_LEN = 32
 
 # /usr/include/drm/drm_mode.h: 47
-try:
-    DRM_PROP_NAME_LEN = 32
-except:
-    pass
+DRM_PROP_NAME_LEN = 32
 
 # /usr/include/drm/drm_mode.h: 49
-try:
-    DRM_MODE_TYPE_BUILTIN = (1 << 0)
-except:
-    pass
+DRM_MODE_TYPE_BUILTIN = (1 << 0)
 
 # /usr/include/drm/drm_mode.h: 50
-try:
-    DRM_MODE_TYPE_CLOCK_C = ((1 << 1) | DRM_MODE_TYPE_BUILTIN)
-except:
-    pass
+DRM_MODE_TYPE_CLOCK_C = ((1 << 1) | DRM_MODE_TYPE_BUILTIN)
 
 # /usr/include/drm/drm_mode.h: 51
-try:
-    DRM_MODE_TYPE_CRTC_C = ((1 << 2) | DRM_MODE_TYPE_BUILTIN)
-except:
-    pass
+DRM_MODE_TYPE_CRTC_C = ((1 << 2) | DRM_MODE_TYPE_BUILTIN)
 
 # /usr/include/drm/drm_mode.h: 52
-try:
-    DRM_MODE_TYPE_PREFERRED = (1 << 3)
-except:
-    pass
+DRM_MODE_TYPE_PREFERRED = (1 << 3)
 
 # /usr/include/drm/drm_mode.h: 53
-try:
-    DRM_MODE_TYPE_DEFAULT = (1 << 4)
-except:
-    pass
+DRM_MODE_TYPE_DEFAULT = (1 << 4)
 
 # /usr/include/drm/drm_mode.h: 54
-try:
-    DRM_MODE_TYPE_USERDEF = (1 << 5)
-except:
-    pass
+DRM_MODE_TYPE_USERDEF = (1 << 5)
 
 # /usr/include/drm/drm_mode.h: 55
-try:
-    DRM_MODE_TYPE_DRIVER = (1 << 6)
-except:
-    pass
+DRM_MODE_TYPE_DRIVER = (1 << 6)
 
 # /usr/include/drm/drm_mode.h: 57
-try:
-    DRM_MODE_TYPE_ALL = ((DRM_MODE_TYPE_PREFERRED | DRM_MODE_TYPE_USERDEF) | DRM_MODE_TYPE_DRIVER)
-except:
-    pass
+DRM_MODE_TYPE_ALL = ((DRM_MODE_TYPE_PREFERRED | DRM_MODE_TYPE_USERDEF) | DRM_MODE_TYPE_DRIVER)
 
 # /usr/include/drm/drm_mode.h: 71
-try:
-    DRM_MODE_FLAG_PHSYNC = (1 << 0)
-except:
-    pass
+DRM_MODE_FLAG_PHSYNC = (1 << 0)
 
 # /usr/include/drm/drm_mode.h: 72
-try:
-    DRM_MODE_FLAG_NHSYNC = (1 << 1)
-except:
-    pass
+DRM_MODE_FLAG_NHSYNC = (1 << 1)
 
 # /usr/include/drm/drm_mode.h: 73
-try:
-    DRM_MODE_FLAG_PVSYNC = (1 << 2)
-except:
-    pass
+DRM_MODE_FLAG_PVSYNC = (1 << 2)
 
 # /usr/include/drm/drm_mode.h: 74
-try:
-    DRM_MODE_FLAG_NVSYNC = (1 << 3)
-except:
-    pass
+DRM_MODE_FLAG_NVSYNC = (1 << 3)
 
 # /usr/include/drm/drm_mode.h: 75
-try:
-    DRM_MODE_FLAG_INTERLACE = (1 << 4)
-except:
-    pass
+DRM_MODE_FLAG_INTERLACE = (1 << 4)
 
 # /usr/include/drm/drm_mode.h: 76
-try:
-    DRM_MODE_FLAG_DBLSCAN = (1 << 5)
-except:
-    pass
+DRM_MODE_FLAG_DBLSCAN = (1 << 5)
 
 # /usr/include/drm/drm_mode.h: 77
-try:
-    DRM_MODE_FLAG_CSYNC = (1 << 6)
-except:
-    pass
+DRM_MODE_FLAG_CSYNC = (1 << 6)
 
 # /usr/include/drm/drm_mode.h: 78
-try:
-    DRM_MODE_FLAG_PCSYNC = (1 << 7)
-except:
-    pass
+DRM_MODE_FLAG_PCSYNC = (1 << 7)
 
 # /usr/include/drm/drm_mode.h: 79
-try:
-    DRM_MODE_FLAG_NCSYNC = (1 << 8)
-except:
-    pass
+DRM_MODE_FLAG_NCSYNC = (1 << 8)
 
 # /usr/include/drm/drm_mode.h: 80
-try:
-    DRM_MODE_FLAG_HSKEW = (1 << 9)
-except:
-    pass
+DRM_MODE_FLAG_HSKEW = (1 << 9)
 
 # /usr/include/drm/drm_mode.h: 81
-try:
-    DRM_MODE_FLAG_BCAST = (1 << 10)
-except:
-    pass
+DRM_MODE_FLAG_BCAST = (1 << 10)
 
 # /usr/include/drm/drm_mode.h: 82
-try:
-    DRM_MODE_FLAG_PIXMUX = (1 << 11)
-except:
-    pass
+DRM_MODE_FLAG_PIXMUX = (1 << 11)
 
 # /usr/include/drm/drm_mode.h: 83
-try:
-    DRM_MODE_FLAG_DBLCLK = (1 << 12)
-except:
-    pass
+DRM_MODE_FLAG_DBLCLK = (1 << 12)
 
 # /usr/include/drm/drm_mode.h: 84
-try:
-    DRM_MODE_FLAG_CLKDIV2 = (1 << 13)
-except:
-    pass
+DRM_MODE_FLAG_CLKDIV2 = (1 << 13)
 
 # /usr/include/drm/drm_mode.h: 89
-try:
-    DRM_MODE_FLAG_3D_MASK = (0x1f << 14)
-except:
-    pass
+DRM_MODE_FLAG_3D_MASK = (0x1f << 14)
 
 # /usr/include/drm/drm_mode.h: 90
-try:
-    DRM_MODE_FLAG_3D_NONE = (0 << 14)
-except:
-    pass
+DRM_MODE_FLAG_3D_NONE = (0 << 14)
 
 # /usr/include/drm/drm_mode.h: 91
-try:
-    DRM_MODE_FLAG_3D_FRAME_PACKING = (1 << 14)
-except:
-    pass
+DRM_MODE_FLAG_3D_FRAME_PACKING = (1 << 14)
 
 # /usr/include/drm/drm_mode.h: 92
-try:
-    DRM_MODE_FLAG_3D_FIELD_ALTERNATIVE = (2 << 14)
-except:
-    pass
+DRM_MODE_FLAG_3D_FIELD_ALTERNATIVE = (2 << 14)
 
 # /usr/include/drm/drm_mode.h: 93
-try:
-    DRM_MODE_FLAG_3D_LINE_ALTERNATIVE = (3 << 14)
-except:
-    pass
+DRM_MODE_FLAG_3D_LINE_ALTERNATIVE = (3 << 14)
 
 # /usr/include/drm/drm_mode.h: 94
-try:
-    DRM_MODE_FLAG_3D_SIDE_BY_SIDE_FULL = (4 << 14)
-except:
-    pass
+DRM_MODE_FLAG_3D_SIDE_BY_SIDE_FULL = (4 << 14)
 
 # /usr/include/drm/drm_mode.h: 95
-try:
-    DRM_MODE_FLAG_3D_L_DEPTH = (5 << 14)
-except:
-    pass
+DRM_MODE_FLAG_3D_L_DEPTH = (5 << 14)
 
 # /usr/include/drm/drm_mode.h: 96
-try:
-    DRM_MODE_FLAG_3D_L_DEPTH_GFX_GFX_DEPTH = (6 << 14)
-except:
-    pass
+DRM_MODE_FLAG_3D_L_DEPTH_GFX_GFX_DEPTH = (6 << 14)
 
 # /usr/include/drm/drm_mode.h: 97
-try:
-    DRM_MODE_FLAG_3D_TOP_AND_BOTTOM = (7 << 14)
-except:
-    pass
+DRM_MODE_FLAG_3D_TOP_AND_BOTTOM = (7 << 14)
 
 # /usr/include/drm/drm_mode.h: 98
-try:
-    DRM_MODE_FLAG_3D_SIDE_BY_SIDE_HALF = (8 << 14)
-except:
-    pass
+DRM_MODE_FLAG_3D_SIDE_BY_SIDE_HALF = (8 << 14)
 
 # /usr/include/drm/drm_mode.h: 101
-try:
-    DRM_MODE_PICTURE_ASPECT_NONE = 0
-except:
-    pass
+DRM_MODE_PICTURE_ASPECT_NONE = 0
 
 # /usr/include/drm/drm_mode.h: 102
-try:
-    DRM_MODE_PICTURE_ASPECT_4_3 = 1
-except:
-    pass
+DRM_MODE_PICTURE_ASPECT_4_3 = 1
 
 # /usr/include/drm/drm_mode.h: 103
-try:
-    DRM_MODE_PICTURE_ASPECT_16_9 = 2
-except:
-    pass
+DRM_MODE_PICTURE_ASPECT_16_9 = 2
 
 # /usr/include/drm/drm_mode.h: 104
-try:
-    DRM_MODE_PICTURE_ASPECT_64_27 = 3
-except:
-    pass
+DRM_MODE_PICTURE_ASPECT_64_27 = 3
 
 # /usr/include/drm/drm_mode.h: 105
-try:
-    DRM_MODE_PICTURE_ASPECT_256_135 = 4
-except:
-    pass
+DRM_MODE_PICTURE_ASPECT_256_135 = 4
 
 # /usr/include/drm/drm_mode.h: 108
-try:
-    DRM_MODE_CONTENT_TYPE_NO_DATA = 0
-except:
-    pass
+DRM_MODE_CONTENT_TYPE_NO_DATA = 0
 
 # /usr/include/drm/drm_mode.h: 109
-try:
-    DRM_MODE_CONTENT_TYPE_GRAPHICS = 1
-except:
-    pass
+DRM_MODE_CONTENT_TYPE_GRAPHICS = 1
 
 # /usr/include/drm/drm_mode.h: 110
-try:
-    DRM_MODE_CONTENT_TYPE_PHOTO = 2
-except:
-    pass
+DRM_MODE_CONTENT_TYPE_PHOTO = 2
 
 # /usr/include/drm/drm_mode.h: 111
-try:
-    DRM_MODE_CONTENT_TYPE_CINEMA = 3
-except:
-    pass
+DRM_MODE_CONTENT_TYPE_CINEMA = 3
 
 # /usr/include/drm/drm_mode.h: 112
-try:
-    DRM_MODE_CONTENT_TYPE_GAME = 4
-except:
-    pass
+DRM_MODE_CONTENT_TYPE_GAME = 4
 
 # /usr/include/drm/drm_mode.h: 115
-try:
-    DRM_MODE_FLAG_PIC_AR_MASK = (0x0F << 19)
-except:
-    pass
+DRM_MODE_FLAG_PIC_AR_MASK = (0x0F << 19)
 
 # /usr/include/drm/drm_mode.h: 116
-try:
-    DRM_MODE_FLAG_PIC_AR_NONE = (DRM_MODE_PICTURE_ASPECT_NONE << 19)
-except:
-    pass
+DRM_MODE_FLAG_PIC_AR_NONE = (DRM_MODE_PICTURE_ASPECT_NONE << 19)
 
 # /usr/include/drm/drm_mode.h: 118
-try:
-    DRM_MODE_FLAG_PIC_AR_4_3 = (DRM_MODE_PICTURE_ASPECT_4_3 << 19)
-except:
-    pass
+DRM_MODE_FLAG_PIC_AR_4_3 = (DRM_MODE_PICTURE_ASPECT_4_3 << 19)
 
 # /usr/include/drm/drm_mode.h: 120
-try:
-    DRM_MODE_FLAG_PIC_AR_16_9 = (DRM_MODE_PICTURE_ASPECT_16_9 << 19)
-except:
-    pass
+DRM_MODE_FLAG_PIC_AR_16_9 = (DRM_MODE_PICTURE_ASPECT_16_9 << 19)
 
 # /usr/include/drm/drm_mode.h: 122
-try:
-    DRM_MODE_FLAG_PIC_AR_64_27 = (DRM_MODE_PICTURE_ASPECT_64_27 << 19)
-except:
-    pass
+DRM_MODE_FLAG_PIC_AR_64_27 = (DRM_MODE_PICTURE_ASPECT_64_27 << 19)
 
 # /usr/include/drm/drm_mode.h: 124
-try:
-    DRM_MODE_FLAG_PIC_AR_256_135 = (DRM_MODE_PICTURE_ASPECT_256_135 << 19)
-except:
-    pass
+DRM_MODE_FLAG_PIC_AR_256_135 = (DRM_MODE_PICTURE_ASPECT_256_135 << 19)
 
 # /usr/include/drm/drm_mode.h: 127
-try:
-    DRM_MODE_FLAG_ALL = ((((((((((((DRM_MODE_FLAG_PHSYNC | DRM_MODE_FLAG_NHSYNC) | DRM_MODE_FLAG_PVSYNC) | DRM_MODE_FLAG_NVSYNC) | DRM_MODE_FLAG_INTERLACE) | DRM_MODE_FLAG_DBLSCAN) | DRM_MODE_FLAG_CSYNC) | DRM_MODE_FLAG_PCSYNC) | DRM_MODE_FLAG_NCSYNC) | DRM_MODE_FLAG_HSKEW) | DRM_MODE_FLAG_DBLCLK) | DRM_MODE_FLAG_CLKDIV2) | DRM_MODE_FLAG_3D_MASK)
-except:
-    pass
+DRM_MODE_FLAG_ALL = ((((((((((((DRM_MODE_FLAG_PHSYNC | DRM_MODE_FLAG_NHSYNC) | DRM_MODE_FLAG_PVSYNC) | DRM_MODE_FLAG_NVSYNC) | DRM_MODE_FLAG_INTERLACE) | DRM_MODE_FLAG_DBLSCAN) | DRM_MODE_FLAG_CSYNC) | DRM_MODE_FLAG_PCSYNC) | DRM_MODE_FLAG_NCSYNC) | DRM_MODE_FLAG_HSKEW) | DRM_MODE_FLAG_DBLCLK) | DRM_MODE_FLAG_CLKDIV2) | DRM_MODE_FLAG_3D_MASK)
 
 # /usr/include/drm/drm_mode.h: 143
-try:
-    DRM_MODE_DPMS_ON = 0
-except:
-    pass
+DRM_MODE_DPMS_ON = 0
 
 # /usr/include/drm/drm_mode.h: 144
-try:
-    DRM_MODE_DPMS_STANDBY = 1
-except:
-    pass
+DRM_MODE_DPMS_STANDBY = 1
 
 # /usr/include/drm/drm_mode.h: 145
-try:
-    DRM_MODE_DPMS_SUSPEND = 2
-except:
-    pass
+DRM_MODE_DPMS_SUSPEND = 2
 
 # /usr/include/drm/drm_mode.h: 146
-try:
-    DRM_MODE_DPMS_OFF = 3
-except:
-    pass
+DRM_MODE_DPMS_OFF = 3
 
 # /usr/include/drm/drm_mode.h: 149
-try:
-    DRM_MODE_SCALE_NONE = 0
-except:
-    pass
+DRM_MODE_SCALE_NONE = 0
 
 # /usr/include/drm/drm_mode.h: 151
-try:
-    DRM_MODE_SCALE_FULLSCREEN = 1
-except:
-    pass
+DRM_MODE_SCALE_FULLSCREEN = 1
 
 # /usr/include/drm/drm_mode.h: 152
-try:
-    DRM_MODE_SCALE_CENTER = 2
-except:
-    pass
+DRM_MODE_SCALE_CENTER = 2
 
 # /usr/include/drm/drm_mode.h: 153
-try:
-    DRM_MODE_SCALE_ASPECT = 3
-except:
-    pass
+DRM_MODE_SCALE_ASPECT = 3
 
 # /usr/include/drm/drm_mode.h: 156
-try:
-    DRM_MODE_DITHERING_OFF = 0
-except:
-    pass
+DRM_MODE_DITHERING_OFF = 0
 
 # /usr/include/drm/drm_mode.h: 157
-try:
-    DRM_MODE_DITHERING_ON = 1
-except:
-    pass
+DRM_MODE_DITHERING_ON = 1
 
 # /usr/include/drm/drm_mode.h: 158
-try:
-    DRM_MODE_DITHERING_AUTO = 2
-except:
-    pass
+DRM_MODE_DITHERING_AUTO = 2
 
 # /usr/include/drm/drm_mode.h: 161
-try:
-    DRM_MODE_DIRTY_OFF = 0
-except:
-    pass
+DRM_MODE_DIRTY_OFF = 0
 
 # /usr/include/drm/drm_mode.h: 162
-try:
-    DRM_MODE_DIRTY_ON = 1
-except:
-    pass
+DRM_MODE_DIRTY_ON = 1
 
 # /usr/include/drm/drm_mode.h: 163
-try:
-    DRM_MODE_DIRTY_ANNOTATE = 2
-except:
-    pass
+DRM_MODE_DIRTY_ANNOTATE = 2
 
 # /usr/include/drm/drm_mode.h: 166
-try:
-    DRM_MODE_LINK_STATUS_GOOD = 0
-except:
-    pass
+DRM_MODE_LINK_STATUS_GOOD = 0
 
 # /usr/include/drm/drm_mode.h: 167
-try:
-    DRM_MODE_LINK_STATUS_BAD = 1
-except:
-    pass
+DRM_MODE_LINK_STATUS_BAD = 1
 
 # /usr/include/drm/drm_mode.h: 178
-try:
-    DRM_MODE_ROTATE_0 = (1 << 0)
-except:
-    pass
+DRM_MODE_ROTATE_0 = (1 << 0)
 
 # /usr/include/drm/drm_mode.h: 179
-try:
-    DRM_MODE_ROTATE_90 = (1 << 1)
-except:
-    pass
+DRM_MODE_ROTATE_90 = (1 << 1)
 
 # /usr/include/drm/drm_mode.h: 180
-try:
-    DRM_MODE_ROTATE_180 = (1 << 2)
-except:
-    pass
+DRM_MODE_ROTATE_180 = (1 << 2)
 
 # /usr/include/drm/drm_mode.h: 181
-try:
-    DRM_MODE_ROTATE_270 = (1 << 3)
-except:
-    pass
+DRM_MODE_ROTATE_270 = (1 << 3)
 
 # /usr/include/drm/drm_mode.h: 188
-try:
-    DRM_MODE_ROTATE_MASK = (((DRM_MODE_ROTATE_0 | DRM_MODE_ROTATE_90) | DRM_MODE_ROTATE_180) | DRM_MODE_ROTATE_270)
-except:
-    pass
+DRM_MODE_ROTATE_MASK = (((DRM_MODE_ROTATE_0 | DRM_MODE_ROTATE_90) | DRM_MODE_ROTATE_180) | DRM_MODE_ROTATE_270)
 
 # /usr/include/drm/drm_mode.h: 204
-try:
-    DRM_MODE_REFLECT_X = (1 << 4)
-except:
-    pass
+DRM_MODE_REFLECT_X = (1 << 4)
 
 # /usr/include/drm/drm_mode.h: 205
-try:
-    DRM_MODE_REFLECT_Y = (1 << 5)
-except:
-    pass
+DRM_MODE_REFLECT_Y = (1 << 5)
 
 # /usr/include/drm/drm_mode.h: 212
-try:
-    DRM_MODE_REFLECT_MASK = (DRM_MODE_REFLECT_X | DRM_MODE_REFLECT_Y)
-except:
-    pass
+DRM_MODE_REFLECT_MASK = (DRM_MODE_REFLECT_X | DRM_MODE_REFLECT_Y)
 
 # /usr/include/drm/drm_mode.h: 217
-try:
-    DRM_MODE_CONTENT_PROTECTION_UNDESIRED = 0
-except:
-    pass
+DRM_MODE_CONTENT_PROTECTION_UNDESIRED = 0
 
 # /usr/include/drm/drm_mode.h: 218
-try:
-    DRM_MODE_CONTENT_PROTECTION_DESIRED = 1
-except:
-    pass
+DRM_MODE_CONTENT_PROTECTION_DESIRED = 1
 
 # /usr/include/drm/drm_mode.h: 219
-try:
-    DRM_MODE_CONTENT_PROTECTION_ENABLED = 2
-except:
-    pass
+DRM_MODE_CONTENT_PROTECTION_ENABLED = 2
 
 # /usr/include/drm/drm_mode.h: 292
-try:
-    DRM_MODE_PRESENT_TOP_FIELD = (1 << 0)
-except:
-    pass
+DRM_MODE_PRESENT_TOP_FIELD = (1 << 0)
 
 # /usr/include/drm/drm_mode.h: 293
-try:
-    DRM_MODE_PRESENT_BOTTOM_FIELD = (1 << 1)
-except:
-    pass
+DRM_MODE_PRESENT_BOTTOM_FIELD = (1 << 1)
 
 # /usr/include/drm/drm_mode.h: 365
-try:
-    DRM_MODE_ENCODER_NONE = 0
-except:
-    pass
+DRM_MODE_ENCODER_NONE = 0
 
 # /usr/include/drm/drm_mode.h: 366
-try:
-    DRM_MODE_ENCODER_DAC = 1
-except:
-    pass
+DRM_MODE_ENCODER_DAC = 1
 
 # /usr/include/drm/drm_mode.h: 367
-try:
-    DRM_MODE_ENCODER_TMDS = 2
-except:
-    pass
+DRM_MODE_ENCODER_TMDS = 2
 
 # /usr/include/drm/drm_mode.h: 368
-try:
-    DRM_MODE_ENCODER_LVDS = 3
-except:
-    pass
+DRM_MODE_ENCODER_LVDS = 3
 
 # /usr/include/drm/drm_mode.h: 369
-try:
-    DRM_MODE_ENCODER_TVDAC = 4
-except:
-    pass
+DRM_MODE_ENCODER_TVDAC = 4
 
 # /usr/include/drm/drm_mode.h: 370
-try:
-    DRM_MODE_ENCODER_VIRTUAL = 5
-except:
-    pass
+DRM_MODE_ENCODER_VIRTUAL = 5
 
 # /usr/include/drm/drm_mode.h: 371
-try:
-    DRM_MODE_ENCODER_DSI = 6
-except:
-    pass
+DRM_MODE_ENCODER_DSI = 6
 
 # /usr/include/drm/drm_mode.h: 372
-try:
-    DRM_MODE_ENCODER_DPMST = 7
-except:
-    pass
+DRM_MODE_ENCODER_DPMST = 7
 
 # /usr/include/drm/drm_mode.h: 373
-try:
-    DRM_MODE_ENCODER_DPI = 8
-except:
-    pass
+DRM_MODE_ENCODER_DPI = 8
 
 # /usr/include/drm/drm_mode.h: 403
-try:
-    DRM_MODE_CONNECTOR_Unknown = 0
-except:
-    pass
+DRM_MODE_CONNECTOR_Unknown = 0
 
 # /usr/include/drm/drm_mode.h: 404
-try:
-    DRM_MODE_CONNECTOR_VGA = 1
-except:
-    pass
+DRM_MODE_CONNECTOR_VGA = 1
 
 # /usr/include/drm/drm_mode.h: 405
-try:
-    DRM_MODE_CONNECTOR_DVII = 2
-except:
-    pass
+DRM_MODE_CONNECTOR_DVII = 2
 
 # /usr/include/drm/drm_mode.h: 406
-try:
-    DRM_MODE_CONNECTOR_DVID = 3
-except:
-    pass
+DRM_MODE_CONNECTOR_DVID = 3
 
 # /usr/include/drm/drm_mode.h: 407
-try:
-    DRM_MODE_CONNECTOR_DVIA = 4
-except:
-    pass
+DRM_MODE_CONNECTOR_DVIA = 4
 
 # /usr/include/drm/drm_mode.h: 408
-try:
-    DRM_MODE_CONNECTOR_Composite = 5
-except:
-    pass
+DRM_MODE_CONNECTOR_Composite = 5
 
 # /usr/include/drm/drm_mode.h: 409
-try:
-    DRM_MODE_CONNECTOR_SVIDEO = 6
-except:
-    pass
+DRM_MODE_CONNECTOR_SVIDEO = 6
 
 # /usr/include/drm/drm_mode.h: 410
-try:
-    DRM_MODE_CONNECTOR_LVDS = 7
-except:
-    pass
+DRM_MODE_CONNECTOR_LVDS = 7
 
 # /usr/include/drm/drm_mode.h: 411
-try:
-    DRM_MODE_CONNECTOR_Component = 8
-except:
-    pass
+DRM_MODE_CONNECTOR_Component = 8
 
 # /usr/include/drm/drm_mode.h: 412
-try:
-    DRM_MODE_CONNECTOR_9PinDIN = 9
-except:
-    pass
+DRM_MODE_CONNECTOR_9PinDIN = 9
 
 # /usr/include/drm/drm_mode.h: 413
-try:
-    DRM_MODE_CONNECTOR_DisplayPort = 10
-except:
-    pass
+DRM_MODE_CONNECTOR_DisplayPort = 10
 
 # /usr/include/drm/drm_mode.h: 414
-try:
-    DRM_MODE_CONNECTOR_HDMIA = 11
-except:
-    pass
+DRM_MODE_CONNECTOR_HDMIA = 11
 
 # /usr/include/drm/drm_mode.h: 415
-try:
-    DRM_MODE_CONNECTOR_HDMIB = 12
-except:
-    pass
+DRM_MODE_CONNECTOR_HDMIB = 12
 
 # /usr/include/drm/drm_mode.h: 416
-try:
-    DRM_MODE_CONNECTOR_TV = 13
-except:
-    pass
+DRM_MODE_CONNECTOR_TV = 13
 
 # /usr/include/drm/drm_mode.h: 417
-try:
-    DRM_MODE_CONNECTOR_eDP = 14
-except:
-    pass
+DRM_MODE_CONNECTOR_eDP = 14
 
 # /usr/include/drm/drm_mode.h: 418
-try:
-    DRM_MODE_CONNECTOR_VIRTUAL = 15
-except:
-    pass
+DRM_MODE_CONNECTOR_VIRTUAL = 15
 
 # /usr/include/drm/drm_mode.h: 419
-try:
-    DRM_MODE_CONNECTOR_DSI = 16
-except:
-    pass
+DRM_MODE_CONNECTOR_DSI = 16
 
 # /usr/include/drm/drm_mode.h: 420
-try:
-    DRM_MODE_CONNECTOR_DPI = 17
-except:
-    pass
+DRM_MODE_CONNECTOR_DPI = 17
 
 # /usr/include/drm/drm_mode.h: 421
-try:
-    DRM_MODE_CONNECTOR_WRITEBACK = 18
-except:
-    pass
+DRM_MODE_CONNECTOR_WRITEBACK = 18
 
 # /usr/include/drm/drm_mode.h: 422
-try:
-    DRM_MODE_CONNECTOR_SPI = 19
-except:
-    pass
+DRM_MODE_CONNECTOR_SPI = 19
 
 # /usr/include/drm/drm_mode.h: 423
-try:
-    DRM_MODE_CONNECTOR_USB = 20
-except:
-    pass
+DRM_MODE_CONNECTOR_USB = 20
 
 # /usr/include/drm/drm_mode.h: 515
-try:
-    DRM_MODE_PROP_PENDING = (1 << 0)
-except:
-    pass
+DRM_MODE_PROP_PENDING = (1 << 0)
 
 # /usr/include/drm/drm_mode.h: 516
-try:
-    DRM_MODE_PROP_RANGE = (1 << 1)
-except:
-    pass
+DRM_MODE_PROP_RANGE = (1 << 1)
 
 # /usr/include/drm/drm_mode.h: 517
-try:
-    DRM_MODE_PROP_IMMUTABLE = (1 << 2)
-except:
-    pass
+DRM_MODE_PROP_IMMUTABLE = (1 << 2)
 
 # /usr/include/drm/drm_mode.h: 518
-try:
-    DRM_MODE_PROP_ENUM = (1 << 3)
-except:
-    pass
+DRM_MODE_PROP_ENUM = (1 << 3)
 
 # /usr/include/drm/drm_mode.h: 519
-try:
-    DRM_MODE_PROP_BLOB = (1 << 4)
-except:
-    pass
+DRM_MODE_PROP_BLOB = (1 << 4)
 
 # /usr/include/drm/drm_mode.h: 520
-try:
-    DRM_MODE_PROP_BITMASK = (1 << 5)
-except:
-    pass
+DRM_MODE_PROP_BITMASK = (1 << 5)
 
 # /usr/include/drm/drm_mode.h: 523
-try:
-    DRM_MODE_PROP_LEGACY_TYPE = (((DRM_MODE_PROP_RANGE | DRM_MODE_PROP_ENUM) | DRM_MODE_PROP_BLOB) | DRM_MODE_PROP_BITMASK)
-except:
-    pass
+DRM_MODE_PROP_LEGACY_TYPE = (((DRM_MODE_PROP_RANGE | DRM_MODE_PROP_ENUM) | DRM_MODE_PROP_BLOB) | DRM_MODE_PROP_BITMASK)
 
 # /usr/include/drm/drm_mode.h: 532
-try:
-    DRM_MODE_PROP_EXTENDED_TYPE = 0x0000ffc0
-except:
-    pass
+DRM_MODE_PROP_EXTENDED_TYPE = 0x0000ffc0
 
 # /usr/include/drm/drm_mode.h: 533
 def DRM_MODE_PROP_TYPE(n):
     return (n << 6)
 
 # /usr/include/drm/drm_mode.h: 534
-try:
-    DRM_MODE_PROP_OBJECT = (DRM_MODE_PROP_TYPE (1))
-except:
-    pass
+DRM_MODE_PROP_OBJECT = (DRM_MODE_PROP_TYPE (1))
 
 # /usr/include/drm/drm_mode.h: 535
-try:
-    DRM_MODE_PROP_SIGNED_RANGE = (DRM_MODE_PROP_TYPE (2))
-except:
-    pass
+DRM_MODE_PROP_SIGNED_RANGE = (DRM_MODE_PROP_TYPE (2))
 
 # /usr/include/drm/drm_mode.h: 542
-try:
-    DRM_MODE_PROP_ATOMIC = 0x80000000
-except:
-    pass
+DRM_MODE_PROP_ATOMIC = 0x80000000
 
 # /usr/include/drm/drm_mode.h: 621
-try:
-    DRM_MODE_OBJECT_CRTC = 0xcccccccc
-except:
-    pass
+DRM_MODE_OBJECT_CRTC = 0xcccccccc
 
 # /usr/include/drm/drm_mode.h: 622
-try:
-    DRM_MODE_OBJECT_CONNECTOR = 0xc0c0c0c0
-except:
-    pass
+DRM_MODE_OBJECT_CONNECTOR = 0xc0c0c0c0
 
 # /usr/include/drm/drm_mode.h: 623
-try:
-    DRM_MODE_OBJECT_ENCODER = 0xe0e0e0e0
-except:
-    pass
+DRM_MODE_OBJECT_ENCODER = 0xe0e0e0e0
 
 # /usr/include/drm/drm_mode.h: 624
-try:
-    DRM_MODE_OBJECT_MODE = 0xdededede
-except:
-    pass
+DRM_MODE_OBJECT_MODE = 0xdededede
 
 # /usr/include/drm/drm_mode.h: 625
-try:
-    DRM_MODE_OBJECT_PROPERTY = 0xb0b0b0b0
-except:
-    pass
+DRM_MODE_OBJECT_PROPERTY = 0xb0b0b0b0
 
 # /usr/include/drm/drm_mode.h: 626
-try:
-    DRM_MODE_OBJECT_FB = 0xfbfbfbfb
-except:
-    pass
+DRM_MODE_OBJECT_FB = 0xfbfbfbfb
 
 # /usr/include/drm/drm_mode.h: 627
-try:
-    DRM_MODE_OBJECT_BLOB = 0xbbbbbbbb
-except:
-    pass
+DRM_MODE_OBJECT_BLOB = 0xbbbbbbbb
 
 # /usr/include/drm/drm_mode.h: 628
-try:
-    DRM_MODE_OBJECT_PLANE = 0xeeeeeeee
-except:
-    pass
+DRM_MODE_OBJECT_PLANE = 0xeeeeeeee
 
 # /usr/include/drm/drm_mode.h: 629
-try:
-    DRM_MODE_OBJECT_ANY = 0
-except:
-    pass
+DRM_MODE_OBJECT_ANY = 0
 
 # /usr/include/drm/drm_mode.h: 663
-try:
-    DRM_MODE_FB_INTERLACED = (1 << 0)
-except:
-    pass
+DRM_MODE_FB_INTERLACED = (1 << 0)
 
 # /usr/include/drm/drm_mode.h: 664
-try:
-    DRM_MODE_FB_MODIFIERS = (1 << 1)
-except:
-    pass
+DRM_MODE_FB_MODIFIERS = (1 << 1)
 
 # /usr/include/drm/drm_mode.h: 703
-try:
-    DRM_MODE_FB_DIRTY_ANNOTATE_COPY = 0x01
-except:
-    pass
+DRM_MODE_FB_DIRTY_ANNOTATE_COPY = 0x01
 
 # /usr/include/drm/drm_mode.h: 704
-try:
-    DRM_MODE_FB_DIRTY_ANNOTATE_FILL = 0x02
-except:
-    pass
+DRM_MODE_FB_DIRTY_ANNOTATE_FILL = 0x02
 
 # /usr/include/drm/drm_mode.h: 705
-try:
-    DRM_MODE_FB_DIRTY_FLAGS = 0x03
-except:
-    pass
+DRM_MODE_FB_DIRTY_FLAGS = 0x03
 
 # /usr/include/drm/drm_mode.h: 707
-try:
-    DRM_MODE_FB_DIRTY_MAX_CLIPS = 256
-except:
-    pass
+DRM_MODE_FB_DIRTY_MAX_CLIPS = 256
 
 # /usr/include/drm/drm_mode.h: 749
-try:
-    DRM_MODE_CURSOR_BO = 0x01
-except:
-    pass
+DRM_MODE_CURSOR_BO = 0x01
 
 # /usr/include/drm/drm_mode.h: 750
-try:
-    DRM_MODE_CURSOR_MOVE = 0x02
-except:
-    pass
+DRM_MODE_CURSOR_MOVE = 0x02
 
 # /usr/include/drm/drm_mode.h: 751
-try:
-    DRM_MODE_CURSOR_FLAGS = 0x03
-except:
-    pass
+DRM_MODE_CURSOR_FLAGS = 0x03
 
 # /usr/include/drm/drm_mode.h: 906
-try:
-    DRM_MODE_PAGE_FLIP_EVENT = 0x01
-except:
-    pass
+DRM_MODE_PAGE_FLIP_EVENT = 0x01
 
 # /usr/include/drm/drm_mode.h: 907
-try:
-    DRM_MODE_PAGE_FLIP_ASYNC = 0x02
-except:
-    pass
+DRM_MODE_PAGE_FLIP_ASYNC = 0x02
 
 # /usr/include/drm/drm_mode.h: 908
-try:
-    DRM_MODE_PAGE_FLIP_TARGET_ABSOLUTE = 0x4
-except:
-    pass
+DRM_MODE_PAGE_FLIP_TARGET_ABSOLUTE = 0x4
 
 # /usr/include/drm/drm_mode.h: 909
-try:
-    DRM_MODE_PAGE_FLIP_TARGET_RELATIVE = 0x8
-except:
-    pass
+DRM_MODE_PAGE_FLIP_TARGET_RELATIVE = 0x8
 
 # /usr/include/drm/drm_mode.h: 910
-try:
-    DRM_MODE_PAGE_FLIP_TARGET = (DRM_MODE_PAGE_FLIP_TARGET_ABSOLUTE | DRM_MODE_PAGE_FLIP_TARGET_RELATIVE)
-except:
-    pass
+DRM_MODE_PAGE_FLIP_TARGET = (DRM_MODE_PAGE_FLIP_TARGET_ABSOLUTE | DRM_MODE_PAGE_FLIP_TARGET_RELATIVE)
 
 # /usr/include/drm/drm_mode.h: 912
-try:
-    DRM_MODE_PAGE_FLIP_FLAGS = ((DRM_MODE_PAGE_FLIP_EVENT | DRM_MODE_PAGE_FLIP_ASYNC) | DRM_MODE_PAGE_FLIP_TARGET)
-except:
-    pass
+DRM_MODE_PAGE_FLIP_FLAGS = ((DRM_MODE_PAGE_FLIP_EVENT | DRM_MODE_PAGE_FLIP_ASYNC) | DRM_MODE_PAGE_FLIP_TARGET)
 
 # /usr/include/drm/drm_mode.h: 1006
-try:
-    DRM_MODE_ATOMIC_TEST_ONLY = 0x0100
-except:
-    pass
+DRM_MODE_ATOMIC_TEST_ONLY = 0x0100
 
 # /usr/include/drm/drm_mode.h: 1007
-try:
-    DRM_MODE_ATOMIC_NONBLOCK = 0x0200
-except:
-    pass
+DRM_MODE_ATOMIC_NONBLOCK = 0x0200
 
 # /usr/include/drm/drm_mode.h: 1008
-try:
-    DRM_MODE_ATOMIC_ALLOW_MODESET = 0x0400
-except:
-    pass
+DRM_MODE_ATOMIC_ALLOW_MODESET = 0x0400
 
 # /usr/include/drm/drm_mode.h: 1010
-try:
-    DRM_MODE_ATOMIC_FLAGS = ((((DRM_MODE_PAGE_FLIP_EVENT | DRM_MODE_PAGE_FLIP_ASYNC) | DRM_MODE_ATOMIC_TEST_ONLY) | DRM_MODE_ATOMIC_NONBLOCK) | DRM_MODE_ATOMIC_ALLOW_MODESET)
-except:
-    pass
+DRM_MODE_ATOMIC_FLAGS = ((((DRM_MODE_PAGE_FLIP_EVENT | DRM_MODE_PAGE_FLIP_ASYNC) | DRM_MODE_ATOMIC_TEST_ONLY) | DRM_MODE_ATOMIC_NONBLOCK) | DRM_MODE_ATOMIC_ALLOW_MODESET)
 
 # /usr/include/drm/drm_mode.h: 1029
-try:
-    FORMAT_BLOB_CURRENT = 1
-except:
-    pass
+FORMAT_BLOB_CURRENT = 1
 
 # /usr/include/drm/drm.h: 954
-try:
-    DRM_IOCTL_BASE = 'd'
-except:
-    pass
+DRM_IOCTL_BASE = 'd'
 
 # /usr/include/drm/drm.h: 955
 def DRM_IO(nr):
@@ -3296,1430 +2687,719 @@ def DRM_IOWR(nr, type):
     return (_IOWR (DRM_IOCTL_BASE, nr, type))
 
 # /usr/include/drm/drm.h: 960
-try:
-    DRM_IOCTL_VERSION = (DRM_IOWR (0x00, struct_drm_version))
-except:
-    pass
+DRM_IOCTL_VERSION = (DRM_IOWR (0x00, struct_drm_version))
 
 # /usr/include/drm/drm.h: 961
-try:
-    DRM_IOCTL_GET_UNIQUE = (DRM_IOWR (0x01, struct_drm_unique))
-except:
-    pass
+DRM_IOCTL_GET_UNIQUE = (DRM_IOWR (0x01, struct_drm_unique))
 
 # /usr/include/drm/drm.h: 962
-try:
-    DRM_IOCTL_GET_MAGIC = (DRM_IOR (0x02, struct_drm_auth))
-except:
-    pass
+DRM_IOCTL_GET_MAGIC = (DRM_IOR (0x02, struct_drm_auth))
 
 # /usr/include/drm/drm.h: 963
-try:
-    DRM_IOCTL_IRQ_BUSID = (DRM_IOWR (0x03, struct_drm_irq_busid))
-except:
-    pass
+DRM_IOCTL_IRQ_BUSID = (DRM_IOWR (0x03, struct_drm_irq_busid))
 
 # /usr/include/drm/drm.h: 964
-try:
-    DRM_IOCTL_GET_MAP = (DRM_IOWR (0x04, struct_drm_map))
-except:
-    pass
+DRM_IOCTL_GET_MAP = (DRM_IOWR (0x04, struct_drm_map))
 
 # /usr/include/drm/drm.h: 965
-try:
-    DRM_IOCTL_GET_CLIENT = (DRM_IOWR (0x05, struct_drm_client))
-except:
-    pass
+DRM_IOCTL_GET_CLIENT = (DRM_IOWR (0x05, struct_drm_client))
 
 # /usr/include/drm/drm.h: 966
-try:
-    DRM_IOCTL_GET_STATS = (DRM_IOR (0x06, struct_drm_stats))
-except:
-    pass
+DRM_IOCTL_GET_STATS = (DRM_IOR (0x06, struct_drm_stats))
 
 # /usr/include/drm/drm.h: 967
-try:
-    DRM_IOCTL_SET_VERSION = (DRM_IOWR (0x07, struct_drm_set_version))
-except:
-    pass
+DRM_IOCTL_SET_VERSION = (DRM_IOWR (0x07, struct_drm_set_version))
 
 # /usr/include/drm/drm.h: 968
-try:
-    DRM_IOCTL_MODESET_CTL = (DRM_IOW (0x08, struct_drm_modeset_ctl))
-except:
-    pass
+DRM_IOCTL_MODESET_CTL = (DRM_IOW (0x08, struct_drm_modeset_ctl))
 
 # /usr/include/drm/drm.h: 969
-try:
-    DRM_IOCTL_GEM_CLOSE = (DRM_IOW (0x09, struct_drm_gem_close))
-except:
-    pass
+DRM_IOCTL_GEM_CLOSE = (DRM_IOW (0x09, struct_drm_gem_close))
 
 # /usr/include/drm/drm.h: 970
-try:
-    DRM_IOCTL_GEM_FLINK = (DRM_IOWR (0x0a, struct_drm_gem_flink))
-except:
-    pass
+DRM_IOCTL_GEM_FLINK = (DRM_IOWR (0x0a, struct_drm_gem_flink))
 
 # /usr/include/drm/drm.h: 971
-try:
-    DRM_IOCTL_GEM_OPEN = (DRM_IOWR (0x0b, struct_drm_gem_open))
-except:
-    pass
+DRM_IOCTL_GEM_OPEN = (DRM_IOWR (0x0b, struct_drm_gem_open))
 
 # /usr/include/drm/drm.h: 972
-try:
-    DRM_IOCTL_GET_CAP = (DRM_IOWR (0x0c, struct_drm_get_cap))
-except:
-    pass
+DRM_IOCTL_GET_CAP = (DRM_IOWR (0x0c, struct_drm_get_cap))
 
 # /usr/include/drm/drm.h: 973
-try:
-    DRM_IOCTL_SET_CLIENT_CAP = (DRM_IOW (0x0d, struct_drm_set_client_cap))
-except:
-    pass
+DRM_IOCTL_SET_CLIENT_CAP = (DRM_IOW (0x0d, struct_drm_set_client_cap))
 
 # /usr/include/drm/drm.h: 975
-try:
-    DRM_IOCTL_SET_UNIQUE = (DRM_IOW (0x10, struct_drm_unique))
-except:
-    pass
+DRM_IOCTL_SET_UNIQUE = (DRM_IOW (0x10, struct_drm_unique))
 
 # /usr/include/drm/drm.h: 976
-try:
-    DRM_IOCTL_AUTH_MAGIC = (DRM_IOW (0x11, struct_drm_auth))
-except:
-    pass
+DRM_IOCTL_AUTH_MAGIC = (DRM_IOW (0x11, struct_drm_auth))
 
 # /usr/include/drm/drm.h: 977
-try:
-    DRM_IOCTL_BLOCK = (DRM_IOWR (0x12, struct_drm_block))
-except:
-    pass
+DRM_IOCTL_BLOCK = (DRM_IOWR (0x12, struct_drm_block))
 
 # /usr/include/drm/drm.h: 978
-try:
-    DRM_IOCTL_UNBLOCK = (DRM_IOWR (0x13, struct_drm_block))
-except:
-    pass
+DRM_IOCTL_UNBLOCK = (DRM_IOWR (0x13, struct_drm_block))
 
 # /usr/include/drm/drm.h: 979
-try:
-    DRM_IOCTL_CONTROL = (DRM_IOW (0x14, struct_drm_control))
-except:
-    pass
+DRM_IOCTL_CONTROL = (DRM_IOW (0x14, struct_drm_control))
 
 # /usr/include/drm/drm.h: 980
-try:
-    DRM_IOCTL_ADD_MAP = (DRM_IOWR (0x15, struct_drm_map))
-except:
-    pass
+DRM_IOCTL_ADD_MAP = (DRM_IOWR (0x15, struct_drm_map))
 
 # /usr/include/drm/drm.h: 981
-try:
-    DRM_IOCTL_ADD_BUFS = (DRM_IOWR (0x16, struct_drm_buf_desc))
-except:
-    pass
+DRM_IOCTL_ADD_BUFS = (DRM_IOWR (0x16, struct_drm_buf_desc))
 
 # /usr/include/drm/drm.h: 982
-try:
-    DRM_IOCTL_MARK_BUFS = (DRM_IOW (0x17, struct_drm_buf_desc))
-except:
-    pass
+DRM_IOCTL_MARK_BUFS = (DRM_IOW (0x17, struct_drm_buf_desc))
 
 # /usr/include/drm/drm.h: 983
-try:
-    DRM_IOCTL_INFO_BUFS = (DRM_IOWR (0x18, struct_drm_buf_info))
-except:
-    pass
+DRM_IOCTL_INFO_BUFS = (DRM_IOWR (0x18, struct_drm_buf_info))
 
 # /usr/include/drm/drm.h: 984
-try:
-    DRM_IOCTL_MAP_BUFS = (DRM_IOWR (0x19, struct_drm_buf_map))
-except:
-    pass
+DRM_IOCTL_MAP_BUFS = (DRM_IOWR (0x19, struct_drm_buf_map))
 
 # /usr/include/drm/drm.h: 985
-try:
-    DRM_IOCTL_FREE_BUFS = (DRM_IOW (0x1a, struct_drm_buf_free))
-except:
-    pass
+DRM_IOCTL_FREE_BUFS = (DRM_IOW (0x1a, struct_drm_buf_free))
 
 # /usr/include/drm/drm.h: 987
-try:
-    DRM_IOCTL_RM_MAP = (DRM_IOW (0x1b, struct_drm_map))
-except:
-    pass
+DRM_IOCTL_RM_MAP = (DRM_IOW (0x1b, struct_drm_map))
 
 # /usr/include/drm/drm.h: 989
-try:
-    DRM_IOCTL_SET_SAREA_CTX = (DRM_IOW (0x1c, struct_drm_ctx_priv_map))
-except:
-    pass
+DRM_IOCTL_SET_SAREA_CTX = (DRM_IOW (0x1c, struct_drm_ctx_priv_map))
 
 # /usr/include/drm/drm.h: 990
-try:
-    DRM_IOCTL_GET_SAREA_CTX = (DRM_IOWR (0x1d, struct_drm_ctx_priv_map))
-except:
-    pass
+DRM_IOCTL_GET_SAREA_CTX = (DRM_IOWR (0x1d, struct_drm_ctx_priv_map))
 
 # /usr/include/drm/drm.h: 992
-try:
-    DRM_IOCTL_SET_MASTER = (DRM_IO (0x1e))
-except:
-    pass
+DRM_IOCTL_SET_MASTER = (DRM_IO (0x1e))
 
 # /usr/include/drm/drm.h: 993
-try:
-    DRM_IOCTL_DROP_MASTER = (DRM_IO (0x1f))
-except:
-    pass
+DRM_IOCTL_DROP_MASTER = (DRM_IO (0x1f))
 
 # /usr/include/drm/drm.h: 995
-try:
-    DRM_IOCTL_ADD_CTX = (DRM_IOWR (0x20, struct_drm_ctx))
-except:
-    pass
+DRM_IOCTL_ADD_CTX = (DRM_IOWR (0x20, struct_drm_ctx))
 
 # /usr/include/drm/drm.h: 996
-try:
-    DRM_IOCTL_RM_CTX = (DRM_IOWR (0x21, struct_drm_ctx))
-except:
-    pass
+DRM_IOCTL_RM_CTX = (DRM_IOWR (0x21, struct_drm_ctx))
 
 # /usr/include/drm/drm.h: 997
-try:
-    DRM_IOCTL_MOD_CTX = (DRM_IOW (0x22, struct_drm_ctx))
-except:
-    pass
+DRM_IOCTL_MOD_CTX = (DRM_IOW (0x22, struct_drm_ctx))
 
 # /usr/include/drm/drm.h: 998
-try:
-    DRM_IOCTL_GET_CTX = (DRM_IOWR (0x23, struct_drm_ctx))
-except:
-    pass
+DRM_IOCTL_GET_CTX = (DRM_IOWR (0x23, struct_drm_ctx))
 
 # /usr/include/drm/drm.h: 999
-try:
-    DRM_IOCTL_SWITCH_CTX = (DRM_IOW (0x24, struct_drm_ctx))
-except:
-    pass
+DRM_IOCTL_SWITCH_CTX = (DRM_IOW (0x24, struct_drm_ctx))
 
 # /usr/include/drm/drm.h: 1000
-try:
-    DRM_IOCTL_NEW_CTX = (DRM_IOW (0x25, struct_drm_ctx))
-except:
-    pass
+DRM_IOCTL_NEW_CTX = (DRM_IOW (0x25, struct_drm_ctx))
 
 # /usr/include/drm/drm.h: 1001
-try:
-    DRM_IOCTL_RES_CTX = (DRM_IOWR (0x26, struct_drm_ctx_res))
-except:
-    pass
+DRM_IOCTL_RES_CTX = (DRM_IOWR (0x26, struct_drm_ctx_res))
 
 # /usr/include/drm/drm.h: 1002
-try:
-    DRM_IOCTL_ADD_DRAW = (DRM_IOWR (0x27, struct_drm_draw))
-except:
-    pass
+DRM_IOCTL_ADD_DRAW = (DRM_IOWR (0x27, struct_drm_draw))
 
 # /usr/include/drm/drm.h: 1003
-try:
-    DRM_IOCTL_RM_DRAW = (DRM_IOWR (0x28, struct_drm_draw))
-except:
-    pass
+DRM_IOCTL_RM_DRAW = (DRM_IOWR (0x28, struct_drm_draw))
 
 # /usr/include/drm/drm.h: 1004
-try:
-    DRM_IOCTL_DMA = (DRM_IOWR (0x29, struct_drm_dma))
-except:
-    pass
+DRM_IOCTL_DMA = (DRM_IOWR (0x29, struct_drm_dma))
 
 # /usr/include/drm/drm.h: 1005
-try:
-    DRM_IOCTL_LOCK = (DRM_IOW (0x2a, struct_drm_lock))
-except:
-    pass
+DRM_IOCTL_LOCK = (DRM_IOW (0x2a, struct_drm_lock))
 
 # /usr/include/drm/drm.h: 1006
-try:
-    DRM_IOCTL_UNLOCK = (DRM_IOW (0x2b, struct_drm_lock))
-except:
-    pass
+DRM_IOCTL_UNLOCK = (DRM_IOW (0x2b, struct_drm_lock))
 
 # /usr/include/drm/drm.h: 1007
-try:
-    DRM_IOCTL_FINISH = (DRM_IOW (0x2c, struct_drm_lock))
-except:
-    pass
+DRM_IOCTL_FINISH = (DRM_IOW (0x2c, struct_drm_lock))
 
 # /usr/include/drm/drm.h: 1009
-try:
-    DRM_IOCTL_PRIME_HANDLE_TO_FD = (DRM_IOWR (0x2d, struct_drm_prime_handle))
-except:
-    pass
+DRM_IOCTL_PRIME_HANDLE_TO_FD = (DRM_IOWR (0x2d, struct_drm_prime_handle))
 
 # /usr/include/drm/drm.h: 1010
-try:
-    DRM_IOCTL_PRIME_FD_TO_HANDLE = (DRM_IOWR (0x2e, struct_drm_prime_handle))
-except:
-    pass
+DRM_IOCTL_PRIME_FD_TO_HANDLE = (DRM_IOWR (0x2e, struct_drm_prime_handle))
 
 # /usr/include/drm/drm.h: 1012
-try:
-    DRM_IOCTL_AGP_ACQUIRE = (DRM_IO (0x30))
-except:
-    pass
+DRM_IOCTL_AGP_ACQUIRE = (DRM_IO (0x30))
 
 # /usr/include/drm/drm.h: 1013
-try:
-    DRM_IOCTL_AGP_RELEASE = (DRM_IO (0x31))
-except:
-    pass
+DRM_IOCTL_AGP_RELEASE = (DRM_IO (0x31))
 
 # /usr/include/drm/drm.h: 1014
-try:
-    DRM_IOCTL_AGP_ENABLE = (DRM_IOW (0x32, struct_drm_agp_mode))
-except:
-    pass
+DRM_IOCTL_AGP_ENABLE = (DRM_IOW (0x32, struct_drm_agp_mode))
 
 # /usr/include/drm/drm.h: 1015
-try:
-    DRM_IOCTL_AGP_INFO = (DRM_IOR (0x33, struct_drm_agp_info))
-except:
-    pass
+DRM_IOCTL_AGP_INFO = (DRM_IOR (0x33, struct_drm_agp_info))
 
 # /usr/include/drm/drm.h: 1016
-try:
-    DRM_IOCTL_AGP_ALLOC = (DRM_IOWR (0x34, struct_drm_agp_buffer))
-except:
-    pass
+DRM_IOCTL_AGP_ALLOC = (DRM_IOWR (0x34, struct_drm_agp_buffer))
 
 # /usr/include/drm/drm.h: 1017
-try:
-    DRM_IOCTL_AGP_FREE = (DRM_IOW (0x35, struct_drm_agp_buffer))
-except:
-    pass
+DRM_IOCTL_AGP_FREE = (DRM_IOW (0x35, struct_drm_agp_buffer))
 
 # /usr/include/drm/drm.h: 1018
-try:
-    DRM_IOCTL_AGP_BIND = (DRM_IOW (0x36, struct_drm_agp_binding))
-except:
-    pass
+DRM_IOCTL_AGP_BIND = (DRM_IOW (0x36, struct_drm_agp_binding))
 
 # /usr/include/drm/drm.h: 1019
-try:
-    DRM_IOCTL_AGP_UNBIND = (DRM_IOW (0x37, struct_drm_agp_binding))
-except:
-    pass
+DRM_IOCTL_AGP_UNBIND = (DRM_IOW (0x37, struct_drm_agp_binding))
 
 # /usr/include/drm/drm.h: 1021
-try:
-    DRM_IOCTL_SG_ALLOC = (DRM_IOWR (0x38, struct_drm_scatter_gather))
-except:
-    pass
+DRM_IOCTL_SG_ALLOC = (DRM_IOWR (0x38, struct_drm_scatter_gather))
 
 # /usr/include/drm/drm.h: 1022
-try:
-    DRM_IOCTL_SG_FREE = (DRM_IOW (0x39, struct_drm_scatter_gather))
-except:
-    pass
+DRM_IOCTL_SG_FREE = (DRM_IOW (0x39, struct_drm_scatter_gather))
 
 # /usr/include/drm/drm.h: 1024
-try:
-    DRM_IOCTL_WAIT_VBLANK = (DRM_IOWR (0x3a, union_drm_wait_vblank))
-except:
-    pass
+DRM_IOCTL_WAIT_VBLANK = (DRM_IOWR (0x3a, union_drm_wait_vblank))
 
 # /usr/include/drm/drm.h: 1026
-try:
-    DRM_IOCTL_CRTC_GET_SEQUENCE = (DRM_IOWR (0x3b, struct_drm_crtc_get_sequence))
-except:
-    pass
+DRM_IOCTL_CRTC_GET_SEQUENCE = (DRM_IOWR (0x3b, struct_drm_crtc_get_sequence))
 
 # /usr/include/drm/drm.h: 1027
-try:
-    DRM_IOCTL_CRTC_QUEUE_SEQUENCE = (DRM_IOWR (0x3c, struct_drm_crtc_queue_sequence))
-except:
-    pass
+DRM_IOCTL_CRTC_QUEUE_SEQUENCE = (DRM_IOWR (0x3c, struct_drm_crtc_queue_sequence))
 
 # /usr/include/drm/drm.h: 1029
-try:
-    DRM_IOCTL_UPDATE_DRAW = (DRM_IOW (0x3f, struct_drm_update_draw))
-except:
-    pass
+DRM_IOCTL_UPDATE_DRAW = (DRM_IOW (0x3f, struct_drm_update_draw))
 
 # /usr/include/drm/drm.h: 1031
-try:
-    DRM_IOCTL_MODE_GETRESOURCES = (DRM_IOWR (0xA0, struct_drm_mode_card_res))
-except:
-    pass
+DRM_IOCTL_MODE_GETRESOURCES = (DRM_IOWR (0xA0, struct_drm_mode_card_res))
 
 # /usr/include/drm/drm.h: 1032
-try:
-    DRM_IOCTL_MODE_GETCRTC = (DRM_IOWR (0xA1, struct_drm_mode_crtc))
-except:
-    pass
+DRM_IOCTL_MODE_GETCRTC = (DRM_IOWR (0xA1, struct_drm_mode_crtc))
 
 # /usr/include/drm/drm.h: 1033
-try:
-    DRM_IOCTL_MODE_SETCRTC = (DRM_IOWR (0xA2, struct_drm_mode_crtc))
-except:
-    pass
+DRM_IOCTL_MODE_SETCRTC = (DRM_IOWR (0xA2, struct_drm_mode_crtc))
 
 # /usr/include/drm/drm.h: 1034
-try:
-    DRM_IOCTL_MODE_CURSOR = (DRM_IOWR (0xA3, struct_drm_mode_cursor))
-except:
-    pass
+DRM_IOCTL_MODE_CURSOR = (DRM_IOWR (0xA3, struct_drm_mode_cursor))
 
 # /usr/include/drm/drm.h: 1035
-try:
-    DRM_IOCTL_MODE_GETGAMMA = (DRM_IOWR (0xA4, struct_drm_mode_crtc_lut))
-except:
-    pass
+DRM_IOCTL_MODE_GETGAMMA = (DRM_IOWR (0xA4, struct_drm_mode_crtc_lut))
 
 # /usr/include/drm/drm.h: 1036
-try:
-    DRM_IOCTL_MODE_SETGAMMA = (DRM_IOWR (0xA5, struct_drm_mode_crtc_lut))
-except:
-    pass
+DRM_IOCTL_MODE_SETGAMMA = (DRM_IOWR (0xA5, struct_drm_mode_crtc_lut))
 
 # /usr/include/drm/drm.h: 1037
-try:
-    DRM_IOCTL_MODE_GETENCODER = (DRM_IOWR (0xA6, struct_drm_mode_get_encoder))
-except:
-    pass
+DRM_IOCTL_MODE_GETENCODER = (DRM_IOWR (0xA6, struct_drm_mode_get_encoder))
 
 # /usr/include/drm/drm.h: 1038
-try:
-    DRM_IOCTL_MODE_GETCONNECTOR = (DRM_IOWR (0xA7, struct_drm_mode_get_connector))
-except:
-    pass
+DRM_IOCTL_MODE_GETCONNECTOR = (DRM_IOWR (0xA7, struct_drm_mode_get_connector))
 
 # /usr/include/drm/drm.h: 1039
-try:
-    DRM_IOCTL_MODE_ATTACHMODE = (DRM_IOWR (0xA8, struct_drm_mode_mode_cmd))
-except:
-    pass
+DRM_IOCTL_MODE_ATTACHMODE = (DRM_IOWR (0xA8, struct_drm_mode_mode_cmd))
 
 # /usr/include/drm/drm.h: 1040
-try:
-    DRM_IOCTL_MODE_DETACHMODE = (DRM_IOWR (0xA9, struct_drm_mode_mode_cmd))
-except:
-    pass
+DRM_IOCTL_MODE_DETACHMODE = (DRM_IOWR (0xA9, struct_drm_mode_mode_cmd))
 
 # /usr/include/drm/drm.h: 1042
-try:
-    DRM_IOCTL_MODE_GETPROPERTY = (DRM_IOWR (0xAA, struct_drm_mode_get_property))
-except:
-    pass
+DRM_IOCTL_MODE_GETPROPERTY = (DRM_IOWR (0xAA, struct_drm_mode_get_property))
 
 # /usr/include/drm/drm.h: 1043
-try:
-    DRM_IOCTL_MODE_SETPROPERTY = (DRM_IOWR (0xAB, struct_drm_mode_connector_set_property))
-except:
-    pass
+DRM_IOCTL_MODE_SETPROPERTY = (DRM_IOWR (0xAB, struct_drm_mode_connector_set_property))
 
 # /usr/include/drm/drm.h: 1044
-try:
-    DRM_IOCTL_MODE_GETPROPBLOB = (DRM_IOWR (0xAC, struct_drm_mode_get_blob))
-except:
-    pass
+DRM_IOCTL_MODE_GETPROPBLOB = (DRM_IOWR (0xAC, struct_drm_mode_get_blob))
 
 # /usr/include/drm/drm.h: 1045
-try:
-    DRM_IOCTL_MODE_GETFB = (DRM_IOWR (0xAD, struct_drm_mode_fb_cmd))
-except:
-    pass
+DRM_IOCTL_MODE_GETFB = (DRM_IOWR (0xAD, struct_drm_mode_fb_cmd))
 
 # /usr/include/drm/drm.h: 1046
-try:
-    DRM_IOCTL_MODE_ADDFB = (DRM_IOWR (0xAE, struct_drm_mode_fb_cmd))
-except:
-    pass
+DRM_IOCTL_MODE_ADDFB = (DRM_IOWR (0xAE, struct_drm_mode_fb_cmd))
 
 # /usr/include/drm/drm.h: 1057
-try:
-    DRM_IOCTL_MODE_RMFB = (DRM_IOWR (0xAF, c_uint))
-except:
-    pass
+DRM_IOCTL_MODE_RMFB = (DRM_IOWR (0xAF, c_uint))
 
 # /usr/include/drm/drm.h: 1058
-try:
-    DRM_IOCTL_MODE_PAGE_FLIP = (DRM_IOWR (0xB0, struct_drm_mode_crtc_page_flip))
-except:
-    pass
+DRM_IOCTL_MODE_PAGE_FLIP = (DRM_IOWR (0xB0, struct_drm_mode_crtc_page_flip))
 
 # /usr/include/drm/drm.h: 1059
-try:
-    DRM_IOCTL_MODE_DIRTYFB = (DRM_IOWR (0xB1, struct_drm_mode_fb_dirty_cmd))
-except:
-    pass
+DRM_IOCTL_MODE_DIRTYFB = (DRM_IOWR (0xB1, struct_drm_mode_fb_dirty_cmd))
 
 # /usr/include/drm/drm.h: 1061
-try:
-    DRM_IOCTL_MODE_CREATE_DUMB = (DRM_IOWR (0xB2, struct_drm_mode_create_dumb))
-except:
-    pass
+DRM_IOCTL_MODE_CREATE_DUMB = (DRM_IOWR (0xB2, struct_drm_mode_create_dumb))
 
 # /usr/include/drm/drm.h: 1062
-try:
-    DRM_IOCTL_MODE_MAP_DUMB = (DRM_IOWR (0xB3, struct_drm_mode_map_dumb))
-except:
-    pass
+DRM_IOCTL_MODE_MAP_DUMB = (DRM_IOWR (0xB3, struct_drm_mode_map_dumb))
 
 # /usr/include/drm/drm.h: 1063
-try:
-    DRM_IOCTL_MODE_DESTROY_DUMB = (DRM_IOWR (0xB4, struct_drm_mode_destroy_dumb))
-except:
-    pass
+DRM_IOCTL_MODE_DESTROY_DUMB = (DRM_IOWR (0xB4, struct_drm_mode_destroy_dumb))
 
 # /usr/include/drm/drm.h: 1064
-try:
-    DRM_IOCTL_MODE_GETPLANERESOURCES = (DRM_IOWR (0xB5, struct_drm_mode_get_plane_res))
-except:
-    pass
+DRM_IOCTL_MODE_GETPLANERESOURCES = (DRM_IOWR (0xB5, struct_drm_mode_get_plane_res))
 
 # /usr/include/drm/drm.h: 1065
-try:
-    DRM_IOCTL_MODE_GETPLANE = (DRM_IOWR (0xB6, struct_drm_mode_get_plane))
-except:
-    pass
+DRM_IOCTL_MODE_GETPLANE = (DRM_IOWR (0xB6, struct_drm_mode_get_plane))
 
 # /usr/include/drm/drm.h: 1066
-try:
-    DRM_IOCTL_MODE_SETPLANE = (DRM_IOWR (0xB7, struct_drm_mode_set_plane))
-except:
-    pass
+DRM_IOCTL_MODE_SETPLANE = (DRM_IOWR (0xB7, struct_drm_mode_set_plane))
 
 # /usr/include/drm/drm.h: 1067
-try:
-    DRM_IOCTL_MODE_ADDFB2 = (DRM_IOWR (0xB8, struct_drm_mode_fb_cmd2))
-except:
-    pass
+DRM_IOCTL_MODE_ADDFB2 = (DRM_IOWR (0xB8, struct_drm_mode_fb_cmd2))
 
 # /usr/include/drm/drm.h: 1068
-try:
-    DRM_IOCTL_MODE_OBJ_GETPROPERTIES = (DRM_IOWR (0xB9, struct_drm_mode_obj_get_properties))
-except:
-    pass
+DRM_IOCTL_MODE_OBJ_GETPROPERTIES = (DRM_IOWR (0xB9, struct_drm_mode_obj_get_properties))
 
 # /usr/include/drm/drm.h: 1069
-try:
-    DRM_IOCTL_MODE_OBJ_SETPROPERTY = (DRM_IOWR (0xBA, struct_drm_mode_obj_set_property))
-except:
-    pass
+DRM_IOCTL_MODE_OBJ_SETPROPERTY = (DRM_IOWR (0xBA, struct_drm_mode_obj_set_property))
 
 # /usr/include/drm/drm.h: 1070
-try:
-    DRM_IOCTL_MODE_CURSOR2 = (DRM_IOWR (0xBB, struct_drm_mode_cursor2))
-except:
-    pass
+DRM_IOCTL_MODE_CURSOR2 = (DRM_IOWR (0xBB, struct_drm_mode_cursor2))
 
 # /usr/include/drm/drm.h: 1071
-try:
-    DRM_IOCTL_MODE_ATOMIC = (DRM_IOWR (0xBC, struct_drm_mode_atomic))
-except:
-    pass
+DRM_IOCTL_MODE_ATOMIC = (DRM_IOWR (0xBC, struct_drm_mode_atomic))
 
 # /usr/include/drm/drm.h: 1072
-try:
-    DRM_IOCTL_MODE_CREATEPROPBLOB = (DRM_IOWR (0xBD, struct_drm_mode_create_blob))
-except:
-    pass
+DRM_IOCTL_MODE_CREATEPROPBLOB = (DRM_IOWR (0xBD, struct_drm_mode_create_blob))
 
 # /usr/include/drm/drm.h: 1073
-try:
-    DRM_IOCTL_MODE_DESTROYPROPBLOB = (DRM_IOWR (0xBE, struct_drm_mode_destroy_blob))
-except:
-    pass
+DRM_IOCTL_MODE_DESTROYPROPBLOB = (DRM_IOWR (0xBE, struct_drm_mode_destroy_blob))
 
 # /usr/include/drm/drm.h: 1075
-try:
-    DRM_IOCTL_SYNCOBJ_CREATE = (DRM_IOWR (0xBF, struct_drm_syncobj_create))
-except:
-    pass
+DRM_IOCTL_SYNCOBJ_CREATE = (DRM_IOWR (0xBF, struct_drm_syncobj_create))
 
 # /usr/include/drm/drm.h: 1076
-try:
-    DRM_IOCTL_SYNCOBJ_DESTROY = (DRM_IOWR (0xC0, struct_drm_syncobj_destroy))
-except:
-    pass
+DRM_IOCTL_SYNCOBJ_DESTROY = (DRM_IOWR (0xC0, struct_drm_syncobj_destroy))
 
 # /usr/include/drm/drm.h: 1077
-try:
-    DRM_IOCTL_SYNCOBJ_HANDLE_TO_FD = (DRM_IOWR (0xC1, struct_drm_syncobj_handle))
-except:
-    pass
+DRM_IOCTL_SYNCOBJ_HANDLE_TO_FD = (DRM_IOWR (0xC1, struct_drm_syncobj_handle))
 
 # /usr/include/drm/drm.h: 1078
-try:
-    DRM_IOCTL_SYNCOBJ_FD_TO_HANDLE = (DRM_IOWR (0xC2, struct_drm_syncobj_handle))
-except:
-    pass
+DRM_IOCTL_SYNCOBJ_FD_TO_HANDLE = (DRM_IOWR (0xC2, struct_drm_syncobj_handle))
 
 # /usr/include/drm/drm.h: 1079
-try:
-    DRM_IOCTL_SYNCOBJ_WAIT = (DRM_IOWR (0xC3, struct_drm_syncobj_wait))
-except:
-    pass
+DRM_IOCTL_SYNCOBJ_WAIT = (DRM_IOWR (0xC3, struct_drm_syncobj_wait))
 
 # /usr/include/drm/drm.h: 1080
-try:
-    DRM_IOCTL_SYNCOBJ_RESET = (DRM_IOWR (0xC4, struct_drm_syncobj_array))
-except:
-    pass
+DRM_IOCTL_SYNCOBJ_RESET = (DRM_IOWR (0xC4, struct_drm_syncobj_array))
 
 # /usr/include/drm/drm.h: 1081
-try:
-    DRM_IOCTL_SYNCOBJ_SIGNAL = (DRM_IOWR (0xC5, struct_drm_syncobj_array))
-except:
-    pass
+DRM_IOCTL_SYNCOBJ_SIGNAL = (DRM_IOWR (0xC5, struct_drm_syncobj_array))
 
 # /usr/include/drm/drm.h: 1083
-try:
-    DRM_IOCTL_MODE_CREATE_LEASE = (DRM_IOWR (0xC6, struct_drm_mode_create_lease))
-except:
-    pass
+DRM_IOCTL_MODE_CREATE_LEASE = (DRM_IOWR (0xC6, struct_drm_mode_create_lease))
 
 # /usr/include/drm/drm.h: 1084
-try:
-    DRM_IOCTL_MODE_LIST_LESSEES = (DRM_IOWR (0xC7, struct_drm_mode_list_lessees))
-except:
-    pass
+DRM_IOCTL_MODE_LIST_LESSEES = (DRM_IOWR (0xC7, struct_drm_mode_list_lessees))
 
 # /usr/include/drm/drm.h: 1085
-try:
-    DRM_IOCTL_MODE_GET_LEASE = (DRM_IOWR (0xC8, struct_drm_mode_get_lease))
-except:
-    pass
+DRM_IOCTL_MODE_GET_LEASE = (DRM_IOWR (0xC8, struct_drm_mode_get_lease))
 
 # /usr/include/drm/drm.h: 1086
-try:
-    DRM_IOCTL_MODE_REVOKE_LEASE = (DRM_IOWR (0xC9, struct_drm_mode_revoke_lease))
-except:
-    pass
+DRM_IOCTL_MODE_REVOKE_LEASE = (DRM_IOWR (0xC9, struct_drm_mode_revoke_lease))
 
 # /usr/include/drm/drm.h: 1088
-try:
-    DRM_IOCTL_SYNCOBJ_TIMELINE_WAIT = (DRM_IOWR (0xCA, struct_drm_syncobj_timeline_wait))
-except:
-    pass
+DRM_IOCTL_SYNCOBJ_TIMELINE_WAIT = (DRM_IOWR (0xCA, struct_drm_syncobj_timeline_wait))
 
 # /usr/include/drm/drm.h: 1089
-try:
-    DRM_IOCTL_SYNCOBJ_QUERY = (DRM_IOWR (0xCB, struct_drm_syncobj_timeline_array))
-except:
-    pass
+DRM_IOCTL_SYNCOBJ_QUERY = (DRM_IOWR (0xCB, struct_drm_syncobj_timeline_array))
 
 # /usr/include/drm/drm.h: 1090
-try:
-    DRM_IOCTL_SYNCOBJ_TRANSFER = (DRM_IOWR (0xCC, struct_drm_syncobj_transfer))
-except:
-    pass
+DRM_IOCTL_SYNCOBJ_TRANSFER = (DRM_IOWR (0xCC, struct_drm_syncobj_transfer))
 
 # /usr/include/drm/drm.h: 1091
-try:
-    DRM_IOCTL_SYNCOBJ_TIMELINE_SIGNAL = (DRM_IOWR (0xCD, struct_drm_syncobj_timeline_array))
-except:
-    pass
+DRM_IOCTL_SYNCOBJ_TIMELINE_SIGNAL = (DRM_IOWR (0xCD, struct_drm_syncobj_timeline_array))
 
 # /usr/include/drm/drm.h: 1093
-try:
-    DRM_IOCTL_MODE_GETFB2 = (DRM_IOWR (0xCE, struct_drm_mode_fb_cmd2))
-except:
-    pass
+DRM_IOCTL_MODE_GETFB2 = (DRM_IOWR (0xCE, struct_drm_mode_fb_cmd2))
 
 # /usr/include/drm/drm.h: 1103
-try:
-    DRM_COMMAND_BASE = 0x40
-except:
-    pass
+DRM_COMMAND_BASE = 0x40
 
 # /usr/include/drm/drm.h: 1104
-try:
-    DRM_COMMAND_END = 0xA0
-except:
-    pass
+DRM_COMMAND_END = 0xA0
 
 # /usr/include/drm/drm.h: 1123
-try:
-    DRM_EVENT_VBLANK = 0x01
-except:
-    pass
+DRM_EVENT_VBLANK = 0x01
 
 # /usr/include/drm/drm.h: 1124
-try:
-    DRM_EVENT_FLIP_COMPLETE = 0x02
-except:
-    pass
+DRM_EVENT_FLIP_COMPLETE = 0x02
 
 # /usr/include/drm/drm.h: 1125
-try:
-    DRM_EVENT_CRTC_SEQUENCE = 0x03
-except:
-    pass
+DRM_EVENT_CRTC_SEQUENCE = 0x03
 
 # /usr/include/drm/drm_fourcc.h: 93
 def fourcc_code(a, b, c, d):
     return ((((__u32 (ord_if_char(a))).value | ((__u32 (ord_if_char(b))).value << 8)) | ((__u32 (ord_if_char(c))).value << 16)) | ((__u32 (ord_if_char(d))).value << 24))
 
 # /usr/include/drm/drm_fourcc.h: 96
-try:
-    DRM_FORMAT_BIG_ENDIAN = (1 << 31)
-except:
-    pass
+DRM_FORMAT_BIG_ENDIAN = (1 << 31)
 
 # /usr/include/drm/drm_fourcc.h: 99
-try:
-    DRM_FORMAT_INVALID = 0
-except:
-    pass
+DRM_FORMAT_INVALID = 0
 
 # /usr/include/drm/drm_fourcc.h: 102
-try:
-    DRM_FORMAT_C8 = (fourcc_code ('C', '8', ' ', ' '))
-except:
-    pass
+DRM_FORMAT_C8 = (fourcc_code ('C', '8', ' ', ' '))
 
 # /usr/include/drm/drm_fourcc.h: 105
-try:
-    DRM_FORMAT_R8 = (fourcc_code ('R', '8', ' ', ' '))
-except:
-    pass
+DRM_FORMAT_R8 = (fourcc_code ('R', '8', ' ', ' '))
 
 # /usr/include/drm/drm_fourcc.h: 108
-try:
-    DRM_FORMAT_R16 = (fourcc_code ('R', '1', '6', ' '))
-except:
-    pass
+DRM_FORMAT_R16 = (fourcc_code ('R', '1', '6', ' '))
 
 # /usr/include/drm/drm_fourcc.h: 111
-try:
-    DRM_FORMAT_RG88 = (fourcc_code ('R', 'G', '8', '8'))
-except:
-    pass
+DRM_FORMAT_RG88 = (fourcc_code ('R', 'G', '8', '8'))
 
 # /usr/include/drm/drm_fourcc.h: 112
-try:
-    DRM_FORMAT_GR88 = (fourcc_code ('G', 'R', '8', '8'))
-except:
-    pass
+DRM_FORMAT_GR88 = (fourcc_code ('G', 'R', '8', '8'))
 
 # /usr/include/drm/drm_fourcc.h: 115
-try:
-    DRM_FORMAT_RG1616 = (fourcc_code ('R', 'G', '3', '2'))
-except:
-    pass
+DRM_FORMAT_RG1616 = (fourcc_code ('R', 'G', '3', '2'))
 
 # /usr/include/drm/drm_fourcc.h: 116
-try:
-    DRM_FORMAT_GR1616 = (fourcc_code ('G', 'R', '3', '2'))
-except:
-    pass
+DRM_FORMAT_GR1616 = (fourcc_code ('G', 'R', '3', '2'))
 
 # /usr/include/drm/drm_fourcc.h: 119
-try:
-    DRM_FORMAT_RGB332 = (fourcc_code ('R', 'G', 'B', '8'))
-except:
-    pass
+DRM_FORMAT_RGB332 = (fourcc_code ('R', 'G', 'B', '8'))
 
 # /usr/include/drm/drm_fourcc.h: 120
-try:
-    DRM_FORMAT_BGR233 = (fourcc_code ('B', 'G', 'R', '8'))
-except:
-    pass
+DRM_FORMAT_BGR233 = (fourcc_code ('B', 'G', 'R', '8'))
 
 # /usr/include/drm/drm_fourcc.h: 123
-try:
-    DRM_FORMAT_XRGB4444 = (fourcc_code ('X', 'R', '1', '2'))
-except:
-    pass
+DRM_FORMAT_XRGB4444 = (fourcc_code ('X', 'R', '1', '2'))
 
 # /usr/include/drm/drm_fourcc.h: 124
-try:
-    DRM_FORMAT_XBGR4444 = (fourcc_code ('X', 'B', '1', '2'))
-except:
-    pass
+DRM_FORMAT_XBGR4444 = (fourcc_code ('X', 'B', '1', '2'))
 
 # /usr/include/drm/drm_fourcc.h: 125
-try:
-    DRM_FORMAT_RGBX4444 = (fourcc_code ('R', 'X', '1', '2'))
-except:
-    pass
+DRM_FORMAT_RGBX4444 = (fourcc_code ('R', 'X', '1', '2'))
 
 # /usr/include/drm/drm_fourcc.h: 126
-try:
-    DRM_FORMAT_BGRX4444 = (fourcc_code ('B', 'X', '1', '2'))
-except:
-    pass
+DRM_FORMAT_BGRX4444 = (fourcc_code ('B', 'X', '1', '2'))
 
 # /usr/include/drm/drm_fourcc.h: 128
-try:
-    DRM_FORMAT_ARGB4444 = (fourcc_code ('A', 'R', '1', '2'))
-except:
-    pass
+DRM_FORMAT_ARGB4444 = (fourcc_code ('A', 'R', '1', '2'))
 
 # /usr/include/drm/drm_fourcc.h: 129
-try:
-    DRM_FORMAT_ABGR4444 = (fourcc_code ('A', 'B', '1', '2'))
-except:
-    pass
+DRM_FORMAT_ABGR4444 = (fourcc_code ('A', 'B', '1', '2'))
 
 # /usr/include/drm/drm_fourcc.h: 130
-try:
-    DRM_FORMAT_RGBA4444 = (fourcc_code ('R', 'A', '1', '2'))
-except:
-    pass
+DRM_FORMAT_RGBA4444 = (fourcc_code ('R', 'A', '1', '2'))
 
 # /usr/include/drm/drm_fourcc.h: 131
-try:
-    DRM_FORMAT_BGRA4444 = (fourcc_code ('B', 'A', '1', '2'))
-except:
-    pass
+DRM_FORMAT_BGRA4444 = (fourcc_code ('B', 'A', '1', '2'))
 
 # /usr/include/drm/drm_fourcc.h: 133
-try:
-    DRM_FORMAT_XRGB1555 = (fourcc_code ('X', 'R', '1', '5'))
-except:
-    pass
+DRM_FORMAT_XRGB1555 = (fourcc_code ('X', 'R', '1', '5'))
 
 # /usr/include/drm/drm_fourcc.h: 134
-try:
-    DRM_FORMAT_XBGR1555 = (fourcc_code ('X', 'B', '1', '5'))
-except:
-    pass
+DRM_FORMAT_XBGR1555 = (fourcc_code ('X', 'B', '1', '5'))
 
 # /usr/include/drm/drm_fourcc.h: 135
-try:
-    DRM_FORMAT_RGBX5551 = (fourcc_code ('R', 'X', '1', '5'))
-except:
-    pass
+DRM_FORMAT_RGBX5551 = (fourcc_code ('R', 'X', '1', '5'))
 
 # /usr/include/drm/drm_fourcc.h: 136
-try:
-    DRM_FORMAT_BGRX5551 = (fourcc_code ('B', 'X', '1', '5'))
-except:
-    pass
+DRM_FORMAT_BGRX5551 = (fourcc_code ('B', 'X', '1', '5'))
 
 # /usr/include/drm/drm_fourcc.h: 138
-try:
-    DRM_FORMAT_ARGB1555 = (fourcc_code ('A', 'R', '1', '5'))
-except:
-    pass
+DRM_FORMAT_ARGB1555 = (fourcc_code ('A', 'R', '1', '5'))
 
 # /usr/include/drm/drm_fourcc.h: 139
-try:
-    DRM_FORMAT_ABGR1555 = (fourcc_code ('A', 'B', '1', '5'))
-except:
-    pass
+DRM_FORMAT_ABGR1555 = (fourcc_code ('A', 'B', '1', '5'))
 
 # /usr/include/drm/drm_fourcc.h: 140
-try:
-    DRM_FORMAT_RGBA5551 = (fourcc_code ('R', 'A', '1', '5'))
-except:
-    pass
+DRM_FORMAT_RGBA5551 = (fourcc_code ('R', 'A', '1', '5'))
 
 # /usr/include/drm/drm_fourcc.h: 141
-try:
-    DRM_FORMAT_BGRA5551 = (fourcc_code ('B', 'A', '1', '5'))
-except:
-    pass
+DRM_FORMAT_BGRA5551 = (fourcc_code ('B', 'A', '1', '5'))
 
 # /usr/include/drm/drm_fourcc.h: 143
-try:
-    DRM_FORMAT_RGB565 = (fourcc_code ('R', 'G', '1', '6'))
-except:
-    pass
+DRM_FORMAT_RGB565 = (fourcc_code ('R', 'G', '1', '6'))
 
 # /usr/include/drm/drm_fourcc.h: 144
-try:
-    DRM_FORMAT_BGR565 = (fourcc_code ('B', 'G', '1', '6'))
-except:
-    pass
+DRM_FORMAT_BGR565 = (fourcc_code ('B', 'G', '1', '6'))
 
 # /usr/include/drm/drm_fourcc.h: 147
-try:
-    DRM_FORMAT_RGB888 = (fourcc_code ('R', 'G', '2', '4'))
-except:
-    pass
+DRM_FORMAT_RGB888 = (fourcc_code ('R', 'G', '2', '4'))
 
 # /usr/include/drm/drm_fourcc.h: 148
-try:
-    DRM_FORMAT_BGR888 = (fourcc_code ('B', 'G', '2', '4'))
-except:
-    pass
+DRM_FORMAT_BGR888 = (fourcc_code ('B', 'G', '2', '4'))
 
 # /usr/include/drm/drm_fourcc.h: 151
-try:
-    DRM_FORMAT_XRGB8888 = (fourcc_code ('X', 'R', '2', '4'))
-except:
-    pass
+DRM_FORMAT_XRGB8888 = (fourcc_code ('X', 'R', '2', '4'))
 
 # /usr/include/drm/drm_fourcc.h: 152
-try:
-    DRM_FORMAT_XBGR8888 = (fourcc_code ('X', 'B', '2', '4'))
-except:
-    pass
+DRM_FORMAT_XBGR8888 = (fourcc_code ('X', 'B', '2', '4'))
 
 # /usr/include/drm/drm_fourcc.h: 153
-try:
-    DRM_FORMAT_RGBX8888 = (fourcc_code ('R', 'X', '2', '4'))
-except:
-    pass
+DRM_FORMAT_RGBX8888 = (fourcc_code ('R', 'X', '2', '4'))
 
 # /usr/include/drm/drm_fourcc.h: 154
-try:
-    DRM_FORMAT_BGRX8888 = (fourcc_code ('B', 'X', '2', '4'))
-except:
-    pass
+DRM_FORMAT_BGRX8888 = (fourcc_code ('B', 'X', '2', '4'))
 
 # /usr/include/drm/drm_fourcc.h: 156
-try:
-    DRM_FORMAT_ARGB8888 = (fourcc_code ('A', 'R', '2', '4'))
-except:
-    pass
+DRM_FORMAT_ARGB8888 = (fourcc_code ('A', 'R', '2', '4'))
 
 # /usr/include/drm/drm_fourcc.h: 157
-try:
-    DRM_FORMAT_ABGR8888 = (fourcc_code ('A', 'B', '2', '4'))
-except:
-    pass
+DRM_FORMAT_ABGR8888 = (fourcc_code ('A', 'B', '2', '4'))
 
 # /usr/include/drm/drm_fourcc.h: 158
-try:
-    DRM_FORMAT_RGBA8888 = (fourcc_code ('R', 'A', '2', '4'))
-except:
-    pass
+DRM_FORMAT_RGBA8888 = (fourcc_code ('R', 'A', '2', '4'))
 
 # /usr/include/drm/drm_fourcc.h: 159
-try:
-    DRM_FORMAT_BGRA8888 = (fourcc_code ('B', 'A', '2', '4'))
-except:
-    pass
+DRM_FORMAT_BGRA8888 = (fourcc_code ('B', 'A', '2', '4'))
 
 # /usr/include/drm/drm_fourcc.h: 161
-try:
-    DRM_FORMAT_XRGB2101010 = (fourcc_code ('X', 'R', '3', '0'))
-except:
-    pass
+DRM_FORMAT_XRGB2101010 = (fourcc_code ('X', 'R', '3', '0'))
 
 # /usr/include/drm/drm_fourcc.h: 162
-try:
-    DRM_FORMAT_XBGR2101010 = (fourcc_code ('X', 'B', '3', '0'))
-except:
-    pass
+DRM_FORMAT_XBGR2101010 = (fourcc_code ('X', 'B', '3', '0'))
 
 # /usr/include/drm/drm_fourcc.h: 163
-try:
-    DRM_FORMAT_RGBX1010102 = (fourcc_code ('R', 'X', '3', '0'))
-except:
-    pass
+DRM_FORMAT_RGBX1010102 = (fourcc_code ('R', 'X', '3', '0'))
 
 # /usr/include/drm/drm_fourcc.h: 164
-try:
-    DRM_FORMAT_BGRX1010102 = (fourcc_code ('B', 'X', '3', '0'))
-except:
-    pass
+DRM_FORMAT_BGRX1010102 = (fourcc_code ('B', 'X', '3', '0'))
 
 # /usr/include/drm/drm_fourcc.h: 166
-try:
-    DRM_FORMAT_ARGB2101010 = (fourcc_code ('A', 'R', '3', '0'))
-except:
-    pass
+DRM_FORMAT_ARGB2101010 = (fourcc_code ('A', 'R', '3', '0'))
 
 # /usr/include/drm/drm_fourcc.h: 167
-try:
-    DRM_FORMAT_ABGR2101010 = (fourcc_code ('A', 'B', '3', '0'))
-except:
-    pass
+DRM_FORMAT_ABGR2101010 = (fourcc_code ('A', 'B', '3', '0'))
 
 # /usr/include/drm/drm_fourcc.h: 168
-try:
-    DRM_FORMAT_RGBA1010102 = (fourcc_code ('R', 'A', '3', '0'))
-except:
-    pass
+DRM_FORMAT_RGBA1010102 = (fourcc_code ('R', 'A', '3', '0'))
 
 # /usr/include/drm/drm_fourcc.h: 169
-try:
-    DRM_FORMAT_BGRA1010102 = (fourcc_code ('B', 'A', '3', '0'))
-except:
-    pass
+DRM_FORMAT_BGRA1010102 = (fourcc_code ('B', 'A', '3', '0'))
 
 # /usr/include/drm/drm_fourcc.h: 172
-try:
-    DRM_FORMAT_XRGB16161616 = (fourcc_code ('X', 'R', '4', '8'))
-except:
-    pass
+DRM_FORMAT_XRGB16161616 = (fourcc_code ('X', 'R', '4', '8'))
 
 # /usr/include/drm/drm_fourcc.h: 173
-try:
-    DRM_FORMAT_XBGR16161616 = (fourcc_code ('X', 'B', '4', '8'))
-except:
-    pass
+DRM_FORMAT_XBGR16161616 = (fourcc_code ('X', 'B', '4', '8'))
 
 # /usr/include/drm/drm_fourcc.h: 175
-try:
-    DRM_FORMAT_ARGB16161616 = (fourcc_code ('A', 'R', '4', '8'))
-except:
-    pass
+DRM_FORMAT_ARGB16161616 = (fourcc_code ('A', 'R', '4', '8'))
 
 # /usr/include/drm/drm_fourcc.h: 176
-try:
-    DRM_FORMAT_ABGR16161616 = (fourcc_code ('A', 'B', '4', '8'))
-except:
-    pass
+DRM_FORMAT_ABGR16161616 = (fourcc_code ('A', 'B', '4', '8'))
 
 # /usr/include/drm/drm_fourcc.h: 183
-try:
-    DRM_FORMAT_XRGB16161616F = (fourcc_code ('X', 'R', '4', 'H'))
-except:
-    pass
+DRM_FORMAT_XRGB16161616F = (fourcc_code ('X', 'R', '4', 'H'))
 
 # /usr/include/drm/drm_fourcc.h: 184
-try:
-    DRM_FORMAT_XBGR16161616F = (fourcc_code ('X', 'B', '4', 'H'))
-except:
-    pass
+DRM_FORMAT_XBGR16161616F = (fourcc_code ('X', 'B', '4', 'H'))
 
 # /usr/include/drm/drm_fourcc.h: 186
-try:
-    DRM_FORMAT_ARGB16161616F = (fourcc_code ('A', 'R', '4', 'H'))
-except:
-    pass
+DRM_FORMAT_ARGB16161616F = (fourcc_code ('A', 'R', '4', 'H'))
 
 # /usr/include/drm/drm_fourcc.h: 187
-try:
-    DRM_FORMAT_ABGR16161616F = (fourcc_code ('A', 'B', '4', 'H'))
-except:
-    pass
+DRM_FORMAT_ABGR16161616F = (fourcc_code ('A', 'B', '4', 'H'))
 
 # /usr/include/drm/drm_fourcc.h: 193
-try:
-    DRM_FORMAT_AXBXGXRX106106106106 = (fourcc_code ('A', 'B', '1', '0'))
-except:
-    pass
+DRM_FORMAT_AXBXGXRX106106106106 = (fourcc_code ('A', 'B', '1', '0'))
 
 # /usr/include/drm/drm_fourcc.h: 196
-try:
-    DRM_FORMAT_YUYV = (fourcc_code ('Y', 'U', 'Y', 'V'))
-except:
-    pass
+DRM_FORMAT_YUYV = (fourcc_code ('Y', 'U', 'Y', 'V'))
 
 # /usr/include/drm/drm_fourcc.h: 197
-try:
-    DRM_FORMAT_YVYU = (fourcc_code ('Y', 'V', 'Y', 'U'))
-except:
-    pass
+DRM_FORMAT_YVYU = (fourcc_code ('Y', 'V', 'Y', 'U'))
 
 # /usr/include/drm/drm_fourcc.h: 198
-try:
-    DRM_FORMAT_UYVY = (fourcc_code ('U', 'Y', 'V', 'Y'))
-except:
-    pass
+DRM_FORMAT_UYVY = (fourcc_code ('U', 'Y', 'V', 'Y'))
 
 # /usr/include/drm/drm_fourcc.h: 199
-try:
-    DRM_FORMAT_VYUY = (fourcc_code ('V', 'Y', 'U', 'Y'))
-except:
-    pass
+DRM_FORMAT_VYUY = (fourcc_code ('V', 'Y', 'U', 'Y'))
 
 # /usr/include/drm/drm_fourcc.h: 201
-try:
-    DRM_FORMAT_AYUV = (fourcc_code ('A', 'Y', 'U', 'V'))
-except:
-    pass
+DRM_FORMAT_AYUV = (fourcc_code ('A', 'Y', 'U', 'V'))
 
 # /usr/include/drm/drm_fourcc.h: 202
-try:
-    DRM_FORMAT_XYUV8888 = (fourcc_code ('X', 'Y', 'U', 'V'))
-except:
-    pass
+DRM_FORMAT_XYUV8888 = (fourcc_code ('X', 'Y', 'U', 'V'))
 
 # /usr/include/drm/drm_fourcc.h: 203
-try:
-    DRM_FORMAT_VUY888 = (fourcc_code ('V', 'U', '2', '4'))
-except:
-    pass
+DRM_FORMAT_VUY888 = (fourcc_code ('V', 'U', '2', '4'))
 
 # /usr/include/drm/drm_fourcc.h: 204
-try:
-    DRM_FORMAT_VUY101010 = (fourcc_code ('V', 'U', '3', '0'))
-except:
-    pass
+DRM_FORMAT_VUY101010 = (fourcc_code ('V', 'U', '3', '0'))
 
 # /usr/include/drm/drm_fourcc.h: 210
-try:
-    DRM_FORMAT_Y210 = (fourcc_code ('Y', '2', '1', '0'))
-except:
-    pass
+DRM_FORMAT_Y210 = (fourcc_code ('Y', '2', '1', '0'))
 
 # /usr/include/drm/drm_fourcc.h: 211
-try:
-    DRM_FORMAT_Y212 = (fourcc_code ('Y', '2', '1', '2'))
-except:
-    pass
+DRM_FORMAT_Y212 = (fourcc_code ('Y', '2', '1', '2'))
 
 # /usr/include/drm/drm_fourcc.h: 212
-try:
-    DRM_FORMAT_Y216 = (fourcc_code ('Y', '2', '1', '6'))
-except:
-    pass
+DRM_FORMAT_Y216 = (fourcc_code ('Y', '2', '1', '6'))
 
 # /usr/include/drm/drm_fourcc.h: 218
-try:
-    DRM_FORMAT_Y410 = (fourcc_code ('Y', '4', '1', '0'))
-except:
-    pass
+DRM_FORMAT_Y410 = (fourcc_code ('Y', '4', '1', '0'))
 
 # /usr/include/drm/drm_fourcc.h: 219
-try:
-    DRM_FORMAT_Y412 = (fourcc_code ('Y', '4', '1', '2'))
-except:
-    pass
+DRM_FORMAT_Y412 = (fourcc_code ('Y', '4', '1', '2'))
 
 # /usr/include/drm/drm_fourcc.h: 220
-try:
-    DRM_FORMAT_Y416 = (fourcc_code ('Y', '4', '1', '6'))
-except:
-    pass
+DRM_FORMAT_Y416 = (fourcc_code ('Y', '4', '1', '6'))
 
 # /usr/include/drm/drm_fourcc.h: 222
-try:
-    DRM_FORMAT_XVYU2101010 = (fourcc_code ('X', 'V', '3', '0'))
-except:
-    pass
+DRM_FORMAT_XVYU2101010 = (fourcc_code ('X', 'V', '3', '0'))
 
 # /usr/include/drm/drm_fourcc.h: 223
-try:
-    DRM_FORMAT_XVYU12_16161616 = (fourcc_code ('X', 'V', '3', '6'))
-except:
-    pass
+DRM_FORMAT_XVYU12_16161616 = (fourcc_code ('X', 'V', '3', '6'))
 
 # /usr/include/drm/drm_fourcc.h: 224
-try:
-    DRM_FORMAT_XVYU16161616 = (fourcc_code ('X', 'V', '4', '8'))
-except:
-    pass
+DRM_FORMAT_XVYU16161616 = (fourcc_code ('X', 'V', '4', '8'))
 
 # /usr/include/drm/drm_fourcc.h: 231
-try:
-    DRM_FORMAT_Y0L0 = (fourcc_code ('Y', '0', 'L', '0'))
-except:
-    pass
+DRM_FORMAT_Y0L0 = (fourcc_code ('Y', '0', 'L', '0'))
 
 # /usr/include/drm/drm_fourcc.h: 233
-try:
-    DRM_FORMAT_X0L0 = (fourcc_code ('X', '0', 'L', '0'))
-except:
-    pass
+DRM_FORMAT_X0L0 = (fourcc_code ('X', '0', 'L', '0'))
 
 # /usr/include/drm/drm_fourcc.h: 236
-try:
-    DRM_FORMAT_Y0L2 = (fourcc_code ('Y', '0', 'L', '2'))
-except:
-    pass
+DRM_FORMAT_Y0L2 = (fourcc_code ('Y', '0', 'L', '2'))
 
 # /usr/include/drm/drm_fourcc.h: 238
-try:
-    DRM_FORMAT_X0L2 = (fourcc_code ('X', '0', 'L', '2'))
-except:
-    pass
+DRM_FORMAT_X0L2 = (fourcc_code ('X', '0', 'L', '2'))
 
 # /usr/include/drm/drm_fourcc.h: 246
-try:
-    DRM_FORMAT_YUV420_8BIT = (fourcc_code ('Y', 'U', '0', '8'))
-except:
-    pass
+DRM_FORMAT_YUV420_8BIT = (fourcc_code ('Y', 'U', '0', '8'))
 
 # /usr/include/drm/drm_fourcc.h: 247
-try:
-    DRM_FORMAT_YUV420_10BIT = (fourcc_code ('Y', 'U', '1', '0'))
-except:
-    pass
+DRM_FORMAT_YUV420_10BIT = (fourcc_code ('Y', 'U', '1', '0'))
 
 # /usr/include/drm/drm_fourcc.h: 254
-try:
-    DRM_FORMAT_XRGB8888_A8 = (fourcc_code ('X', 'R', 'A', '8'))
-except:
-    pass
+DRM_FORMAT_XRGB8888_A8 = (fourcc_code ('X', 'R', 'A', '8'))
 
 # /usr/include/drm/drm_fourcc.h: 255
-try:
-    DRM_FORMAT_XBGR8888_A8 = (fourcc_code ('X', 'B', 'A', '8'))
-except:
-    pass
+DRM_FORMAT_XBGR8888_A8 = (fourcc_code ('X', 'B', 'A', '8'))
 
 # /usr/include/drm/drm_fourcc.h: 256
-try:
-    DRM_FORMAT_RGBX8888_A8 = (fourcc_code ('R', 'X', 'A', '8'))
-except:
-    pass
+DRM_FORMAT_RGBX8888_A8 = (fourcc_code ('R', 'X', 'A', '8'))
 
 # /usr/include/drm/drm_fourcc.h: 257
-try:
-    DRM_FORMAT_BGRX8888_A8 = (fourcc_code ('B', 'X', 'A', '8'))
-except:
-    pass
+DRM_FORMAT_BGRX8888_A8 = (fourcc_code ('B', 'X', 'A', '8'))
 
 # /usr/include/drm/drm_fourcc.h: 258
-try:
-    DRM_FORMAT_RGB888_A8 = (fourcc_code ('R', '8', 'A', '8'))
-except:
-    pass
+DRM_FORMAT_RGB888_A8 = (fourcc_code ('R', '8', 'A', '8'))
 
 # /usr/include/drm/drm_fourcc.h: 259
-try:
-    DRM_FORMAT_BGR888_A8 = (fourcc_code ('B', '8', 'A', '8'))
-except:
-    pass
+DRM_FORMAT_BGR888_A8 = (fourcc_code ('B', '8', 'A', '8'))
 
 # /usr/include/drm/drm_fourcc.h: 260
-try:
-    DRM_FORMAT_RGB565_A8 = (fourcc_code ('R', '5', 'A', '8'))
-except:
-    pass
+DRM_FORMAT_RGB565_A8 = (fourcc_code ('R', '5', 'A', '8'))
 
 # /usr/include/drm/drm_fourcc.h: 261
-try:
-    DRM_FORMAT_BGR565_A8 = (fourcc_code ('B', '5', 'A', '8'))
-except:
-    pass
+DRM_FORMAT_BGR565_A8 = (fourcc_code ('B', '5', 'A', '8'))
 
 # /usr/include/drm/drm_fourcc.h: 270
-try:
-    DRM_FORMAT_NV12 = (fourcc_code ('N', 'V', '1', '2'))
-except:
-    pass
+DRM_FORMAT_NV12 = (fourcc_code ('N', 'V', '1', '2'))
 
 # /usr/include/drm/drm_fourcc.h: 271
-try:
-    DRM_FORMAT_NV21 = (fourcc_code ('N', 'V', '2', '1'))
-except:
-    pass
+DRM_FORMAT_NV21 = (fourcc_code ('N', 'V', '2', '1'))
 
 # /usr/include/drm/drm_fourcc.h: 272
-try:
-    DRM_FORMAT_NV16 = (fourcc_code ('N', 'V', '1', '6'))
-except:
-    pass
+DRM_FORMAT_NV16 = (fourcc_code ('N', 'V', '1', '6'))
 
 # /usr/include/drm/drm_fourcc.h: 273
-try:
-    DRM_FORMAT_NV61 = (fourcc_code ('N', 'V', '6', '1'))
-except:
-    pass
+DRM_FORMAT_NV61 = (fourcc_code ('N', 'V', '6', '1'))
 
 # /usr/include/drm/drm_fourcc.h: 274
-try:
-    DRM_FORMAT_NV24 = (fourcc_code ('N', 'V', '2', '4'))
-except:
-    pass
+DRM_FORMAT_NV24 = (fourcc_code ('N', 'V', '2', '4'))
 
 # /usr/include/drm/drm_fourcc.h: 275
-try:
-    DRM_FORMAT_NV42 = (fourcc_code ('N', 'V', '4', '2'))
-except:
-    pass
+DRM_FORMAT_NV42 = (fourcc_code ('N', 'V', '4', '2'))
 
 # /usr/include/drm/drm_fourcc.h: 281
-try:
-    DRM_FORMAT_NV15 = (fourcc_code ('N', 'V', '1', '5'))
-except:
-    pass
+DRM_FORMAT_NV15 = (fourcc_code ('N', 'V', '1', '5'))
 
 # /usr/include/drm/drm_fourcc.h: 288
-try:
-    DRM_FORMAT_P210 = (fourcc_code ('P', '2', '1', '0'))
-except:
-    pass
+DRM_FORMAT_P210 = (fourcc_code ('P', '2', '1', '0'))
 
 # /usr/include/drm/drm_fourcc.h: 295
-try:
-    DRM_FORMAT_P010 = (fourcc_code ('P', '0', '1', '0'))
-except:
-    pass
+DRM_FORMAT_P010 = (fourcc_code ('P', '0', '1', '0'))
 
 # /usr/include/drm/drm_fourcc.h: 302
-try:
-    DRM_FORMAT_P012 = (fourcc_code ('P', '0', '1', '2'))
-except:
-    pass
+DRM_FORMAT_P012 = (fourcc_code ('P', '0', '1', '2'))
 
 # /usr/include/drm/drm_fourcc.h: 309
-try:
-    DRM_FORMAT_P016 = (fourcc_code ('P', '0', '1', '6'))
-except:
-    pass
+DRM_FORMAT_P016 = (fourcc_code ('P', '0', '1', '6'))
 
 # /usr/include/drm/drm_fourcc.h: 316
-try:
-    DRM_FORMAT_P030 = (fourcc_code ('P', '0', '3', '0'))
-except:
-    pass
+DRM_FORMAT_P030 = (fourcc_code ('P', '0', '3', '0'))
 
 # /usr/include/drm/drm_fourcc.h: 324
-try:
-    DRM_FORMAT_Q410 = (fourcc_code ('Q', '4', '1', '0'))
-except:
-    pass
+DRM_FORMAT_Q410 = (fourcc_code ('Q', '4', '1', '0'))
 
 # /usr/include/drm/drm_fourcc.h: 332
-try:
-    DRM_FORMAT_Q401 = (fourcc_code ('Q', '4', '0', '1'))
-except:
-    pass
+DRM_FORMAT_Q401 = (fourcc_code ('Q', '4', '0', '1'))
 
 # /usr/include/drm/drm_fourcc.h: 343
-try:
-    DRM_FORMAT_YUV410 = (fourcc_code ('Y', 'U', 'V', '9'))
-except:
-    pass
+DRM_FORMAT_YUV410 = (fourcc_code ('Y', 'U', 'V', '9'))
 
 # /usr/include/drm/drm_fourcc.h: 344
-try:
-    DRM_FORMAT_YVU410 = (fourcc_code ('Y', 'V', 'U', '9'))
-except:
-    pass
+DRM_FORMAT_YVU410 = (fourcc_code ('Y', 'V', 'U', '9'))
 
 # /usr/include/drm/drm_fourcc.h: 345
-try:
-    DRM_FORMAT_YUV411 = (fourcc_code ('Y', 'U', '1', '1'))
-except:
-    pass
+DRM_FORMAT_YUV411 = (fourcc_code ('Y', 'U', '1', '1'))
 
 # /usr/include/drm/drm_fourcc.h: 346
-try:
-    DRM_FORMAT_YVU411 = (fourcc_code ('Y', 'V', '1', '1'))
-except:
-    pass
+DRM_FORMAT_YVU411 = (fourcc_code ('Y', 'V', '1', '1'))
 
 # /usr/include/drm/drm_fourcc.h: 347
-try:
-    DRM_FORMAT_YUV420 = (fourcc_code ('Y', 'U', '1', '2'))
-except:
-    pass
+DRM_FORMAT_YUV420 = (fourcc_code ('Y', 'U', '1', '2'))
 
 # /usr/include/drm/drm_fourcc.h: 348
-try:
-    DRM_FORMAT_YVU420 = (fourcc_code ('Y', 'V', '1', '2'))
-except:
-    pass
+DRM_FORMAT_YVU420 = (fourcc_code ('Y', 'V', '1', '2'))
 
 # /usr/include/drm/drm_fourcc.h: 349
-try:
-    DRM_FORMAT_YUV422 = (fourcc_code ('Y', 'U', '1', '6'))
-except:
-    pass
+DRM_FORMAT_YUV422 = (fourcc_code ('Y', 'U', '1', '6'))
 
 # /usr/include/drm/drm_fourcc.h: 350
-try:
-    DRM_FORMAT_YVU422 = (fourcc_code ('Y', 'V', '1', '6'))
-except:
-    pass
+DRM_FORMAT_YVU422 = (fourcc_code ('Y', 'V', '1', '6'))
 
 # /usr/include/drm/drm_fourcc.h: 351
-try:
-    DRM_FORMAT_YUV444 = (fourcc_code ('Y', 'U', '2', '4'))
-except:
-    pass
+DRM_FORMAT_YUV444 = (fourcc_code ('Y', 'U', '2', '4'))
 
 # /usr/include/drm/drm_fourcc.h: 352
-try:
-    DRM_FORMAT_YVU444 = (fourcc_code ('Y', 'V', '2', '4'))
-except:
-    pass
+DRM_FORMAT_YVU444 = (fourcc_code ('Y', 'V', '2', '4'))
 
 # /usr/include/drm/drm_fourcc.h: 367
-try:
-    DRM_FORMAT_MOD_VENDOR_NONE = 0
-except:
-    pass
+DRM_FORMAT_MOD_VENDOR_NONE = 0
 
 # /usr/include/drm/drm_fourcc.h: 368
-try:
-    DRM_FORMAT_MOD_VENDOR_INTEL = 0x01
-except:
-    pass
+DRM_FORMAT_MOD_VENDOR_INTEL = 0x01
 
 # /usr/include/drm/drm_fourcc.h: 369
-try:
-    DRM_FORMAT_MOD_VENDOR_AMD = 0x02
-except:
-    pass
+DRM_FORMAT_MOD_VENDOR_AMD = 0x02
 
 # /usr/include/drm/drm_fourcc.h: 370
-try:
-    DRM_FORMAT_MOD_VENDOR_NVIDIA = 0x03
-except:
-    pass
+DRM_FORMAT_MOD_VENDOR_NVIDIA = 0x03
 
 # /usr/include/drm/drm_fourcc.h: 371
-try:
-    DRM_FORMAT_MOD_VENDOR_SAMSUNG = 0x04
-except:
-    pass
+DRM_FORMAT_MOD_VENDOR_SAMSUNG = 0x04
 
 # /usr/include/drm/drm_fourcc.h: 372
-try:
-    DRM_FORMAT_MOD_VENDOR_QCOM = 0x05
-except:
-    pass
+DRM_FORMAT_MOD_VENDOR_QCOM = 0x05
 
 # /usr/include/drm/drm_fourcc.h: 373
-try:
-    DRM_FORMAT_MOD_VENDOR_VIVANTE = 0x06
-except:
-    pass
+DRM_FORMAT_MOD_VENDOR_VIVANTE = 0x06
 
 # /usr/include/drm/drm_fourcc.h: 374
-try:
-    DRM_FORMAT_MOD_VENDOR_BROADCOM = 0x07
-except:
-    pass
+DRM_FORMAT_MOD_VENDOR_BROADCOM = 0x07
 
 # /usr/include/drm/drm_fourcc.h: 375
-try:
-    DRM_FORMAT_MOD_VENDOR_ARM = 0x08
-except:
-    pass
+DRM_FORMAT_MOD_VENDOR_ARM = 0x08
 
 # /usr/include/drm/drm_fourcc.h: 376
-try:
-    DRM_FORMAT_MOD_VENDOR_ALLWINNER = 0x09
-except:
-    pass
+DRM_FORMAT_MOD_VENDOR_ALLWINNER = 0x09
 
 # /usr/include/drm/drm_fourcc.h: 377
-try:
-    DRM_FORMAT_MOD_VENDOR_AMLOGIC = 0x0a
-except:
-    pass
+DRM_FORMAT_MOD_VENDOR_AMLOGIC = 0x0a
 
 # /usr/include/drm/drm_fourcc.h: 381
-try:
-    DRM_FORMAT_RESERVED = ((1 << 56) - 1)
-except:
-    pass
+DRM_FORMAT_RESERVED = ((1 << 56) - 1)
 
 # /usr/include/drm/drm_fourcc.h: 446
-try:
-    DRM_FORMAT_MOD_NONE = 0
-except:
-    pass
+DRM_FORMAT_MOD_NONE = 0
 
 # /usr/include/drm/drm_fourcc.h: 798
-try:
-    __fourcc_mod_broadcom_param_shift = 8
-except:
-    pass
+__fourcc_mod_broadcom_param_shift = 8
 
 # /usr/include/drm/drm_fourcc.h: 799
-try:
-    __fourcc_mod_broadcom_param_bits = 48
-except:
-    pass
+__fourcc_mod_broadcom_param_bits = 48
 
 # /usr/include/drm/drm_fourcc.h: 802
 def fourcc_mod_broadcom_param(m):
@@ -4730,130 +3410,67 @@ def fourcc_mod_broadcom_mod(m):
     return (m & (~(((1 << __fourcc_mod_broadcom_param_bits) - 1) << __fourcc_mod_broadcom_param_shift)))
 
 # /usr/include/drm/drm_fourcc.h: 921
-try:
-    DRM_FORMAT_MOD_ARM_TYPE_AFBC = 0x00
-except:
-    pass
+DRM_FORMAT_MOD_ARM_TYPE_AFBC = 0x00
 
 # /usr/include/drm/drm_fourcc.h: 922
-try:
-    DRM_FORMAT_MOD_ARM_TYPE_MISC = 0x01
-except:
-    pass
+DRM_FORMAT_MOD_ARM_TYPE_MISC = 0x01
 
 # /usr/include/drm/drm_fourcc.h: 940
-try:
-    AFBC_FORMAT_MOD_BLOCK_SIZE_MASK = 0xf
-except:
-    pass
+AFBC_FORMAT_MOD_BLOCK_SIZE_MASK = 0xf
 
 # /usr/include/drm/drm_fourcc.h: 941
-try:
-    AFBC_FORMAT_MOD_BLOCK_SIZE_16x16 = 1
-except:
-    pass
+AFBC_FORMAT_MOD_BLOCK_SIZE_16x16 = 1
 
 # /usr/include/drm/drm_fourcc.h: 942
-try:
-    AFBC_FORMAT_MOD_BLOCK_SIZE_32x8 = 2
-except:
-    pass
+AFBC_FORMAT_MOD_BLOCK_SIZE_32x8 = 2
 
 # /usr/include/drm/drm_fourcc.h: 943
-try:
-    AFBC_FORMAT_MOD_BLOCK_SIZE_64x4 = 3
-except:
-    pass
+AFBC_FORMAT_MOD_BLOCK_SIZE_64x4 = 3
 
 # /usr/include/drm/drm_fourcc.h: 944
-try:
-    AFBC_FORMAT_MOD_BLOCK_SIZE_32x8_64x4 = 4
-except:
-    pass
+AFBC_FORMAT_MOD_BLOCK_SIZE_32x8_64x4 = 4
 
 # /usr/include/drm/drm_fourcc.h: 952
-try:
-    AFBC_FORMAT_MOD_YTR = (1 << 4)
-except:
-    pass
+AFBC_FORMAT_MOD_YTR = (1 << 4)
 
 # /usr/include/drm/drm_fourcc.h: 961
-try:
-    AFBC_FORMAT_MOD_SPLIT = (1 << 5)
-except:
-    pass
+AFBC_FORMAT_MOD_SPLIT = (1 << 5)
 
 # /usr/include/drm/drm_fourcc.h: 973
-try:
-    AFBC_FORMAT_MOD_SPARSE = (1 << 6)
-except:
-    pass
+AFBC_FORMAT_MOD_SPARSE = (1 << 6)
 
 # /usr/include/drm/drm_fourcc.h: 982
-try:
-    AFBC_FORMAT_MOD_CBR = (1 << 7)
-except:
-    pass
+AFBC_FORMAT_MOD_CBR = (1 << 7)
 
 # /usr/include/drm/drm_fourcc.h: 994
-try:
-    AFBC_FORMAT_MOD_TILED = (1 << 8)
-except:
-    pass
+AFBC_FORMAT_MOD_TILED = (1 << 8)
 
 # /usr/include/drm/drm_fourcc.h: 1002
-try:
-    AFBC_FORMAT_MOD_SC = (1 << 9)
-except:
-    pass
+AFBC_FORMAT_MOD_SC = (1 << 9)
 
 # /usr/include/drm/drm_fourcc.h: 1010
-try:
-    AFBC_FORMAT_MOD_DB = (1 << 10)
-except:
-    pass
+AFBC_FORMAT_MOD_DB = (1 << 10)
 
 # /usr/include/drm/drm_fourcc.h: 1017
-try:
-    AFBC_FORMAT_MOD_BCH = (1 << 11)
-except:
-    pass
+AFBC_FORMAT_MOD_BCH = (1 << 11)
 
 # /usr/include/drm/drm_fourcc.h: 1029
-try:
-    AFBC_FORMAT_MOD_USM = (1 << 12)
-except:
-    pass
+AFBC_FORMAT_MOD_USM = (1 << 12)
 
 # /usr/include/drm/drm_fourcc.h: 1091
-try:
-    DRM_FORMAT_MOD_ARM_TYPE_AFRC = 0x02
-except:
-    pass
+DRM_FORMAT_MOD_ARM_TYPE_AFRC = 0x02
 
 # /usr/include/drm/drm_fourcc.h: 1117
-try:
-    AFRC_FORMAT_MOD_CU_SIZE_MASK = 0xf
-except:
-    pass
+AFRC_FORMAT_MOD_CU_SIZE_MASK = 0xf
 
 # /usr/include/drm/drm_fourcc.h: 1118
-try:
-    AFRC_FORMAT_MOD_CU_SIZE_16 = 1
-except:
-    pass
+AFRC_FORMAT_MOD_CU_SIZE_16 = 1
 
 # /usr/include/drm/drm_fourcc.h: 1119
-try:
-    AFRC_FORMAT_MOD_CU_SIZE_24 = 2
-except:
-    pass
+AFRC_FORMAT_MOD_CU_SIZE_24 = 2
 
 # /usr/include/drm/drm_fourcc.h: 1120
-try:
-    AFRC_FORMAT_MOD_CU_SIZE_32 = 3
-except:
-    pass
+AFRC_FORMAT_MOD_CU_SIZE_32 = 3
 
 # /usr/include/drm/drm_fourcc.h: 1122
 def AFRC_FORMAT_MOD_CU_SIZE_P0(__afrc_cu_size):
@@ -4864,284 +3481,146 @@ def AFRC_FORMAT_MOD_CU_SIZE_P12(__afrc_cu_size):
     return (__afrc_cu_size << 4)
 
 # /usr/include/drm/drm_fourcc.h: 1132
-try:
-    AFRC_FORMAT_MOD_LAYOUT_SCAN = (1 << 8)
-except:
-    pass
+AFRC_FORMAT_MOD_LAYOUT_SCAN = (1 << 8)
 
 # /usr/include/drm/drm_fourcc.h: 1179
-try:
-    __fourcc_mod_amlogic_layout_mask = 0xff
-except:
-    pass
+__fourcc_mod_amlogic_layout_mask = 0xff
 
 # /usr/include/drm/drm_fourcc.h: 1180
-try:
-    __fourcc_mod_amlogic_options_shift = 8
-except:
-    pass
+__fourcc_mod_amlogic_options_shift = 8
 
 # /usr/include/drm/drm_fourcc.h: 1181
-try:
-    __fourcc_mod_amlogic_options_mask = 0xff
-except:
-    pass
+__fourcc_mod_amlogic_options_mask = 0xff
 
 # /usr/include/drm/drm_fourcc.h: 1201
-try:
-    AMLOGIC_FBC_LAYOUT_BASIC = 1
-except:
-    pass
+AMLOGIC_FBC_LAYOUT_BASIC = 1
 
 # /usr/include/drm/drm_fourcc.h: 1221
-try:
-    AMLOGIC_FBC_LAYOUT_SCATTER = 2
-except:
-    pass
+AMLOGIC_FBC_LAYOUT_SCATTER = 2
 
 # /usr/include/drm/drm_fourcc.h: 1236
-try:
-    AMLOGIC_FBC_OPTION_MEM_SAVING = (1 << 0)
-except:
-    pass
+AMLOGIC_FBC_OPTION_MEM_SAVING = (1 << 0)
 
 # /usr/include/drm/drm_fourcc.h: 1279
 def IS_AMD_FMT_MOD(val):
     return ((val >> 56) == DRM_FORMAT_MOD_VENDOR_AMD)
 
 # /usr/include/drm/drm_fourcc.h: 1282
-try:
-    AMD_FMT_MOD_TILE_VER_GFX9 = 1
-except:
-    pass
+AMD_FMT_MOD_TILE_VER_GFX9 = 1
 
 # /usr/include/drm/drm_fourcc.h: 1283
-try:
-    AMD_FMT_MOD_TILE_VER_GFX10 = 2
-except:
-    pass
+AMD_FMT_MOD_TILE_VER_GFX10 = 2
 
 # /usr/include/drm/drm_fourcc.h: 1284
-try:
-    AMD_FMT_MOD_TILE_VER_GFX10_RBPLUS = 3
-except:
-    pass
+AMD_FMT_MOD_TILE_VER_GFX10_RBPLUS = 3
 
 # /usr/include/drm/drm_fourcc.h: 1290
-try:
-    AMD_FMT_MOD_TILE_GFX9_64K_S = 9
-except:
-    pass
+AMD_FMT_MOD_TILE_GFX9_64K_S = 9
 
 # /usr/include/drm/drm_fourcc.h: 1296
-try:
-    AMD_FMT_MOD_TILE_GFX9_64K_D = 10
-except:
-    pass
+AMD_FMT_MOD_TILE_GFX9_64K_D = 10
 
 # /usr/include/drm/drm_fourcc.h: 1297
-try:
-    AMD_FMT_MOD_TILE_GFX9_64K_S_X = 25
-except:
-    pass
+AMD_FMT_MOD_TILE_GFX9_64K_S_X = 25
 
 # /usr/include/drm/drm_fourcc.h: 1298
-try:
-    AMD_FMT_MOD_TILE_GFX9_64K_D_X = 26
-except:
-    pass
+AMD_FMT_MOD_TILE_GFX9_64K_D_X = 26
 
 # /usr/include/drm/drm_fourcc.h: 1299
-try:
-    AMD_FMT_MOD_TILE_GFX9_64K_R_X = 27
-except:
-    pass
+AMD_FMT_MOD_TILE_GFX9_64K_R_X = 27
 
 # /usr/include/drm/drm_fourcc.h: 1301
-try:
-    AMD_FMT_MOD_DCC_BLOCK_64B = 0
-except:
-    pass
+AMD_FMT_MOD_DCC_BLOCK_64B = 0
 
 # /usr/include/drm/drm_fourcc.h: 1302
-try:
-    AMD_FMT_MOD_DCC_BLOCK_128B = 1
-except:
-    pass
+AMD_FMT_MOD_DCC_BLOCK_128B = 1
 
 # /usr/include/drm/drm_fourcc.h: 1303
-try:
-    AMD_FMT_MOD_DCC_BLOCK_256B = 2
-except:
-    pass
+AMD_FMT_MOD_DCC_BLOCK_256B = 2
 
 # /usr/include/drm/drm_fourcc.h: 1305
-try:
-    AMD_FMT_MOD_TILE_VERSION_SHIFT = 0
-except:
-    pass
+AMD_FMT_MOD_TILE_VERSION_SHIFT = 0
 
 # /usr/include/drm/drm_fourcc.h: 1306
-try:
-    AMD_FMT_MOD_TILE_VERSION_MASK = 0xFF
-except:
-    pass
+AMD_FMT_MOD_TILE_VERSION_MASK = 0xFF
 
 # /usr/include/drm/drm_fourcc.h: 1307
-try:
-    AMD_FMT_MOD_TILE_SHIFT = 8
-except:
-    pass
+AMD_FMT_MOD_TILE_SHIFT = 8
 
 # /usr/include/drm/drm_fourcc.h: 1308
-try:
-    AMD_FMT_MOD_TILE_MASK = 0x1F
-except:
-    pass
+AMD_FMT_MOD_TILE_MASK = 0x1F
 
 # /usr/include/drm/drm_fourcc.h: 1311
-try:
-    AMD_FMT_MOD_DCC_SHIFT = 13
-except:
-    pass
+AMD_FMT_MOD_DCC_SHIFT = 13
 
 # /usr/include/drm/drm_fourcc.h: 1312
-try:
-    AMD_FMT_MOD_DCC_MASK = 0x1
-except:
-    pass
+AMD_FMT_MOD_DCC_MASK = 0x1
 
 # /usr/include/drm/drm_fourcc.h: 1318
-try:
-    AMD_FMT_MOD_DCC_RETILE_SHIFT = 14
-except:
-    pass
+AMD_FMT_MOD_DCC_RETILE_SHIFT = 14
 
 # /usr/include/drm/drm_fourcc.h: 1319
-try:
-    AMD_FMT_MOD_DCC_RETILE_MASK = 0x1
-except:
-    pass
+AMD_FMT_MOD_DCC_RETILE_MASK = 0x1
 
 # /usr/include/drm/drm_fourcc.h: 1322
-try:
-    AMD_FMT_MOD_DCC_PIPE_ALIGN_SHIFT = 15
-except:
-    pass
+AMD_FMT_MOD_DCC_PIPE_ALIGN_SHIFT = 15
 
 # /usr/include/drm/drm_fourcc.h: 1323
-try:
-    AMD_FMT_MOD_DCC_PIPE_ALIGN_MASK = 0x1
-except:
-    pass
+AMD_FMT_MOD_DCC_PIPE_ALIGN_MASK = 0x1
 
 # /usr/include/drm/drm_fourcc.h: 1325
-try:
-    AMD_FMT_MOD_DCC_INDEPENDENT_64B_SHIFT = 16
-except:
-    pass
+AMD_FMT_MOD_DCC_INDEPENDENT_64B_SHIFT = 16
 
 # /usr/include/drm/drm_fourcc.h: 1326
-try:
-    AMD_FMT_MOD_DCC_INDEPENDENT_64B_MASK = 0x1
-except:
-    pass
+AMD_FMT_MOD_DCC_INDEPENDENT_64B_MASK = 0x1
 
 # /usr/include/drm/drm_fourcc.h: 1327
-try:
-    AMD_FMT_MOD_DCC_INDEPENDENT_128B_SHIFT = 17
-except:
-    pass
+AMD_FMT_MOD_DCC_INDEPENDENT_128B_SHIFT = 17
 
 # /usr/include/drm/drm_fourcc.h: 1328
-try:
-    AMD_FMT_MOD_DCC_INDEPENDENT_128B_MASK = 0x1
-except:
-    pass
+AMD_FMT_MOD_DCC_INDEPENDENT_128B_MASK = 0x1
 
 # /usr/include/drm/drm_fourcc.h: 1329
-try:
-    AMD_FMT_MOD_DCC_MAX_COMPRESSED_BLOCK_SHIFT = 18
-except:
-    pass
+AMD_FMT_MOD_DCC_MAX_COMPRESSED_BLOCK_SHIFT = 18
 
 # /usr/include/drm/drm_fourcc.h: 1330
-try:
-    AMD_FMT_MOD_DCC_MAX_COMPRESSED_BLOCK_MASK = 0x3
-except:
-    pass
+AMD_FMT_MOD_DCC_MAX_COMPRESSED_BLOCK_MASK = 0x3
 
 # /usr/include/drm/drm_fourcc.h: 1341
-try:
-    AMD_FMT_MOD_DCC_CONSTANT_ENCODE_SHIFT = 20
-except:
-    pass
+AMD_FMT_MOD_DCC_CONSTANT_ENCODE_SHIFT = 20
 
 # /usr/include/drm/drm_fourcc.h: 1342
-try:
-    AMD_FMT_MOD_DCC_CONSTANT_ENCODE_MASK = 0x1
-except:
-    pass
+AMD_FMT_MOD_DCC_CONSTANT_ENCODE_MASK = 0x1
 
 # /usr/include/drm/drm_fourcc.h: 1354
-try:
-    AMD_FMT_MOD_PIPE_XOR_BITS_SHIFT = 21
-except:
-    pass
+AMD_FMT_MOD_PIPE_XOR_BITS_SHIFT = 21
 
 # /usr/include/drm/drm_fourcc.h: 1355
-try:
-    AMD_FMT_MOD_PIPE_XOR_BITS_MASK = 0x7
-except:
-    pass
+AMD_FMT_MOD_PIPE_XOR_BITS_MASK = 0x7
 
 # /usr/include/drm/drm_fourcc.h: 1356
-try:
-    AMD_FMT_MOD_BANK_XOR_BITS_SHIFT = 24
-except:
-    pass
+AMD_FMT_MOD_BANK_XOR_BITS_SHIFT = 24
 
 # /usr/include/drm/drm_fourcc.h: 1357
-try:
-    AMD_FMT_MOD_BANK_XOR_BITS_MASK = 0x7
-except:
-    pass
+AMD_FMT_MOD_BANK_XOR_BITS_MASK = 0x7
 
 # /usr/include/drm/drm_fourcc.h: 1358
-try:
-    AMD_FMT_MOD_PACKERS_SHIFT = 27
-except:
-    pass
+AMD_FMT_MOD_PACKERS_SHIFT = 27
 
 # /usr/include/drm/drm_fourcc.h: 1359
-try:
-    AMD_FMT_MOD_PACKERS_MASK = 0x7
-except:
-    pass
+AMD_FMT_MOD_PACKERS_MASK = 0x7
 
 # /usr/include/drm/drm_fourcc.h: 1360
-try:
-    AMD_FMT_MOD_RB_SHIFT = 30
-except:
-    pass
+AMD_FMT_MOD_RB_SHIFT = 30
 
 # /usr/include/drm/drm_fourcc.h: 1361
-try:
-    AMD_FMT_MOD_RB_MASK = 0x7
-except:
-    pass
+AMD_FMT_MOD_RB_MASK = 0x7
 
 # /usr/include/drm/drm_fourcc.h: 1362
-try:
-    AMD_FMT_MOD_PIPE_SHIFT = 33
-except:
-    pass
+AMD_FMT_MOD_PIPE_SHIFT = 33
 
 # /usr/include/drm/drm_fourcc.h: 1363
-try:
-    AMD_FMT_MOD_PIPE_MASK = 0x7
-except:
-    pass
+AMD_FMT_MOD_PIPE_MASK = 0x7
 
 drm_clip_rect = struct_drm_clip_rect# /usr/include/drm/drm.h: 90
 
