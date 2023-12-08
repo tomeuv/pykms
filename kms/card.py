@@ -349,10 +349,10 @@ class Crtc(DrmPropObject):
 
     @property
     def primary_plane(self):
-        plane = next((p for p in self.get_possible_planes() if p.type == kms.PlaneTypePrimary and p.crtc_id == self.id), None)
+        plane = next((p for p in self.get_possible_planes() if p.type == kms.PlaneType.Primary and p.crtc_id == self.id), None)
         if plane:
             return plane
-        plane = next((p for p in self.get_possible_planes() if p.type == kms.PlaneTypePrimary), None)
+        plane = next((p for p in self.get_possible_planes() if p.type == kms.PlaneType.Primary), None)
         if plane:
             return plane
         plane = next((p for p in self.get_possible_planes()), None)
@@ -416,7 +416,7 @@ class Plane(DrmPropObject):
 
     @property
     def plane_type(self):
-        return self.get_prop_value('type')
+        return kms.PlaneType(self.get_prop_value('type'))
 
     def supports_format(self, format):
         return format in self.format_types
@@ -437,6 +437,8 @@ class DumbFramebuffer(DrmObject):
             self.map = 0
 
     def __init__(self, card: Card, width, height, fourcc: str | int) -> None:
+        self._deleted = True
+
         if type(fourcc) is str:
             fourcc = kms.str_to_fourcc(fourcc)
 
@@ -483,7 +485,7 @@ class DumbFramebuffer(DrmObject):
         self._deleted = False
 
     def __del__(self):
-        if self.card.fd == -1 or self._deleted:
+        if self._deleted or self.card.fd == -1:
             return
 
         for p in self.planes:

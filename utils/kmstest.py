@@ -20,7 +20,7 @@ conn = res.reserve_connector(args.connector)
 crtc = res.reserve_crtc(conn)
 plane = res.reserve_generic_plane(crtc, kms.PixelFormat.XRGB8888)
 mode = conn.get_default_mode()
-modeb = mode.to_blob(card)
+modeb = kms.Blob(card, mode)
 
 fbs = []
 numpybufs = []

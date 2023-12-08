@@ -95,7 +95,7 @@ class ResourceManager:
             if plane in self.reserved_planes:
                 continue
 
-            if plane.plane_type == kms.uapi.DRM_PLANE_TYPE_CURSOR:
+            if plane.plane_type == kms.PlaneType.Cursor:
                 continue
 
             if format and not plane.supports_format(format):
