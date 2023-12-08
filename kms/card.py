@@ -299,7 +299,7 @@ class Connector(DrmPropObject):
     def get_current_crtc(self):
         assert(self.connector_res.encoder_id)
         enc = self.card.get_encoder(self.connector_res.encoder_id)
-        return enc.get_crtc()
+        return enc.crtc
 
     def __repr__(self) -> str:
         return f'Connector({self.id})'
@@ -312,6 +312,10 @@ class Connector(DrmPropObject):
             crtcs.update(self.card.get_encoder(encoder_id).possible_crtcs)
 
         return crtcs
+
+    @property
+    def encoders(self):
+        return [self.card.get_encoder(eid) for eid in self.encoder_ids]
 
 
 class Crtc(DrmPropObject):
@@ -332,6 +336,11 @@ class Crtc(DrmPropObject):
 
     def get_possible_planes(self):
         return [p for p in self.card.planes if p.supports_crtc(self)]
+
+    # XXX create our own mode class
+    @property
+    def mode(self) -> kms.uapi.drm_mode_modeinfo:
+        return self.crtc_res.mode
 
     # XXX deprecated
     def set_mode(self, connector, fb, mode):
@@ -378,14 +387,18 @@ class Encoder(DrmObject):
     def __repr__(self) -> str:
         return f'Encoder({self.id})'
 
-    def get_crtc(self):
+    @property
+    def crtc(self):
         assert(self.encoder_res.crtc_id)
-        crtc = self.card.get_crtc(self.encoder_res.crtc_id)
-        return crtc
+        return self.card.get_crtc(self.encoder_res.crtc_id)
 
     @property
     def possible_crtcs(self):
         return [crtc for crtc in self.card.crtcs if self.encoder_res.possible_crtcs & (1 << crtc.idx)]
+
+    @property
+    def encoder_type(self):
+        return kms.EncoderType(self.encoder_res.encoder_type)
 
 
 class Plane(DrmPropObject):
@@ -424,6 +437,10 @@ class Plane(DrmPropObject):
     @property
     def crtc_id(self):
         return self.res.crtc_id
+
+    @property
+    def fb_id(self):
+        return self.res.fb_id
 
 
 class DumbFramebuffer(DrmObject):
