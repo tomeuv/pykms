@@ -73,12 +73,11 @@ class ResourceManager:
         return conn
 
     def reserve_crtc(self, connector: Connector):
-        if connector.has_current_crtc:
-            crtc = connector.get_current_crtc()
+        crtc = connector.current_crtc
 
-            if crtc not in self.reserved_crtcs:
-                self.reserved_crtcs.add(crtc)
-                return crtc
+        if crtc and crtc not in self.reserved_crtcs:
+            self.reserved_crtcs.add(crtc)
+            return crtc
 
         for crtc in connector.possible_crtcs:
             if crtc not in self.reserved_crtcs:

@@ -293,10 +293,7 @@ class Connector(DrmPropObject):
         return self.modes[0]
 
     @property
-    def has_current_crtc(self):
-        return not not self.connector_res.encoder_id
-
-    def get_current_crtc(self):
+    def current_crtc(self):
         assert(self.connector_res.encoder_id)
         enc = self.card.get_encoder(self.connector_res.encoder_id)
         return enc.crtc
@@ -389,8 +386,10 @@ class Encoder(DrmObject):
 
     @property
     def crtc(self):
-        assert(self.encoder_res.crtc_id)
-        return self.card.get_crtc(self.encoder_res.crtc_id)
+        if self.encoder_res.crtc_id:
+            return self.card.get_crtc(self.encoder_res.crtc_id)
+        else:
+            return None
 
     @property
     def possible_crtcs(self):

@@ -53,6 +53,9 @@ def main():
 
             crtc = e.crtc
 
+            if not crtc:
+                continue
+
             print_crtc(crtc)
 
             for p in card.planes:
