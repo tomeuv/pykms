@@ -1,3 +1,5 @@
+[![Lint Status](https://github.com/tomba/pykms/actions/workflows/pylint.yml/badge.svg)](https://github.com/tomba/pykms/actions/workflows/pylint.yml)
+
 # Pure-Python Linux kernel mode setting (KMS) bindings
 
 ## kms.uapi
