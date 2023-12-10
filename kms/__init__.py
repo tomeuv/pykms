@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import kms.uapi
 from kms.enums import *
 from kms.helpers import *

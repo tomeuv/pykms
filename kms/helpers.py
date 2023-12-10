@@ -1,3 +1,4 @@
+from __future__ import annotations
 
 def fourcc_to_str(fourcc: int):
     return ''.join((

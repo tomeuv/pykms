@@ -1,3 +1,4 @@
+from __future__ import annotations
 
 # XXX deprecated
 def draw_color_bar(fb, old_xpos, new_xpos, bar_width):
