@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools >= 61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pykms"
+version = "0.1"
+dependencies = [ ]
+requires-python = ">=3.8"
+authors = [
+  {name = "Tomi Valkeinen", email = "tomi.valkeinen@ideasonboard.com"},
+]
+maintainers = [
+  {name = "Tomi Valkeinen", email = "tomi.valkeinen@ideasonboard.com"},
+]
+description = "Pure-Python kms bindings"
+readme = "README.md"
+license = {file = "LICENSE.md"}
+keywords = ["linux", "kms", "drm"]
+classifiers = [
+  "Programming Language :: Python",
+  "License :: OSI Approved :: GNU Lesser General Public License v3 (LGPLv3)",
+  "Development Status :: 4 - Beta",
+]
+
+[project.urls]
+Homepage = "https://github.com/tomba/pykms"
+Repository = "https://github.com/tomba/pykms.git"
+"Bug Tracker" = "https://github.com/tomba/pykms/issues"
