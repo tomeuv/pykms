@@ -5,6 +5,7 @@ import ctypes
 import fcntl
 import io
 import os
+import weakref
 
 import kms.uapi
 import kms.pixelformats
@@ -21,8 +22,7 @@ class Card:
 
         self.event_buf = bytearray(1024)
 
-    def __del__(self):
-        self.fio.close()
+        weakref.finalize(self, self.fio.close)
 
     @property
     def fd(self):
@@ -453,11 +453,9 @@ class DumbFramebuffer(DrmObject):
             self.size = size
             self.prime_fd = -1
             self.offset = 0
-            self.map = 0
+            self.map = None
 
     def __init__(self, card: Card, width: int, height: int, fourcc: str | int) -> None:
-        self._deleted = True
-
         if type(fourcc) is str:
             fourcc = kms.str_to_fourcc(fourcc)
 
@@ -501,27 +499,23 @@ class DumbFramebuffer(DrmObject):
 
         super().__init__(card, fb2.fb_id, kms.uapi.DRM_MODE_OBJECT_FB, -1)
 
-        self._deleted = False
+        weakref.finalize(self, DumbFramebuffer.cleanup, self.card, self.id, self.planes)
 
-    def __del__(self):
-        if self._deleted or self.card.fd == -1:
-            return
-
-        for p in self.planes:
+    @staticmethod
+    def cleanup(card: Card, fb_id: int, planes: list[DumbFramebufferPlane]):
+        for p in planes:
             if p.prime_fd != -1:
                 os.close(p.prime_fd)
 
             if p.map:
                 p.map.close()
 
-        fcntl.ioctl(self.card.fd, kms.uapi.DRM_IOCTL_MODE_RMFB, ctypes.c_uint32(self.id), False)
+        fcntl.ioctl(card.fd, kms.uapi.DRM_IOCTL_MODE_RMFB, ctypes.c_uint32(fb_id), False)
 
-        for p in self.planes:
+        for p in planes:
             dumb = kms.uapi.drm_mode_destroy_dumb()
             dumb.handle = p.handle
-            fcntl.ioctl(self.card.fd, kms.uapi.DRM_IOCTL_MODE_DESTROY_DUMB, dumb, True)
-
-        self._deleted = True
+            fcntl.ioctl(card.fd, kms.uapi.DRM_IOCTL_MODE_DESTROY_DUMB, dumb, True)
 
     def __repr__(self) -> str:
         return f'DumbFramebuffer({self.id})'
@@ -540,7 +534,7 @@ class DumbFramebuffer(DrmObject):
             fcntl.ioctl(self.card.fd, kms.uapi.DRM_IOCTL_MODE_MAP_DUMB, map_dumb, True)
             p.offset = map_dumb.offset
 
-        if p.map == 0:
+        if not p.map:
             p.map = mmap.mmap(self.card.fd, p.size,
                               mmap.MAP_SHARED, mmap.PROT_READ | mmap.PROT_WRITE,
                               offset=p.offset)
