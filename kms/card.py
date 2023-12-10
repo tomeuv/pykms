@@ -13,7 +13,6 @@ class Card:
     def __init__(self, dev_path='/dev/dri/card0') -> None:
         self.fio = io.FileIO(dev_path,
                              opener=lambda name,_: os.open(name, os.O_RDWR | os.O_NONBLOCK))
-        self.fd = self.fio.fileno()
 
         self.set_defaults()
         self.get_res()
@@ -23,8 +22,11 @@ class Card:
         self.event_buf = bytearray(1024)
 
     def __del__(self):
-        self.fio = None
-        self.fd = -1
+        self.fio.close()
+
+    @property
+    def fd(self):
+        return self.fio.fileno()
 
     def collect_props(self):
         prop_ids = set()
@@ -53,7 +55,8 @@ class Card:
         try:
             fcntl.ioctl(self.fd, kms.uapi.DRM_IOCTL_SET_MASTER, 0, False)
         except:
-            print("NOT MASTER")
+            # Not master
+            pass
 
         cap = kms.uapi.drm_get_cap(kms.uapi.DRM_CAP_DUMB_BUFFER)
         fcntl.ioctl(self.fd, kms.uapi.DRM_IOCTL_GET_CAP, cap, True)
@@ -452,7 +455,7 @@ class DumbFramebuffer(DrmObject):
             self.offset = 0
             self.map = 0
 
-    def __init__(self, card: Card, width, height, fourcc: str | int) -> None:
+    def __init__(self, card: Card, width: int, height: int, fourcc: str | int) -> None:
         self._deleted = True
 
         if type(fourcc) is str:
