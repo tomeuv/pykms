@@ -572,14 +572,13 @@ class Blob(DrmObject):
 
         super().__init__(card, blob.blob_id, kms.uapi.DRM_MODE_OBJECT_BLOB, -1)
 
-    def __del__(self):
-        if self.card.fd == -1 or self.id is None:
-            return
+        weakref.finalize(self, Blob.cleanup, self.card, self.id)
 
+    @staticmethod
+    def cleanup(card, id):
         blob = kms.uapi.drm_mode_destroy_blob()
-        blob.blob_id = self.id
-        fcntl.ioctl(self.card.fd, kms.uapi.DRM_IOCTL_MODE_DESTROYPROPBLOB, blob, True)
-        self.id = None
+        blob.blob_id = id
+        fcntl.ioctl(card.fd, kms.uapi.DRM_IOCTL_MODE_DESTROYPROPBLOB, blob, True)
 
     def __repr__(self) -> str:
         return f'Blob({self.id})'
