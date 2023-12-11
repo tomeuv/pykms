@@ -297,7 +297,8 @@ class Connector(DrmPropObject):
 
     @property
     def current_crtc(self):
-        assert(self.connector_res.encoder_id)
+        if self.connector_res.encoder_id == 0:
+            return None
         enc = self.card.get_encoder(self.connector_res.encoder_id)
         return enc.crtc
 
