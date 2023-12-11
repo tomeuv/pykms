@@ -507,9 +507,17 @@ class DumbFramebuffer(DrmObject):
         for p in planes:
             if p.prime_fd != -1:
                 os.close(p.prime_fd)
+                p.prime_fd = -1
 
             if p.map:
-                p.map.close()
+                try:
+                    # This will fail if the user is still using the mmap,
+                    # e.g. a numpy buffer.
+                    p.map.close()
+                except BufferError:
+                    print("Warning: mmapped buffer still in use")
+                finally:
+                    p.map = None
 
         fcntl.ioctl(card.fd, kms.uapi.DRM_IOCTL_MODE_RMFB, ctypes.c_uint32(fb_id), False)
 
