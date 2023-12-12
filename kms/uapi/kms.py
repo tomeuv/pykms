@@ -1,7 +1,7 @@
 r"""Wrapper for drm.h
 
 Generated with:
-/home/tomba/work/ctypesgen/run.py --no-embed-preamble --no-macro-try-except --no-source-comments -D__volatile__= -D__signed__= -U__SIZEOF_INT128__ -I/usr/include -o kms/uapi/kms.py /usr/include/drm/drm.h /usr/include/drm/drm_mode.h /usr/include/drm/drm_fourcc.h
+ctypesgen --no-embed-preamble --no-macro-try-except --no-source-comments -D__volatile__= -D__signed__= -U__SIZEOF_INT128__ -I/usr/include -okms/uapi/kms.py /usr/include/drm/drm.h /usr/include/drm/drm_mode.h /usr/include/drm/drm_fourcc.h
 
 Do not modify this file.
 """
