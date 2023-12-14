@@ -5,6 +5,7 @@ import ctypes
 import fcntl
 import io
 import os
+import typing
 import weakref
 
 import kms.uapi
@@ -446,24 +447,40 @@ class Plane(DrmPropObject):
         return self.res.fb_id
 
 
-class DumbFramebuffer(DrmObject):
-    class DumbFramebufferPlane:
-        def __init__(self, handle: int, stride: int, size: int) -> None:
-            self.handle = handle
-            self.stride = stride
-            self.size = size
+class Framebuffer(DrmObject):
+    class FramebufferPlane:
+        def __init__(self) -> None:
+            self.handle = 0
+            self.stride = 0
+            self.size = 0
             self.prime_fd = -1
             self.offset = 0
-            self.map = None
+            self.map: typing.Any = None # XXX How to say this will contain a mmap?
 
-    def __init__(self, card: Card, width: int, height: int, fourcc: str | int) -> None:
-        if type(fourcc) is str:
-            fourcc = kms.str_to_fourcc(fourcc)
+    def __init__(self, card: Card, id: int, width: int, height: int, fourcc: str | int, planes: list[FramebufferPlane]) -> None:
+        super().__init__(card, id, kms.uapi.DRM_MODE_OBJECT_FB, -1)
 
         self.width = width
         self.height = height
         self.format = fourcc
-        self.planes = []
+        self.planes = planes
+
+    def size(self, plane_idx):
+        return self.planes[plane_idx].size
+
+    def map(self, plane_idx: int):
+        raise NotImplementedError()
+
+    def mmap(self):
+        return [self.map(pidx) for pidx in range(len(self.planes))]
+
+
+class DumbFramebuffer(Framebuffer):
+    def __init__(self, card: Card, width: int, height: int, fourcc: str | int) -> None:
+        if type(fourcc) is str:
+            fourcc = kms.str_to_fourcc(fourcc)
+
+        planes = []
 
         format_info = kms.pixelformats.get_pixel_format_info(fourcc)
 
@@ -482,28 +499,29 @@ class DumbFramebuffer(DrmObject):
 
             fcntl.ioctl(card.fd, kms.uapi.DRM_IOCTL_MODE_CREATE_DUMB, creq, True)
 
-            plane = DumbFramebuffer.DumbFramebufferPlane(handle=creq.handle,
-                                                         stride=creq.pitch,
-                                                         size=creq.height * creq.pitch)
+            plane = Framebuffer.FramebufferPlane()
+            plane.handle = creq.handle
+            plane.stride = creq.pitch
+            plane.size = creq.height * creq.pitch
 
-            self.planes.append(plane)
+            planes.append(plane)
 
         fb2 = kms.uapi.struct_drm_mode_fb_cmd2()
         fb2.width = width
         fb2.height = height
         fb2.pixel_format = fourcc
-        fb2.handles = (ctypes.c_uint * 4)(*[p.handle for p in self.planes])
-        fb2.pitches = (ctypes.c_uint * 4)(*[p.stride for p in self.planes])
-        fb2.offsets = (ctypes.c_uint * 4)(*[p.offset for p in self.planes])
+        fb2.handles = (ctypes.c_uint * 4)(*[p.handle for p in planes])
+        fb2.pitches = (ctypes.c_uint * 4)(*[p.stride for p in planes])
+        fb2.offsets = (ctypes.c_uint * 4)(*[p.offset for p in planes])
 
         fcntl.ioctl(card.fd, kms.uapi.DRM_IOCTL_MODE_ADDFB2, fb2, True)
 
-        super().__init__(card, fb2.fb_id, kms.uapi.DRM_MODE_OBJECT_FB, -1)
+        super().__init__(card, fb2.fb_id, width, height, fourcc, planes)
 
-        weakref.finalize(self, DumbFramebuffer.cleanup, self.card, self.id, self.planes)
+        weakref.finalize(self, DumbFramebuffer.cleanup, self.card, self.id, planes)
 
     @staticmethod
-    def cleanup(card: Card, fb_id: int, planes: list[DumbFramebufferPlane]):
+    def cleanup(card: Card, fb_id: int, planes: list[Framebuffer.FramebufferPlane]):
         for p in planes:
             if p.prime_fd != -1:
                 os.close(p.prime_fd)
@@ -529,9 +547,6 @@ class DumbFramebuffer(DrmObject):
     def __repr__(self) -> str:
         return f'DumbFramebuffer({self.id})'
 
-    def mmap(self):
-        return [self.map(pidx) for pidx in range(len(self.planes))]
-
     def map(self, plane_idx):
         import mmap
 
@@ -550,9 +565,6 @@ class DumbFramebuffer(DrmObject):
 
         return p.map
 
-    def size(self, plane_idx):
-        return self.planes[plane_idx].size
-
     def fd(self, plane_idx):
         p = self.planes[plane_idx]
 
@@ -570,25 +582,13 @@ class DumbFramebuffer(DrmObject):
         return p.prime_fd
 
 
-class DmabufFramebuffer(DrmObject):
-    class DmabufFramebufferPlane:
-        def __init__(self) -> None:
-            self.handle = 0
-            self.stride = 0
-            self.size = 0
-            self.prime_fd = -1
-            self.offset = 0
-            self.map = None
-
+class DmabufFramebuffer(Framebuffer):
     def __init__(self, card: Card, width: int, height: int, fourcc: str | int,
                  fds: list[int], strides: list[int], offsets: list[int]) -> None:
         if type(fourcc) is str:
             fourcc = kms.str_to_fourcc(fourcc)
 
-        self.width = width
-        self.height = height
-        self.format = fourcc
-        self.planes = []
+        planes = []
 
         format_info = kms.pixelformats.get_pixel_format_info(fourcc)
 
@@ -596,30 +596,30 @@ class DmabufFramebuffer(DrmObject):
             args = kms.uapi.drm_prime_handle(fd=fds[idx])
             fcntl.ioctl(card.fd, kms.uapi.DRM_IOCTL_PRIME_FD_TO_HANDLE, args, True)
 
-            plane = DmabufFramebuffer.DmabufFramebufferPlane()
+            plane = Framebuffer.FramebufferPlane()
             plane.handle=args.handle
             plane.stride=strides[idx]
             plane.size=height * strides[idx]
             plane.prime_fd = fds[idx]
             plane.offset = offsets[idx]
-            self.planes.append(plane)
+            planes.append(plane)
 
         fb2 = kms.uapi.struct_drm_mode_fb_cmd2()
         fb2.width = width
         fb2.height = height
         fb2.pixel_format = fourcc
-        fb2.handles = (ctypes.c_uint * 4)(*[p.handle for p in self.planes])
-        fb2.pitches = (ctypes.c_uint * 4)(*[p.stride for p in self.planes])
-        fb2.offsets = (ctypes.c_uint * 4)(*[p.offset for p in self.planes])
+        fb2.handles = (ctypes.c_uint * 4)(*[p.handle for p in planes])
+        fb2.pitches = (ctypes.c_uint * 4)(*[p.stride for p in planes])
+        fb2.offsets = (ctypes.c_uint * 4)(*[p.offset for p in planes])
 
         fcntl.ioctl(card.fd, kms.uapi.DRM_IOCTL_MODE_ADDFB2, fb2, True)
 
-        super().__init__(card, fb2.fb_id, kms.uapi.DRM_MODE_OBJECT_FB, -1)
+        super().__init__(card, fb2.fb_id, width, height, fourcc, planes)
 
         weakref.finalize(self, DmabufFramebuffer.cleanup, self.card, self.id, self.planes)
 
     @staticmethod
-    def cleanup(card: Card, fb_id: int, planes: list[DmabufFramebufferPlane]):
+    def cleanup(card: Card, fb_id: int, planes: list[Framebuffer.FramebufferPlane]):
         for p in planes:
             if p.prime_fd != -1:
                 #os.close(p.prime_fd)
@@ -640,9 +640,6 @@ class DmabufFramebuffer(DrmObject):
     def __repr__(self) -> str:
         return f'DmabufFramebuffer({self.id})'
 
-    def mmap(self):
-        return [self.map(pidx) for pidx in range(len(self.planes))]
-
     def map(self, plane_idx):
         import mmap
 
@@ -653,9 +650,6 @@ class DmabufFramebuffer(DrmObject):
                               mmap.MAP_SHARED, mmap.PROT_READ | mmap.PROT_WRITE)
 
         return p.map
-
-    def size(self, plane_idx):
-        return self.planes[plane_idx].size
 
     def fd(self, plane_idx):
         p = self.planes[plane_idx]
