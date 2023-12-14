@@ -570,6 +570,99 @@ class DumbFramebuffer(DrmObject):
         return p.prime_fd
 
 
+class DmabufFramebuffer(DrmObject):
+    class DmabufFramebufferPlane:
+        def __init__(self) -> None:
+            self.handle = 0
+            self.stride = 0
+            self.size = 0
+            self.prime_fd = -1
+            self.offset = 0
+            self.map = None
+
+    def __init__(self, card: Card, width: int, height: int, fourcc: str | int,
+                 fds: list[int], strides: list[int], offsets: list[int]) -> None:
+        if type(fourcc) is str:
+            fourcc = kms.str_to_fourcc(fourcc)
+
+        self.width = width
+        self.height = height
+        self.format = fourcc
+        self.planes = []
+
+        format_info = kms.pixelformats.get_pixel_format_info(fourcc)
+
+        for idx,pi in enumerate(format_info.planes):
+            args = kms.uapi.drm_prime_handle(fd=fds[idx])
+            fcntl.ioctl(card.fd, kms.uapi.DRM_IOCTL_PRIME_FD_TO_HANDLE, args, True)
+
+            plane = DmabufFramebuffer.DmabufFramebufferPlane()
+            plane.handle=args.handle
+            plane.stride=strides[idx]
+            plane.size=height * strides[idx]
+            plane.prime_fd = fds[idx]
+            plane.offset = offsets[idx]
+            self.planes.append(plane)
+
+        fb2 = kms.uapi.struct_drm_mode_fb_cmd2()
+        fb2.width = width
+        fb2.height = height
+        fb2.pixel_format = fourcc
+        fb2.handles = (ctypes.c_uint * 4)(*[p.handle for p in self.planes])
+        fb2.pitches = (ctypes.c_uint * 4)(*[p.stride for p in self.planes])
+        fb2.offsets = (ctypes.c_uint * 4)(*[p.offset for p in self.planes])
+
+        fcntl.ioctl(card.fd, kms.uapi.DRM_IOCTL_MODE_ADDFB2, fb2, True)
+
+        super().__init__(card, fb2.fb_id, kms.uapi.DRM_MODE_OBJECT_FB, -1)
+
+        weakref.finalize(self, DmabufFramebuffer.cleanup, self.card, self.id, self.planes)
+
+    @staticmethod
+    def cleanup(card: Card, fb_id: int, planes: list[DmabufFramebufferPlane]):
+        for p in planes:
+            if p.prime_fd != -1:
+                #os.close(p.prime_fd)
+                p.prime_fd = -1
+
+            if p.map:
+                try:
+                    # This will fail if the user is still using the mmap,
+                    # e.g. a numpy buffer.
+                    p.map.close()
+                except BufferError:
+                    print("Warning: mmapped buffer still in use")
+                finally:
+                    p.map = None
+
+        fcntl.ioctl(card.fd, kms.uapi.DRM_IOCTL_MODE_RMFB, ctypes.c_uint32(fb_id), False)
+
+    def __repr__(self) -> str:
+        return f'DmabufFramebuffer({self.id})'
+
+    def mmap(self):
+        return [self.map(pidx) for pidx in range(len(self.planes))]
+
+    def map(self, plane_idx):
+        import mmap
+
+        p = self.planes[plane_idx]
+
+        if not p.map:
+            p.map = mmap.mmap(p.prime_fd, p.size,
+                              mmap.MAP_SHARED, mmap.PROT_READ | mmap.PROT_WRITE)
+
+        return p.map
+
+    def size(self, plane_idx):
+        return self.planes[plane_idx].size
+
+    def fd(self, plane_idx):
+        p = self.planes[plane_idx]
+
+        return p.prime_fd
+
+
 class Blob(DrmObject):
     def __init__(self, card: Card, data) -> None:
         blob = kms.uapi.drm_mode_create_blob()
