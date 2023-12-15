@@ -12,7 +12,10 @@ import kms.uapi
 import kms.pixelformats
 
 class Card:
-    def __init__(self, dev_path='/dev/dri/card0') -> None:
+    def __init__(self, dev_path: str | None = None) -> None:
+        if not dev_path:
+            dev_path = Card.__open_first_kms_device()
+
         self.fio = io.FileIO(dev_path,
                              opener=lambda name,_: os.open(name, os.O_RDWR | os.O_NONBLOCK))
 
@@ -24,6 +27,26 @@ class Card:
         self.event_buf = bytearray(1024)
 
         weakref.finalize(self, self.fio.close)
+
+    @staticmethod
+    def __open_first_kms_device() -> str:
+        import glob
+        for path in glob.glob('/dev/dri/card*'):
+            try:
+                fd = os.open(path, os.O_RDWR | os.O_NONBLOCK)
+            except:
+                continue
+
+            try:
+                res = kms.uapi.drm_mode_card_res()
+                fcntl.ioctl(fd, kms.uapi.DRM_IOCTL_MODE_GETRESOURCES, res, True)
+
+                if res.count_crtcs > 0 and res.count_connectors > 0 and res.count_encoders > 0:
+                    return path
+            finally:
+                os.close(fd)
+
+        raise FileNotFoundError("No KMS capable card found")
 
     @property
     def fd(self):
