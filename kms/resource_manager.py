@@ -86,7 +86,7 @@ class ResourceManager:
 
         raise Exception("Crtc not found")
 
-    def reserve_generic_plane(self, crtc: Crtc, format=None):
+    def reserve_plane(self, crtc: Crtc, format=None, plane_type=None):
         if format and type(format) == str:
             format = kms.str_to_fourcc(format)
 
@@ -94,7 +94,11 @@ class ResourceManager:
             if plane in self.reserved_planes:
                 continue
 
-            if plane.plane_type == kms.PlaneType.Cursor:
+            # Return Cursor planes only if specifically requested
+            if not plane_type and plane.plane_type == kms.PlaneType.Cursor:
+                continue
+
+            if plane_type and plane_type != plane.plane_type:
                 continue
 
             if format and not plane.supports_format(format):
@@ -105,3 +109,15 @@ class ResourceManager:
             return plane
 
         raise Exception("Plane not found")
+
+    # Deprecated
+    def reserve_generic_plane(self, crtc: Crtc, format=None):
+        return self.reserve_plane(crtc, format)
+
+    # Deprecated
+    def reserve_primary_plane(self, crtc: Crtc, format=None):
+        return self.reserve_plane(crtc, format, kms.PlaneType.Primary)
+
+    # Deprecated
+    def reserve_overlay_plane(self, crtc: Crtc, format=None):
+        return self.reserve_plane(crtc, format, kms.PlaneType.Overlay)
