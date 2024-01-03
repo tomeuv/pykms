@@ -42,10 +42,10 @@ fbs=[]
 for i in range(len(planes)):
     fbs.append(kms.DumbFramebuffer(card, w, h, 'AR24'))
 
-kms.draw_rect(fbs[0], 50, 50, 200, 200, kms.RGB(128, 255, 0, 0))
-kms.draw_rect(fbs[1], 150, 50, 200, 200, kms.RGB(128, 0, 255, 0))
-kms.draw_rect(fbs[2], 50, 150, 200, 200, kms.RGB(128, 0, 0, 255))
-kms.draw_rect(fbs[3], 150, 150, 200, 200, kms.RGB(128, 128, 128, 128))
+kms.fill_rect(fbs[0], 50, 50, 200, 200, kms.RGB(128, 255, 0, 0))
+kms.fill_rect(fbs[1], 150, 50, 200, 200, kms.RGB(128, 0, 255, 0))
+kms.fill_rect(fbs[2], 50, 150, 200, 200, kms.RGB(128, 0, 0, 255))
+kms.fill_rect(fbs[3], 150, 150, 200, 200, kms.RGB(128, 128, 128, 128))
 
 card.disable_planes()
 

@@ -27,10 +27,11 @@ class RGB:
         self.g = g
 
 # XXX deprecated
-def draw_rect(fb, x, y, w, h, color: RGB):
+def fill_rect(fb, x, y, w, h, color: RGB):
     bytespp = 4
 
-    fill = bytearray([color.b, color.g, color.r, color.a] * w)
+    # Pixels for a single line
+    line_data = bytearray([color.b, color.g, color.r, color.a] * w)
 
     m = fb.map(0)
 
@@ -38,6 +39,6 @@ def draw_rect(fb, x, y, w, h, color: RGB):
 
     xoff = x * bytespp
 
-    for y in range(y, y + h):
-        yoff = y * stride
-        m[yoff + xoff:yoff + xoff + len(fill)] = fill
+    for l in range(y, y + h):
+        yoff = l * stride
+        m[yoff + xoff:yoff + xoff + len(line_data)] = line_data
