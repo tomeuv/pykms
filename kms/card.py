@@ -497,6 +497,14 @@ class Framebuffer(DrmObject):
     def mmap(self) -> list[mmap.mmap]:
         return [self.map(pidx) for pidx in range(len(self.planes))]
 
+    def clear(self):
+        for idx in range(len(self.planes)):
+            # Can't we just create a ubyte pointer type and use it, instead of
+            # creating a ubyte[planesize] type for each plane?
+            ptrtype = ctypes.c_ubyte * self.size(idx)
+            ptr = ptrtype.from_buffer(self.map(idx))
+            ctypes.memset(ptr, 0, self.size(idx))
+
 
 class DumbFramebuffer(Framebuffer):
     def __init__(self, card: Card, width: int, height: int, fourcc: str | int) -> None:
