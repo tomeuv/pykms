@@ -4,8 +4,8 @@ from enum import Enum, auto
 import ctypes
 import fcntl
 import io
+import mmap
 import os
-import typing
 import weakref
 
 import kms.uapi
@@ -478,7 +478,7 @@ class Framebuffer(DrmObject):
             self.size = 0
             self.prime_fd = -1
             self.offset = 0
-            self.map: typing.Any = None # XXX How to say this will contain a mmap?
+            self.map: mmap.mmap | None = None
 
     def __init__(self, card: Card, id: int, width: int, height: int, fourcc: str | int, planes: list[FramebufferPlane]) -> None:
         super().__init__(card, id, kms.uapi.DRM_MODE_OBJECT_FB, -1)
@@ -491,10 +491,10 @@ class Framebuffer(DrmObject):
     def size(self, plane_idx):
         return self.planes[plane_idx].size
 
-    def map(self, plane_idx: int):
+    def map(self, plane_idx: int) -> mmap.mmap:
         raise NotImplementedError()
 
-    def mmap(self):
+    def mmap(self) -> list[mmap.mmap]:
         return [self.map(pidx) for pidx in range(len(self.planes))]
 
 
@@ -571,8 +571,6 @@ class DumbFramebuffer(Framebuffer):
         return f'DumbFramebuffer({self.id})'
 
     def map(self, plane_idx):
-        import mmap
-
         p = self.planes[plane_idx]
 
         if p.offset == 0:
@@ -664,8 +662,6 @@ class DmabufFramebuffer(Framebuffer):
         return f'DmabufFramebuffer({self.id})'
 
     def map(self, plane_idx):
-        import mmap
-
         p = self.planes[plane_idx]
 
         if not p.map:
