@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 from enum import Enum, IntEnum
-import kms.uapi
 from typing import NamedTuple
+import kms.uapi
 
 class PixelFormatPlaneInfo(NamedTuple):
     bitspp: int
@@ -217,7 +217,7 @@ def get_pixel_format_info(fourcc) -> PixelFormatInfo:
             info = PixelFormatInfo(p)
             return info
 
-    raise Exception("Pixel format not found")
+    raise KeyError("Pixel format not found")
 
 # To generate:
 # str.join('\n', [f'    {e[11:]} = kms.uapi.{e}' for e in kms.uapi.__dir__() if e.startswith("DRM_FORMAT_")])

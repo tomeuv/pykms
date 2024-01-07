@@ -29,7 +29,6 @@ class AtomicReq:
         self._commit(flags)
 
     def _commit(self, flags):
-
         # Sort the list by object ID, then by property ID
         props = sorted(self.props, key=lambda tuple: (tuple[0], tuple[1]))
 
@@ -66,9 +65,7 @@ class AtomicReq:
         atomic.flags = flags
 
         pidx = 0
-        for oidx in range(len(objs)):
-            oid = objs[oidx]
-
+        for oidx, oid in enumerate(objs):
             try:
                 oid = self.card.get_object(oid)
             except:
@@ -85,21 +82,21 @@ class AtomicReq:
         fcntl.ioctl(self.card.fd, kms.uapi.DRM_IOCTL_MODE_ATOMIC, atomic, True)
 
     def add_single(self, ob: kms.DrmPropObject | int, prop: str | int, value: int):
-        if type(ob) == int:
+        if isinstance(ob, int):
             ob_id = ob
             ob = self.card.get_object(ob_id)
             assert(isinstance(ob, kms.DrmPropObject))
         elif isinstance(ob, kms.DrmPropObject):
             ob_id = ob.id
         else:
-            raise Exception("Bad object")
+            raise RuntimeError("Bad object")
 
-        if type(prop) == int:
+        if isinstance(prop, int):
             prop_id = prop
-        elif type(prop) == str:
+        elif isinstance(prop, str):
             prop_id = self.card.find_property_id(ob, prop)
         else:
-            raise Exception("Bad prop")
+            raise RuntimeError("Bad prop")
 
         self.props.append((ob_id, prop_id, value))
 
@@ -113,7 +110,7 @@ class AtomicReq:
         elif len(argv) == 1:
             self.add_many(ob, *argv)
         else:
-            raise Exception("Bad add() call")
+            raise RuntimeError("Bad add() call")
 
     def add_connector(self, connector: kms.Connector, crtc: kms.Crtc):
         self.add(connector.id, "CRTC_ID", crtc.id if crtc else 0)
@@ -126,7 +123,7 @@ class AtomicReq:
 
     def add_plane(self, plane, fb, crtc,
                                src=None, dst=None, zpos=None,
-                               params={}):
+                               params: dict=None):
         if not src and fb:
             src = (0, 0, fb.width, fb.height)
 
@@ -161,6 +158,7 @@ class AtomicReq:
         if zpos is not None:
             m["zpos"] = zpos
 
-        m.update(params)
+        if params:
+            m.update(params)
 
         self.add(plane, m)

@@ -4,9 +4,7 @@ import kms
 import kms.uapi
 
 class ResourceManager:
-    from kms.card import Card, Connector, Crtc
-
-    def __init__(self, card: Card) -> None:
+    def __init__(self, card: kms.Card) -> None:
         self.card = card
         self.reserved_connectors = set()
         self.reserved_crtcs = set()
@@ -22,7 +20,7 @@ class ResourceManager:
 
             return c
 
-        raise Exception("Available connector not found")
+        raise RuntimeError("Available connector not found")
 
     def resolve_connector(self, name: str):
         if name.startswith('@'):
@@ -30,7 +28,7 @@ class ResourceManager:
             conn = self.card.get_connector(id)
 
             if conn in self.reserved_connectors:
-                raise Exception("Connector already reserved")
+                raise RuntimeError("Connector already reserved")
 
             return conn
 
@@ -38,12 +36,12 @@ class ResourceManager:
             idx = int(name)
 
             if idx >= len(self.card.connectors):
-                raise Exception("Connector idx too high")
+                raise RuntimeError("Connector idx too high")
 
             conn = self.card.connectors[idx]
 
             if conn in self.reserved_connectors:
-                raise Exception("Connector already reserved")
+                raise RuntimeError("Connector already reserved")
 
             return conn
         except:
@@ -56,11 +54,11 @@ class ResourceManager:
                 continue
 
             if c in self.reserved_connectors:
-                raise Exception("Connector already reserved")
+                raise RuntimeError("Connector already reserved")
 
             return c
 
-        raise Exception("Connector not found")
+        raise RuntimeError("Connector not found")
 
     def reserve_connector(self, name=""):
         if not name:
@@ -72,7 +70,7 @@ class ResourceManager:
 
         return conn
 
-    def reserve_crtc(self, connector: Connector):
+    def reserve_crtc(self, connector: kms.Connector):
         crtc = connector.current_crtc
 
         if crtc and crtc not in self.reserved_crtcs:
@@ -84,9 +82,9 @@ class ResourceManager:
                 self.reserved_crtcs.add(crtc)
                 return crtc
 
-        raise Exception("Crtc not found")
+        raise RuntimeError("Crtc not found")
 
-    def reserve_plane(self, crtc: Crtc, format=None, plane_type=None):
+    def reserve_plane(self, crtc: kms.Crtc, format=None, plane_type=None):
         if format and type(format) == str:
             format = kms.str_to_fourcc(format)
 
@@ -95,29 +93,29 @@ class ResourceManager:
                 continue
 
             # Return Cursor planes only if specifically requested
-            if not plane_type and plane.plane_type == kms.PlaneType.Cursor:
+            if not plane_type and plane.plane_type == kms.PlaneType.CURSOR:
                 continue
 
             if plane_type and plane_type != plane.plane_type:
                 continue
 
             if format and not plane.supports_format(format):
-                continue;
+                continue
 
             self.reserved_planes.add(plane)
 
             return plane
 
-        raise Exception("Plane not found")
+        raise RuntimeError("Plane not found")
 
     # Deprecated
-    def reserve_generic_plane(self, crtc: Crtc, format=None):
+    def reserve_generic_plane(self, crtc: kms.Crtc, format=None):
         return self.reserve_plane(crtc, format)
 
     # Deprecated
-    def reserve_primary_plane(self, crtc: Crtc, format=None):
-        return self.reserve_plane(crtc, format, kms.PlaneType.Primary)
+    def reserve_primary_plane(self, crtc: kms.Crtc, format=None):
+        return self.reserve_plane(crtc, format, kms.PlaneType.PRIMARY)
 
     # Deprecated
-    def reserve_overlay_plane(self, crtc: Crtc, format=None):
-        return self.reserve_plane(crtc, format, kms.PlaneType.Overlay)
+    def reserve_overlay_plane(self, crtc: kms.Crtc, format=None):
+        return self.reserve_plane(crtc, format, kms.PlaneType.OVERLAY)

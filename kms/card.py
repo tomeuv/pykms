@@ -183,7 +183,7 @@ class Card:
                 vblank = kms.uapi.drm_event_vblank.from_buffer(buf, i)
                 #print(vblank.sequence, vblank.tv_sec, vblank.tv_usec, vblank.crtc_id, vblank.user_data)
 
-                time = vblank.tv_sec + vblank.tv_usec / 1000000.0;
+                time = vblank.tv_sec + vblank.tv_usec / 1000000.0
 
                 events.append(DrmEvent(DrmEventType.FLIP_COMPLETE, vblank.sequence, time, vblank.user_data))
 
@@ -416,16 +416,16 @@ class Crtc(DrmPropObject):
 
     @property
     def primary_plane(self):
-        plane = next((p for p in self.get_possible_planes() if p.type == kms.PlaneType.Primary and p.crtc_id == self.id), None)
+        plane = next((p for p in self.get_possible_planes() if p.type == kms.PlaneType.PRIMARY and p.crtc_id == self.id), None)
         if plane:
             return plane
-        plane = next((p for p in self.get_possible_planes() if p.type == kms.PlaneType.Primary), None)
+        plane = next((p for p in self.get_possible_planes() if p.type == kms.PlaneType.PRIMARY), None)
         if plane:
             return plane
         plane = next((p for p in self.get_possible_planes()), None)
         if plane:
             return plane
-        raise Exception("No primary plane")
+        raise RuntimeError("No primary plane")
 
 
 class Plane(DrmPropObject):
@@ -508,7 +508,7 @@ class Framebuffer(DrmObject):
 
 class DumbFramebuffer(Framebuffer):
     def __init__(self, card: Card, width: int, height: int, fourcc: str | int) -> None:
-        if type(fourcc) is str:
+        if isinstance(fourcc, str):
             fourcc = kms.str_to_fourcc(fourcc)
 
         planes = []
@@ -614,7 +614,7 @@ class DumbFramebuffer(Framebuffer):
 class DmabufFramebuffer(Framebuffer):
     def __init__(self, card: Card, width: int, height: int, fourcc: str | int,
                  fds: list[int], strides: list[int], offsets: list[int]) -> None:
-        if type(fourcc) is str:
+        if isinstance(fourcc, str):
             fourcc = kms.str_to_fourcc(fourcc)
 
         planes = []
