@@ -86,7 +86,7 @@ class ResourceManager:
         raise RuntimeError("Crtc not found")
 
     def reserve_plane(self, crtc: kms.Crtc, format=None, plane_type=None):
-        if format and type(format) == str:
+        if isinstance(format, str):
             format = kms.str_to_fourcc(format)
 
         for plane in crtc.get_possible_planes():
