@@ -1,10 +1,8 @@
 from __future__ import annotations
 
-import kms.uapi
-from kms.enums import *
-from kms.helpers import *
-from kms.card import *
-from kms.resource_manager import *
-from kms.atomicreq import *
-from kms.pixelformats import *
-from kms.drawing import *
+from .enums import *
+from .helpers import *
+from .card import *
+from .resource_manager import *
+from .atomicreq import *
+from .pixelformats import *

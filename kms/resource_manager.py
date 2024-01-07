@@ -3,6 +3,8 @@ from __future__ import annotations
 import kms
 import kms.uapi
 
+__all__ = [ 'ResourceManager' ]
+
 class ResourceManager:
     def __init__(self, card: kms.Card) -> None:
         self.card = card

@@ -7,6 +7,8 @@ import itertools
 import kms
 import kms.uapi
 
+__all__ = [ 'AtomicReq' ]
+
 class AtomicReq:
     def __init__(self, card: kms.Card) -> None:
         self.card = card

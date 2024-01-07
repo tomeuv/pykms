@@ -4,6 +4,8 @@ from enum import Enum, IntEnum
 from typing import NamedTuple
 import kms.uapi
 
+__all__ = [ 'PixelFormat' ]
+
 class PixelFormatPlaneInfo(NamedTuple):
     bitspp: int
     xsub: int
