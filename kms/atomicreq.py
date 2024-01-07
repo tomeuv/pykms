@@ -4,7 +4,6 @@ import ctypes
 import fcntl
 import itertools
 
-import kms
 import kms.uapi
 
 __all__ = [ 'AtomicReq' ]
