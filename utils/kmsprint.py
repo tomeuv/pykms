@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 
+import sys
 import kms
 import kms.uapi # XXX remove
-import sys
 
 # Connector 0 (40) DP-1 (connected)
 #   Encoder 0 (39) NONE

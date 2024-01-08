@@ -1,12 +1,12 @@
 #!/usr/bin/python3
 
-import kms
-import kms.uapi
 import argparse
 import selectors
 import sys
 import time
 import numpy as np
+import kms
+import kms.uapi
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-c", "--connector", default="")
@@ -98,8 +98,7 @@ def handle_pageflip():
     if old_y < 0:
         old_y = mode.vdisplay + old_y
 
-    if old_fb != None:
-
+    if old_fb is not None:
         ts1 = time.perf_counter()
 
         fb = fbs[old_fb]
