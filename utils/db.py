@@ -1,8 +1,9 @@
 #!/usr/bin/python3
 
 import sys
-import kms
 import selectors
+import kms
+import kms.drawing as drawing
 
 bar_width = 20
 bar_speed = 8
@@ -47,7 +48,7 @@ class FlipHandler():
 
         self.bar_xpos = new_xpos
 
-        kms.draw_color_bar(fb, old_xpos, new_xpos, bar_width)
+        drawing.draw_color_bar(fb, old_xpos, new_xpos, bar_width)
 
         ctx = kms.AtomicReq(card)
         ctx.add(crtc.primary_plane, "FB_ID", fb.id)

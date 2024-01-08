@@ -11,9 +11,14 @@ import weakref
 import kms.uapi
 import kms.pixelformats
 
-__all__ = [ 'Card', 'Connector', 'Encoder', 'Crtc', 'Plane',
-            'DumbFramebuffer', 'DmabufFramebuffer',
-            'Blob' ]
+__all__ = [
+    'Card',
+    'DrmEventType', 'DrmEvent',
+    'DrmObject', 'DrmPropObject',
+    'Connector', 'Encoder', 'Crtc', 'Plane',
+    'Framebuffer', 'DumbFramebuffer', 'DmabufFramebuffer',
+    'Blob'
+]
 
 class Card:
     def __init__(self, dev_path: str | None = None) -> None:
