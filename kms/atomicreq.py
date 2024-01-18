@@ -67,11 +67,6 @@ class AtomicReq:
 
         pidx = 0
         for oidx, oid in enumerate(objs):
-            try:
-                oid = self.card.get_object(oid)
-            except:
-                pass
-
             prop_count = count_props[oidx]
 
             for _ in range(prop_count):

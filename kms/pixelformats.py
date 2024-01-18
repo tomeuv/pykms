@@ -219,7 +219,7 @@ def get_pixel_format_info(fourcc) -> PixelFormatInfo:
             info = PixelFormatInfo(p)
             return info
 
-    raise KeyError("Pixel format not found")
+    raise KeyError(f'Pixel format "{kms.fourcc_to_str(fourcc)}" not found')
 
 # To generate:
 # str.join('\n', [f'    {e[11:]} = kms.uapi.{e}' for e in kms.uapi.__dir__() if e.startswith("DRM_FORMAT_")])
