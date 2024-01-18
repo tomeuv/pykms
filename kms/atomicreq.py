@@ -12,6 +12,7 @@ class AtomicReq:
     def __init__(self, card: kms.Card) -> None:
         self.card = card
         self.props = [] # (ob_id, prop_id, value)
+        self.debug_print = False
 
     def commit(self, allow_modeset = False):
         flags = kms.uapi.DRM_MODE_PAGE_FLIP_EVENT | kms.uapi.DRM_MODE_ATOMIC_NONBLOCK
@@ -32,6 +33,20 @@ class AtomicReq:
     def _commit(self, flags):
         # Sort the list by object ID, then by property ID
         props = sorted(self.props, key=lambda tuple: (tuple[0], tuple[1]))
+
+        if self.debug_print:
+            for oid, g in itertools.groupby(props, lambda p: p[0]):
+                ob = self.card.get_object(oid)
+                print(ob)
+                for _, pid, val in g:
+                    prop_name = self.card.find_property_name(pid)
+
+                    if prop_name in ['SRC_X', 'SRC_Y', 'SRC_W', 'SRC_H']:
+                        disp_val = f'{val / 0x10000} ({val})'
+                    else:
+                        disp_val = str(val)
+
+                    print(f'  {prop_name}({pid}) = {disp_val}')
 
         obj_prop_counts = {}
         for k, g in itertools.groupby(props, lambda p: p[0]):
