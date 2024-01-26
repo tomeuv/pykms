@@ -132,11 +132,13 @@ class AtomicReq:
         else:
             self.add(crtc.id, {"ACTIVE": 0, "MODE_ID": 0})
 
-    def add_plane(self, plane: kms.Plane, fb: kms.Framebuffer, crtc: kms.Crtc,
-                               src: tuple[int, int, int, int] | None=None,
-                               dst: tuple[int, int, int, int] | None=None,
-                               zpos: int | None=None,
-                               params: dict | None=None):
+    def add_plane(self, plane: kms.Plane,
+                  fb: kms.Framebuffer | None,
+                  crtc: kms.Crtc | None,
+                  src: tuple[int, int, int, int] | None=None,
+                  dst: tuple[int, int, int, int] | None=None,
+                  zpos: int | None=None,
+                  params: dict | None=None):
         if not src and fb:
             src = (0, 0, fb.width, fb.height)
 
