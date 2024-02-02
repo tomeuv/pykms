@@ -25,6 +25,8 @@ class Card:
         if not dev_path:
             dev_path = Card.__open_first_kms_device()
 
+        self.dev_path = dev_path
+
         self.fio = io.FileIO(dev_path,
                              opener=lambda name,_: os.open(name, os.O_RDWR | os.O_NONBLOCK))
 
@@ -71,18 +73,20 @@ class Card:
         props = {}
 
         for prop_id in prop_ids:
-            prop = kms.uapi.drm_mode_get_property(prop_id=prop_id)
-            fcntl.ioctl(self.fd, kms.uapi.DRM_IOCTL_MODE_GETPROPERTY, prop, True)
-            props[prop_id] = prop.name.decode("ascii")
+            prop = DrmProperty(self, prop_id)
+            props[prop_id] = prop
 
-        self._props: dict[int, str] = props
+        self._props: dict[int, DrmProperty] = props
+
+    def find_property(self, prop_id: int):
+        return self._props[prop_id]
 
     def find_property_id(self, obj: DrmPropObject, prop_name: str):
         # We may have duplicate names
-        return next(id for id in obj.prop_values if self._props[id] == prop_name)
+        return next(id for id in obj.prop_values if self._props[id].name == prop_name)
 
     def find_property_name(self, prop_id):
-        return self._props[prop_id]
+        return self._props[prop_id].name
 
     def set_defaults(self):
         try:
@@ -117,8 +121,6 @@ class Card:
         ver.desc = kms.uapi.String(b' ' * ver.desc_len)
 
         fcntl.ioctl(self.fd, kms.uapi.DRM_IOCTL_VERSION, ver, True)
-
-        print(ver.name)
 
         return ver
 
@@ -166,6 +168,24 @@ class Card:
 
     def get_encoder(self, id):
         return next((ob for ob in self.encoders if ob.id == id))
+
+    def get_framebuffer(self, id):
+        res = kms.uapi.drm_mode_fb_cmd2()
+        res.fb_id = id
+        fcntl.ioctl(self.fd, kms.uapi.DRM_IOCTL_MODE_GETFB2, res, True)
+
+        format_info = kms.pixelformats.get_pixel_format_info(res.pixel_format)
+
+        planes = []
+        for i in range(len(format_info.planes)):
+            p = Framebuffer.FramebufferPlane()
+            p.handle = res.handles[i]
+            p.pitch = res.pitches[i]
+            p.offset = res.offsets[i]
+            planes.append(p)
+
+        return Framebuffer(self, res.fb_id, res.width, res.height, kms.PixelFormat(res.pixel_format),
+                           planes)
 
     def read_events(self) -> list[DrmEvent]:
         assert(self.fio)
@@ -221,11 +241,71 @@ class DrmEvent:
 
 
 class DrmObject:
-    def __init__(self, card: Card, id, type, idx) -> None:
+    def __init__(self, card: Card, id: int, type, idx: int) -> None:
         self.card = card
         self.id = id
         self.type = type
         self.idx = idx
+
+
+class DrmPropertyType(Enum):
+    RANGE = auto()
+    ENUM = auto()
+    BLOB = auto()
+    BITMASK = auto()
+    OBJECT = auto()
+    SIGNED_RANGE = auto()
+
+
+class DrmProperty(DrmObject):
+    def __init__(self, card: Card, id) -> None:
+        super().__init__(card, id, kms.uapi.DRM_MODE_OBJECT_PROPERTY, -1)
+
+        prop = kms.uapi.drm_mode_get_property(prop_id=id)
+        fcntl.ioctl(self.card.fd, kms.uapi.DRM_IOCTL_MODE_GETPROPERTY, prop, True)
+
+        self.name = prop.name.decode("ascii")
+
+        self.immutable = prop.flags & kms.uapi.DRM_MODE_PROP_IMMUTABLE
+        self.atomic = prop.flags & kms.uapi.DRM_MODE_PROP_ATOMIC
+
+        ext_type = prop.flags & kms.uapi.DRM_MODE_PROP_EXTENDED_TYPE
+
+        if prop.flags & kms.uapi.DRM_MODE_PROP_RANGE:
+            self.type = DrmPropertyType.RANGE
+        elif prop.flags & kms.uapi.DRM_MODE_PROP_ENUM:
+            self.type = DrmPropertyType.ENUM
+        elif prop.flags & kms.uapi.DRM_MODE_PROP_BLOB:
+            self.type = DrmPropertyType.BLOB
+        elif prop.flags & kms.uapi.DRM_MODE_PROP_BITMASK:
+            self.type = DrmPropertyType.BITMASK
+        elif ext_type == kms.uapi.DRM_MODE_PROP_OBJECT:
+            self.type = DrmPropertyType.OBJECT
+        elif ext_type == kms.uapi.DRM_MODE_PROP_SIGNED_RANGE:
+            self.type = DrmPropertyType.SIGNED_RANGE
+        else:
+            raise NotImplementedError()
+
+        if prop.count_values > 0:
+            prop_values = (kms.uapi.c_uint64 * prop.count_values)()
+            prop.values_ptr = ctypes.addressof(prop_values)
+        else:
+            prop_values = []
+
+        if self.type in (DrmPropertyType.ENUM, DrmPropertyType.BITMASK):
+            enum_blobs = (kms.uapi.drm_mode_property_enum * prop.count_enum_blobs)()
+            prop.enum_blob_ptr = ctypes.addressof(enum_blobs)
+        else:
+            enum_blobs = []
+
+        fcntl.ioctl(self.card.fd, kms.uapi.DRM_IOCTL_MODE_GETPROPERTY, prop, True)
+
+        self.values = [self.conv_raw_to_val(v) for v in prop_values]
+
+        self.enum_descs = [(e.value, e.name.decode('ascii')) for e in enum_blobs]
+
+    def conv_raw_to_val(self, v):
+        return ctypes.c_int64(v).value if self.type == DrmPropertyType.SIGNED_RANGE else v
 
 
 class DrmPropObject(DrmObject):
@@ -268,6 +348,14 @@ class DrmPropObject(DrmObject):
         areq = kms.atomicreq.AtomicReq(self.card)
         areq.add_many(self, map)
         areq.commit_sync()
+
+    @property
+    def props(self):
+        l = []
+        for pid,val in self.prop_values.items():
+            prop = self.card.find_property(pid)
+            l.append((prop, prop.conv_raw_to_val(val)))
+        return l
 
 
 class Connector(DrmPropObject):
@@ -483,7 +571,7 @@ class Framebuffer(DrmObject):
     class FramebufferPlane:
         def __init__(self) -> None:
             self.handle = 0
-            self.stride = 0
+            self.pitch = 0
             self.size = 0
             self.prime_fd = -1
             self.offset = 0
@@ -492,9 +580,12 @@ class Framebuffer(DrmObject):
     def __init__(self, card: Card, id: int, width: int, height: int, fourcc: str | int, planes: list[FramebufferPlane]) -> None:
         super().__init__(card, id, kms.uapi.DRM_MODE_OBJECT_FB, -1)
 
+        if isinstance(fourcc, str):
+            fourcc = kms.str_to_fourcc(fourcc)
+
         self.width = width
         self.height = height
-        self.format = fourcc
+        self.format = kms.PixelFormat(fourcc)
         self.planes = planes
 
     def size(self, plane_idx):
@@ -541,7 +632,7 @@ class DumbFramebuffer(Framebuffer):
 
             plane = Framebuffer.FramebufferPlane()
             plane.handle = creq.handle
-            plane.stride = creq.pitch
+            plane.pitch = creq.pitch
             plane.size = creq.height * creq.pitch
 
             planes.append(plane)
@@ -551,7 +642,7 @@ class DumbFramebuffer(Framebuffer):
         fb2.height = height
         fb2.pixel_format = fourcc
         fb2.handles = (ctypes.c_uint * 4)(*[p.handle for p in planes])
-        fb2.pitches = (ctypes.c_uint * 4)(*[p.stride for p in planes])
+        fb2.pitches = (ctypes.c_uint * 4)(*[p.pitch for p in planes])
         fb2.offsets = (ctypes.c_uint * 4)(*[p.offset for p in planes])
 
         fcntl.ioctl(card.fd, kms.uapi.DRM_IOCTL_MODE_ADDFB2, fb2, True)
@@ -622,7 +713,7 @@ class DumbFramebuffer(Framebuffer):
 
 class DmabufFramebuffer(Framebuffer):
     def __init__(self, card: Card, width: int, height: int, fourcc: str | int,
-                 fds: list[int], strides: list[int], offsets: list[int]) -> None:
+                 fds: list[int], pitches: list[int], offsets: list[int]) -> None:
         if isinstance(fourcc, str):
             fourcc = kms.str_to_fourcc(fourcc)
 
@@ -636,8 +727,8 @@ class DmabufFramebuffer(Framebuffer):
 
             plane = Framebuffer.FramebufferPlane()
             plane.handle=args.handle
-            plane.stride=strides[idx]
-            plane.size=height * strides[idx]
+            plane.pitch=pitches[idx]
+            plane.size=height * pitches[idx]
             plane.prime_fd = fds[idx]
             plane.offset = offsets[idx]
             planes.append(plane)
@@ -647,7 +738,7 @@ class DmabufFramebuffer(Framebuffer):
         fb2.height = height
         fb2.pixel_format = fourcc
         fb2.handles = (ctypes.c_uint * 4)(*[p.handle for p in planes])
-        fb2.pitches = (ctypes.c_uint * 4)(*[p.stride for p in planes])
+        fb2.pitches = (ctypes.c_uint * 4)(*[p.pitch for p in planes])
         fb2.offsets = (ctypes.c_uint * 4)(*[p.offset for p in planes])
 
         fcntl.ioctl(card.fd, kms.uapi.DRM_IOCTL_MODE_ADDFB2, fb2, True)

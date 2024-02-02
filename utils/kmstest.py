@@ -104,10 +104,10 @@ def handle_pageflip():
         fb = fbs[old_fb]
 
         m = mmaps[old_fb][0]
-        stride = fb.planes[0].stride
+        pitch = fb.planes[0].pitch
 
-        m[old_y * stride:old_y * stride + fb.width * 4] = line_0
-        m[bar_y * stride:bar_y * stride + fb.width * 4] = line_1
+        m[old_y * pitch:old_y * pitch + fb.width * 4] = line_0
+        m[bar_y * pitch:bar_y * pitch + fb.width * 4] = line_1
 
         #b = numpybufs[old_fb]
         #b[old_y, :] = 0

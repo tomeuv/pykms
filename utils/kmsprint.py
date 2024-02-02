@@ -1,68 +1,117 @@
 #!/usr/bin/python3
 
+import argparse
+import re
 import sys
+
 import kms
 import kms.uapi # XXX remove
 
-# Connector 0 (40) DP-1 (connected)
-#   Encoder 0 (39) NONE
-#     Crtc 0 (38) 2560x1440@59.95 241.500 2560/48/32/80/+ 1440/3/5/33/- 60 (59.95) P|D
-#       Plane 0 (31) fb-id: 65 (crtcs: 0 1) 0,0 2560x1440 -> 0,0 2560x1440 (AR12 AB12 RA12 RG16 BG16 AR15 AB15 AR24 AB24 RA24 BA24 RG24 BG24 AR30 AB30 XR12 XB12 RX12 XR15 XB15 XR24 XB24 RX24 BX24 XR30 XB30 YUYV UYVY NV12)
-#         FB 65 2560x1440 XR24
-# Connector 1 (50) HDMI-A-1 (disconnected)
-#   Encoder 1 (49) NONE
-#     Crtc 1 (48) 1920x1080@59.72 138.000 1920/48/32/80/+ 1080/3/5/23/- 60 (59.72) P|D
+def printi(indent: int, *args):
+    print(' ' * indent, end='')
+    print(*args)
 
+class Printer:
+    def __init__(self, args: argparse.Namespace) -> None:
+        self.opt_print_props = args.props
+        self.opt_prop_filter = args.prop_filter
 
-def print_connector(c: kms.Connector):
-    print(f'Connector {c.idx} ({c.id}) {c.fullname} ({"connected" if c.connected else "disconnected"})')
+        if self.opt_prop_filter:
+            self.opt_print_props = True
 
-def print_encoder(e: kms.Encoder):
-    print(f'  Encoder {e.idx} ({e.id}) {e.encoder_type.name}')
+    def print_props(self, o: kms.DrmPropObject, indent: int):
+        if not self.opt_print_props:
+            return
 
-def print_crtc(crtc: kms.Crtc):
-    m = crtc.mode
-
-    refresh = (m.clock * 1000.0) / (m.htotal * m.vtotal) * (2 if (m.flags & kms.uapi.DRM_MODE_FLAG_INTERLACE) else 1)
-    refresh = round(refresh, 2)
-
-    print(f'    Crtc {crtc.idx} ({crtc.id}) {m.hdisplay}x{m.vdisplay}@{refresh} {m.clock / 1000:.3f}')
-
-def print_plane(p: kms.Plane):
-    src_x = p.get_prop_value("SRC_X") >> 16
-    src_y = p.get_prop_value("SRC_Y") >> 16
-    src_w = p.get_prop_value("SRC_W") >> 16
-    src_h = p.get_prop_value("SRC_H") >> 16
-
-    crtc_x = p.get_prop_value("CRTC_X")
-    crtc_y = p.get_prop_value("CRTC_Y")
-    crtc_w = p.get_prop_value("CRTC_W")
-    crtc_h = p.get_prop_value("CRTC_H")
-
-    print(f'      Plane {p.idx} ({p.id}) fb-id {p.fb_id} ' +
-          f'{src_x},{src_y} {src_w}x{src_h} -> {crtc_x},{crtc_y} {crtc_w}x{crtc_h} ')
-
-def main():
-    card = kms.Card()
-
-    for c in card.connectors:
-        print_connector(c)
-
-        for e in c.encoders:
-            print_encoder(e)
-
-            crtc = e.crtc
-
-            if not crtc:
+        for p,val in o.props:
+            if self.opt_prop_filter and not re.match(self.opt_prop_filter, p.name):
                 continue
+            printi(indent, f'{p.name}: {val}')
 
-            print_crtc(crtc)
+    def print_connector(self, c: kms.Connector, indent: int):
+        printi(indent, f'Connector {c.idx} ({c.id}) {c.fullname} ({"connected" if c.connected else "disconnected"})')
+        self.print_props(c, indent + 4)
 
-            for p in card.planes:
-                if p.crtc_id != crtc.id:
+    def print_encoder(self, e: kms.Encoder, indent: int):
+        printi(indent, f'Encoder {e.idx} ({e.id}) {e.encoder_type.name}')
+
+    def print_crtc(self, crtc: kms.Crtc, indent: int):
+        m = crtc.mode
+
+        refresh = (m.clock * 1000.0) / (m.htotal * m.vtotal) * (2 if (m.flags & kms.uapi.DRM_MODE_FLAG_INTERLACE) else 1)
+        refresh = round(refresh, 2)
+
+        printi(indent, f'Crtc {crtc.idx} ({crtc.id}) {m.hdisplay}x{m.vdisplay}@{refresh} {m.clock / 1000:.3f}')
+
+        self.print_props(crtc, indent + 4)
+
+    def print_plane(self, p: kms.Plane, indent: int):
+        src_x = p.get_prop_value("SRC_X") >> 16
+        src_y = p.get_prop_value("SRC_Y") >> 16
+        src_w = p.get_prop_value("SRC_W") >> 16
+        src_h = p.get_prop_value("SRC_H") >> 16
+
+        crtc_x = p.get_prop_value("CRTC_X")
+        crtc_y = p.get_prop_value("CRTC_Y")
+        crtc_w = p.get_prop_value("CRTC_W")
+        crtc_h = p.get_prop_value("CRTC_H")
+
+        printi(indent, f'Plane {p.idx} ({p.id}) fb-id {p.fb_id} ' +
+              f'{src_x},{src_y} {src_w}x{src_h} -> {crtc_x},{crtc_y} {crtc_w}x{crtc_h} ')
+
+        self.print_props(p, indent + 4)
+
+    def print_fb(self, fb: kms.Framebuffer, indent: int):
+        printi(indent, f'FB ({fb.id}) {fb.width}x{fb.height} {fb.format.name}')
+
+        format_info = kms.pixelformats.get_pixel_format_info(fb.format)
+
+        for idx, p in enumerate(fb.planes):
+            pi = format_info.planes[idx]
+            printi(indent + 2, f'Plane {idx}: offset={p.offset} pitch={p.pitch} bitspp={pi.bitspp} xsub={pi.xsub} ysub={pi.ysub}')
+
+    def print_card(self, card: kms.Card):
+        ver = card.get_version()
+        printi(0, f'Node: {card.dev_path} Driver: {ver.name} {ver.date} {ver.desc}')
+
+        for c in card.connectors:
+            self.print_connector(c, 2)
+
+            for e in c.encoders:
+                self.print_encoder(e, 4)
+
+                crtc = e.crtc
+
+                if not crtc:
                     continue
 
-                print_plane(p)
+                self.print_crtc(crtc, 6)
+
+                for p in card.planes:
+                    if p.crtc_id != crtc.id:
+                        continue
+
+                    self.print_plane(p, 8)
+
+                    if p.fb_id:
+                        fb = card.get_framebuffer(p.fb_id)
+                        self.print_fb(fb, 10)
+
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-p", "--props", action='store_true')
+    parser.add_argument("-f", "--prop-filter", default="")
+    args = parser.parse_args()
+
+    if args.prop_filter:
+        args.prop_filter = re.compile(args.prop_filter)
+
+    printer = Printer(args)
+
+    card = kms.Card()
+    printer.print_card(card)
 
 
 if __name__ == '__main__':

@@ -8,13 +8,13 @@ def draw_color_bar(fb, old_xpos, new_xpos, bar_width):
     empty = bytearray(bar_width * bytespp)
     fill = bytearray([0xff] * (bar_width * bytespp))
 
-    stride = fb.planes[0].stride
+    pitch = fb.planes[0].pitch
 
     old_xoff = old_xpos * bytespp
     new_xoff = new_xpos * bytespp
 
     for y in range(fb.height):
-        yoff = y * stride
+        yoff = y * pitch
         m[yoff + old_xoff:yoff + old_xoff + len(empty)] = empty
         m[yoff + new_xoff:yoff + new_xoff + len(fill)] = fill
 
@@ -35,10 +35,10 @@ def fill_rect(fb, x, y, w, h, color: RGB):
 
     m = fb.map(0)
 
-    stride = fb.planes[0].stride
+    pitch = fb.planes[0].pitch
 
     xoff = x * bytespp
 
     for l in range(y, y + h):
-        yoff = l * stride
+        yoff = l * pitch
         m[yoff + xoff:yoff + xoff + len(line_data)] = line_data
