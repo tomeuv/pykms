@@ -35,7 +35,9 @@ class ResourceManager:
 
         try:
             idx = int(name)
-
+        except ValueError:
+            pass
+        else:
             if idx >= len(self.card.connectors):
                 raise RuntimeError("Connector idx too high")
 
@@ -45,8 +47,6 @@ class ResourceManager:
                 raise RuntimeError("Connector already reserved")
 
             return conn
-        except:
-            pass
 
         name = name.lower()
 
@@ -59,7 +59,7 @@ class ResourceManager:
 
             return c
 
-        raise RuntimeError("Connector not found")
+        raise RuntimeError(f"Connector '{name}' not found")
 
     def reserve_connector(self, name=""):
         if not name:
