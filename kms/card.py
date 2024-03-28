@@ -461,8 +461,8 @@ class Encoder(DrmObject):
     def crtc(self):
         if self.encoder_res.crtc_id:
             return self.card.get_crtc(self.encoder_res.crtc_id)
-        else:
-            return None
+
+        return None
 
     @property
     def possible_crtcs(self):
@@ -721,7 +721,7 @@ class DmabufFramebuffer(Framebuffer):
 
         format_info = kms.pixelformats.get_pixel_format_info(fourcc)
 
-        for idx,pi in enumerate(format_info.planes):
+        for idx in range(len(format_info.planes)):
             args = kms.uapi.drm_prime_handle(fd=fds[idx])
             fcntl.ioctl(card.fd, kms.uapi.DRM_IOCTL_PRIME_FD_TO_HANDLE, args, True)
 
