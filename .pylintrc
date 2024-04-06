@@ -96,6 +96,9 @@ disable=raw-checker-failed,
         too-many-arguments,
         too-many-locals,
         line-too-long,
+        C,
+        W,
+        R
 
 
 # Enable the message, report, category or checker with the given id(s). You can
