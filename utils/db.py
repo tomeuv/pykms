@@ -13,8 +13,8 @@ class FlipHandler():
         super().__init__()
         self.bar_xpos = 0
         self.front_buf = 0
-        self.fb1 = kms.DumbFramebuffer(card, mode.hdisplay, mode.vdisplay, "XR24");
-        self.fb2 = kms.DumbFramebuffer(card, mode.hdisplay, mode.vdisplay, "XR24");
+        self.fb1 = kms.DumbFramebuffer(card, mode.hdisplay, mode.vdisplay, "XR24")
+        self.fb2 = kms.DumbFramebuffer(card, mode.hdisplay, mode.vdisplay, "XR24")
         self.flips = 0
         self.frames = 0
         self.time = 0
@@ -42,9 +42,9 @@ class FlipHandler():
 
         self.front_buf = self.front_buf ^ 1
 
-        current_xpos = self.bar_xpos;
-        old_xpos = (current_xpos + (fb.width - bar_width - bar_speed)) % (fb.width - bar_width);
-        new_xpos = (current_xpos + bar_speed) % (fb.width - bar_width);
+        current_xpos = self.bar_xpos
+        old_xpos = (current_xpos + (fb.width - bar_width - bar_speed)) % (fb.width - bar_width)
+        new_xpos = (current_xpos + bar_speed) % (fb.width - bar_width)
 
         self.bar_xpos = new_xpos
 
@@ -78,7 +78,7 @@ def readdrm():
 
 
 def readkey():
-    #print("KEY EVENT");
+    #print("KEY EVENT")
     sys.stdin.readline()
     exit(0)
 
