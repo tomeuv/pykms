@@ -25,7 +25,7 @@ CTYPESGEN_OPTS = (
 )
 
 sys.path.insert(0, CTYPESGEN_PATH)
-from ctypesgen.__main__ import main  # pylint: disable=all # type: ignore
+from ctypesgen.__main__ import main  # pylint: disable=E,C # type: ignore
 
 sys.argv = ['ctypesgen', *CTYPESGEN_OPTS, f'-I{INCLUDE_PATH}', f'-o{OUT}', *INCLUDES]
 
