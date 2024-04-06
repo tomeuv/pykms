@@ -3,7 +3,7 @@
 import atexit
 import sys
 import kms
-import kms.drawing as drawing
+from kms import drawing
 
 def exit_handler():
     print('Press enter to exit program')

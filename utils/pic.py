@@ -1,9 +1,9 @@
 #!/usr/bin/python3
 
-import kms
 import argparse
 from PIL import Image
 import numpy as np
+import kms
 
 parser = argparse.ArgumentParser()
 parser.add_argument("image")

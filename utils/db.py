@@ -3,7 +3,7 @@
 import sys
 import selectors
 import kms
-import kms.drawing as drawing
+from kms import drawing
 
 bar_width = 20
 bar_speed = 8
@@ -80,7 +80,7 @@ def readdrm():
 def readkey():
     #print("KEY EVENT")
     sys.stdin.readline()
-    exit(0)
+    sys.exit(0)
 
 sel = selectors.DefaultSelector()
 sel.register(card.fd, selectors.EVENT_READ, readdrm)

@@ -2,8 +2,9 @@
 
 import fcntl
 import gc
-import kms
 import unittest
+
+import kms
 
 
 class TestCardMethods(unittest.TestCase):

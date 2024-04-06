@@ -3,7 +3,7 @@
 import argparse
 import time
 import kms
-import kms.drawing as drawing
+from kms import drawing
 
 parser = argparse.ArgumentParser(description='Simple alpha blending test.')
 parser.add_argument('--resetcrtc', action="store_true",
@@ -20,7 +20,7 @@ card = kms.Card()
 res = kms.ResourceManager(card)
 conn = res.reserve_connector(args.connector)
 crtc = res.reserve_crtc(conn)
-if args.modename == None:
+if args.modename is None:
     mode = conn.get_default_mode()
 else:
     mode = conn.get_mode(args.modename)
@@ -29,7 +29,7 @@ planes = []
 
 for i in range(max_planes):
     p = res.reserve_generic_plane(crtc)
-    if p == None:
+    if p is None:
         break
     planes.append(p)
 
