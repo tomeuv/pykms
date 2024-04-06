@@ -36,12 +36,12 @@ def replace(filename, replaces):
         pat = r[0]
         repl = r[1]
 
-        with open(filename, 'r' ) as f:
+        with open(filename, 'r', encoding='utf-8') as f:
             content = f.read()
 
         content = re.sub(pat, repl, content, count=1, flags=re.MULTILINE)
 
-        with open(filename, 'w' ) as f:
+        with open(filename, 'w', encoding='utf-8') as f:
             f.write(content)
 
 # Fix _IOC by using ord(type)
