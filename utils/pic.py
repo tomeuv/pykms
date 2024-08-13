@@ -7,15 +7,17 @@ import kms
 
 parser = argparse.ArgumentParser()
 parser.add_argument("image")
-parser.add_argument("-f", "--fourcc", default="XR24")
+parser.add_argument("-f", "--format", default="XRGB8888")
 args = parser.parse_args()
+
+format = kms.PixelFormats.find_by_name(args.format)
 
 card = kms.Card()
 res = kms.ResourceManager(card)
 conn = res.reserve_connector()
 crtc = res.reserve_crtc(conn)
 mode = conn.get_default_mode()
-fb = kms.DumbFramebuffer(card, mode.hdisplay, mode.vdisplay, args.fourcc)
+fb = kms.DumbFramebuffer(card, mode.hdisplay, mode.vdisplay, format)
 crtc.set_mode(conn, fb, mode)
 
 image = Image.open(args.image)

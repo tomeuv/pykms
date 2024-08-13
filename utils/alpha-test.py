@@ -43,7 +43,7 @@ h = mode.vdisplay
 fbs=[]
 
 for i in range(max_planes):
-    fbs.append(kms.DumbFramebuffer(card, w, h, "AR24"))
+    fbs.append(kms.DumbFramebuffer(card, w, h, kms.PixelFormats.ARGB8888))
 
 drawing.fill_rect(fbs[0], 50, 50, 200, 200, drawing.RGB(128, 255, 0, 0))
 drawing.fill_rect(fbs[1], 150, 50, 200, 200, drawing.RGB(128, 0, 255, 0))

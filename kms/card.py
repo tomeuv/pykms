@@ -9,7 +9,6 @@ import os
 import weakref
 
 import kms.uapi
-import kms.pixelformats
 
 __all__ = [
     'Card',
@@ -540,7 +539,16 @@ class Plane(DrmPropObject):
 
         fcntl.ioctl(card.fd, kms.uapi.DRM_IOCTL_MODE_GETPLANE, plane, True)
 
-        self.format_types = format_types
+        formats = []
+        for fourcc in format_types:
+            try:
+                format = kms.PixelFormats.find_drm_fourcc(fourcc)
+            except:
+                continue
+
+            formats.append(format)
+
+        self.format_types = formats
         self.res = plane
 
         #print(f"plane {id}: fb: {plane.fb_id}")
@@ -555,7 +563,7 @@ class Plane(DrmPropObject):
     def plane_type(self):
         return kms.PlaneType(self.get_prop_value('type'))
 
-    def supports_format(self, format):
+    def supports_format(self, format: kms.PixelFormat):
         return format in self.format_types
 
     @property
@@ -577,15 +585,12 @@ class Framebuffer(DrmObject):
             self.offset = 0
             self.map: mmap.mmap | None = None
 
-    def __init__(self, card: Card, id: int, width: int, height: int, fourcc: str | int, planes: list[FramebufferPlane]) -> None:
+    def __init__(self, card: Card, id: int, width: int, height: int, format: kms.PixelFormat, planes: list[FramebufferPlane]) -> None:
         super().__init__(card, id, kms.uapi.DRM_MODE_OBJECT_FB, -1)
-
-        if isinstance(fourcc, str):
-            fourcc = kms.str_to_fourcc(fourcc)
 
         self.width = width
         self.height = height
-        self.format = kms.PixelFormat(fourcc)
+        self.format = format
         self.planes = planes
 
     def size(self, plane_idx):
@@ -607,26 +612,14 @@ class Framebuffer(DrmObject):
 
 
 class DumbFramebuffer(Framebuffer):
-    def __init__(self, card: Card, width: int, height: int, fourcc: str | int) -> None:
-        if isinstance(fourcc, str):
-            fourcc = kms.str_to_fourcc(fourcc)
-
+    def __init__(self, card: Card, width: int, height: int, format: kms.PixelFormat) -> None:
         planes = []
 
-        format_info = kms.pixelformats.get_pixel_format_info(fourcc)
-
-        for pi in format_info.planes:
+        for pi in format.planes:
             creq = kms.uapi.drm_mode_create_dumb()
             creq.width = width
-            creq.height = height // pi.ysub
-
-            # For fully planar YUV buffers, the chroma planes don't combine
-            # U and V components, their width must thus be divided by the
-            # horizontal subsampling factor.
-
-            if format_info.colortype == kms.pixelformats.PixelColorType.YUV and len(format_info.planes) == 3:
-                creq.width //= pi.xsub
-            creq.bpp = pi.bitspp
+            creq.height = height // pi.verticalsubsampling
+            creq.bpp = pi.bytespergroup * 8
 
             fcntl.ioctl(card.fd, kms.uapi.DRM_IOCTL_MODE_CREATE_DUMB, creq, True)
 
@@ -640,14 +633,14 @@ class DumbFramebuffer(Framebuffer):
         fb2 = kms.uapi.struct_drm_mode_fb_cmd2()
         fb2.width = width
         fb2.height = height
-        fb2.pixel_format = fourcc
+        fb2.pixel_format = format.drm_fourcc
         fb2.handles = (ctypes.c_uint * 4)(*[p.handle for p in planes])
         fb2.pitches = (ctypes.c_uint * 4)(*[p.pitch for p in planes])
         fb2.offsets = (ctypes.c_uint * 4)(*[p.offset for p in planes])
 
         fcntl.ioctl(card.fd, kms.uapi.DRM_IOCTL_MODE_ADDFB2, fb2, True)
 
-        super().__init__(card, fb2.fb_id, width, height, fourcc, planes)
+        super().__init__(card, fb2.fb_id, width, height, format, planes)
 
         weakref.finalize(self, DumbFramebuffer.cleanup, self.card, self.id, planes)
 
@@ -712,16 +705,11 @@ class DumbFramebuffer(Framebuffer):
 
 
 class DmabufFramebuffer(Framebuffer):
-    def __init__(self, card: Card, width: int, height: int, fourcc: str | int,
+    def __init__(self, card: Card, width: int, height: int, format: kms.PixelFormat,
                  fds: list[int], pitches: list[int], offsets: list[int]) -> None:
-        if isinstance(fourcc, str):
-            fourcc = kms.str_to_fourcc(fourcc)
-
         planes = []
 
-        format_info = kms.pixelformats.get_pixel_format_info(fourcc)
-
-        for idx in range(len(format_info.planes)):
+        for idx in range(len(format.planes)):
             args = kms.uapi.drm_prime_handle(fd=fds[idx])
             fcntl.ioctl(card.fd, kms.uapi.DRM_IOCTL_PRIME_FD_TO_HANDLE, args, True)
 

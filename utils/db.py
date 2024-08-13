@@ -13,8 +13,8 @@ class FlipHandler():
         super().__init__()
         self.bar_xpos = 0
         self.front_buf = 0
-        self.fb1 = kms.DumbFramebuffer(card, mode.hdisplay, mode.vdisplay, "XR24")
-        self.fb2 = kms.DumbFramebuffer(card, mode.hdisplay, mode.vdisplay, "XR24")
+        self.fb1 = kms.DumbFramebuffer(card, mode.hdisplay, mode.vdisplay, kms.PixelFormats.XRGB8888)
+        self.fb2 = kms.DumbFramebuffer(card, mode.hdisplay, mode.vdisplay, kms.PixelFormats.XRGB8888)
         self.flips = 0
         self.frames = 0
         self.time = 0

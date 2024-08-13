@@ -5,4 +5,4 @@ from .helpers import *
 from .card import *
 from .resource_manager import *
 from .atomicreq import *
-from .pixelformats import *
+from pixutils import PixelFormats, PixelFormat

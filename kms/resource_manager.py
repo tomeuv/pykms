@@ -85,10 +85,7 @@ class ResourceManager:
 
         raise RuntimeError("Crtc not found")
 
-    def reserve_plane(self, crtc: kms.Crtc, format=None, plane_type=None):
-        if isinstance(format, str):
-            format = kms.str_to_fourcc(format)
-
+    def reserve_plane(self, crtc: kms.Crtc, format: kms.PixelFormat | None=None, plane_type=None):
         for plane in crtc.get_possible_planes():
             if plane in self.reserved_planes:
                 continue
@@ -110,13 +107,13 @@ class ResourceManager:
         raise RuntimeError("Plane not found")
 
     # Deprecated
-    def reserve_generic_plane(self, crtc: kms.Crtc, format=None):
+    def reserve_generic_plane(self, crtc: kms.Crtc, format: kms.PixelFormat | None=None):
         return self.reserve_plane(crtc, format)
 
     # Deprecated
-    def reserve_primary_plane(self, crtc: kms.Crtc, format=None):
+    def reserve_primary_plane(self, crtc: kms.Crtc, format: kms.PixelFormat | None=None):
         return self.reserve_plane(crtc, format, kms.PlaneType.PRIMARY)
 
     # Deprecated
-    def reserve_overlay_plane(self, crtc: kms.Crtc, format=None):
+    def reserve_overlay_plane(self, crtc: kms.Crtc, format: kms.PixelFormat | None=None):
         return self.reserve_plane(crtc, format, kms.PlaneType.OVERLAY)

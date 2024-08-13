@@ -14,11 +14,11 @@ card = kms.Card()
 res = kms.ResourceManager(card)
 conn = res.reserve_connector(args.connector)
 crtc = res.reserve_crtc(conn)
-plane = res.reserve_plane(crtc, kms.PixelFormat.XRGB8888)
+plane = res.reserve_plane(crtc, kms.PixelFormats.XRGB8888)
 mode = conn.get_default_mode()
 modeb = kms.Blob(card, mode)
 
-fb = kms.DumbFramebuffer(card, mode.hdisplay, mode.vdisplay, kms.PixelFormat.XRGB8888)
+fb = kms.DumbFramebuffer(card, mode.hdisplay, mode.vdisplay, kms.PixelFormats.XRGB8888)
 kms.drawing.fill_rect(fb, 10, 10, 100, 100, kms.drawing.RGB(255, 255, 0, 0))
 
 req = kms.AtomicReq(card)

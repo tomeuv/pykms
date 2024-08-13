@@ -24,10 +24,11 @@ if args.dmabuf:
     heap_fd = kms.uapi.dma_heap.dma_heap_alloc(mode.hdisplay * mode.vdisplay * 4,
                                                'reserved')
 
-    fb = kms.DmabufFramebuffer(card, mode.hdisplay, mode.vdisplay, "XR24",
+    fb = kms.DmabufFramebuffer(card, mode.hdisplay, mode.vdisplay,
+                               kms.PixelFormats.XRGB8888,
                                [heap_fd], [mode.hdisplay * 4], [0])
 else:
-    fb = kms.DumbFramebuffer(card, mode.hdisplay, mode.vdisplay, "XR24");
+    fb = kms.DumbFramebuffer(card, mode.hdisplay, mode.vdisplay, kms.PixelFormats.XRGB8888);
 
 def draw_test_pattern(fb):
     from PIL import Image
