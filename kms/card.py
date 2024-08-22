@@ -44,7 +44,7 @@ class Card:
         for path in glob.glob('/dev/dri/card*'):
             try:
                 fd = os.open(path, os.O_RDWR | os.O_NONBLOCK)
-            except:
+            except OSError:
                 continue
 
             try:
@@ -90,7 +90,7 @@ class Card:
     def set_defaults(self):
         try:
             fcntl.ioctl(self.fd, kms.uapi.DRM_IOCTL_SET_MASTER, 0, False)
-        except:
+        except OSError:
             # Not master
             pass
 
@@ -542,7 +542,7 @@ class Plane(DrmPropObject):
         for fourcc in format_types:
             try:
                 format = kms.PixelFormats.find_drm_fourcc(fourcc)
-            except:
+            except StopIteration:
                 continue
 
             formats.append(format)
