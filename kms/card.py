@@ -725,14 +725,14 @@ class DmabufFramebuffer(Framebuffer):
         fb2 = kms.uapi.struct_drm_mode_fb_cmd2()
         fb2.width = width
         fb2.height = height
-        fb2.pixel_format = fourcc
+        fb2.pixel_format = format.drm_fourcc
         fb2.handles = (ctypes.c_uint * 4)(*[p.handle for p in planes])
         fb2.pitches = (ctypes.c_uint * 4)(*[p.pitch for p in planes])
         fb2.offsets = (ctypes.c_uint * 4)(*[p.offset for p in planes])
 
         fcntl.ioctl(card.fd, kms.uapi.DRM_IOCTL_MODE_ADDFB2, fb2, True)
 
-        super().__init__(card, fb2.fb_id, width, height, fourcc, planes)
+        super().__init__(card, fb2.fb_id, width, height, format, planes)
 
         weakref.finalize(self, DmabufFramebuffer.cleanup, self.card, self.id, self.planes)
 
