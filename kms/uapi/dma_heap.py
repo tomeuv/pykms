@@ -1,7 +1,6 @@
 
 import ctypes
 
-import io
 import os
 import fcntl
 

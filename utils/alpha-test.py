@@ -60,8 +60,7 @@ if args.resetcrtc:
         "alpha_blender": 1,
     })
 
-for i in range(len(planes)):
-    plane = planes[i]
+for i, plane in enumerate(planes):
     fb = fbs[i]
 
     print("set crtc {}, plane {}, z {}, fb {}".format(crtc.id, plane.id, i, fb.id))

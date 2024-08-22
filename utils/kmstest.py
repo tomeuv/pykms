@@ -28,7 +28,7 @@ if args.dmabuf:
                                kms.PixelFormats.XRGB8888,
                                [heap_fd], [mode.hdisplay * 4], [0])
 else:
-    fb = kms.DumbFramebuffer(card, mode.hdisplay, mode.vdisplay, kms.PixelFormats.XRGB8888);
+    fb = kms.DumbFramebuffer(card, mode.hdisplay, mode.vdisplay, kms.PixelFormats.XRGB8888)
 
 def draw_test_pattern(fb):
     from PIL import Image
@@ -43,7 +43,7 @@ def draw_test_pattern(fb):
     b = np.frombuffer(map, dtype=np.uint8).reshape(fb.height, fb.width, 4)
     b[:, :, :] = pixels
 
-draw_test_pattern(fb);
+draw_test_pattern(fb)
 
 card.disable_planes()
 
