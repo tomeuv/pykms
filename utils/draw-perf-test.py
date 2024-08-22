@@ -6,138 +6,156 @@ import sys
 import time
 import numpy as np
 import kms
-import kms.uapi
 
-parser = argparse.ArgumentParser()
-parser.add_argument("-c", "--connector", default="")
-parser.add_argument("--dmabuf", action="store_true", help="use dmabuf")
-args = parser.parse_args()
+class State:
+    def __init__(self, card, conn, crtc, plane, mode) -> None:
+        self.card = card
+        self.conn = conn
+        self.crtc = crtc
+        self.plane = plane
+        self.mode = mode
+        self.modeb = kms.Blob(card, mode)
+        self.fbs = []
+        self.custom_state = {}
 
-card = kms.Card()
+        self.current_fb: None | int = None
+        self.next_fb = 0
+        self.bar_y = 0
+        self.last_ts = time.perf_counter()
+        self.last_framenum = 0
+        self.framenum = 0
+        self.bar_step = 4
 
-res = kms.ResourceManager(card)
-conn = res.reserve_connector(args.connector)
-crtc = res.reserve_crtc(conn)
-plane = res.reserve_plane(crtc, kms.PixelFormats.XRGB8888)
-mode = conn.get_default_mode()
-modeb = kms.Blob(card, mode)
+def init_fbs_1(state: State):
+    mmaps = []
+    numpybufs = []
 
-fbs = []
-numpybufs = []
-mmaps = []
-for x in range(3):
-    fb = kms.DumbFramebuffer(card, mode.hdisplay, mode.vdisplay, kms.PixelFormats.XRGB8888)
+    for fb in state.fbs:
+        fb_mmaps = fb.mmap()
+        buf = fb_mmaps[0]
+        buf[:] = bytearray(fb.planes[0].size)
 
-    fb_mmaps = fb.mmap()
-    buf = fb_mmaps[0]
-    buf[:] = bytearray(fb.planes[0].size)
+        b = np.frombuffer(buf, dtype=np.uint32).reshape(fb.height, fb.width)
 
-    b = np.frombuffer(buf, dtype=np.uint32).reshape(fb.height, fb.width)
+        mmaps.append(fb_mmaps)
+        numpybufs.append(b)
 
-    fbs.append(fb)
-    mmaps.append(fb_mmaps)
-    numpybufs.append(b)
+    state.custom_state = {
+        'numpybufs': numpybufs,
+        'mmaps': mmaps,
+        'line_0': bytes([0] * (state.mode.hdisplay * 4)),
+        'line_1': bytes([0xff] * (state.mode.hdisplay * 4)),
+    }
 
+def draw_fb_1(state: State, fb_idx: int, old_y):
+    fb = state.fbs[fb_idx]
 
-#card.disable_planes()
+    m = state.custom_state['mmaps'][fb_idx][0]
+    pitch = fb.planes[0].pitch
 
-req = kms.AtomicReq(card)
+    m[old_y * pitch:old_y * pitch + fb.width * 4] = state.custom_state['line_0']
+    m[state.bar_y * pitch:state.bar_y * pitch + fb.width * 4] = state.custom_state['line_1']
 
-req.add_connector(conn, crtc)
-req.add_crtc(crtc, modeb)
-req.add_plane(plane, fbs[2], crtc, dst=(0, 0, mode.hdisplay, mode.vdisplay))
+    #b = numpybufs[old_fb]
+    #b[old_y, :] = 0
+    #b[bar_y, :] = 0xffffff
 
-req.commit(allow_modeset = True)
-
-current_fb = None
-next_fb = 0
-bar_y = 0
-last_ts = time.perf_counter()
-last_framenum = 0
-framenum = 0
-bar_step = 4
-
-line_0 = bytes([0] * (mode.hdisplay * 4))
-line_1 = bytes([0xff] * (mode.hdisplay * 4))
-
-def handle_pageflip():
-    global current_fb, next_fb, bar_y
-    global last_ts, last_framenum
-    global framenum
-
-    framenum += 1
-
+def handle_fps(state: State):
     ts = time.perf_counter()
-    ts_diff = ts - last_ts
+    ts_diff = ts - state.last_ts
 
     if ts_diff > 2:
-        num_frames = framenum - last_framenum
+        num_frames = state.framenum - state.last_framenum
 
         fps = num_frames / ts_diff
 
-        last_ts = ts
-        last_framenum = framenum
+        state.last_ts = ts
+        state.last_framenum = state.framenum
 
         print(f'fps {fps:.2f}')
 
-    #print("FLIP, cur", current_fb, "next", next_fb)
+def handle_pageflip(state: State):
+    state.framenum += 1
 
-    old_fb = current_fb
+    handle_fps(state)
 
-    current_fb = next_fb
+    #print("FLIP, cur", state.current_fb, "next", state.next_fb)
 
-    next_fb = (current_fb + 1) % len(fbs)
+    old_fb = state.current_fb
+    state.current_fb = state.next_fb
+    state.next_fb = (state.current_fb + 1) % len(state.fbs)
 
-    req = kms.AtomicReq(card)
-
-    req.add_plane(plane, fbs[next_fb], crtc, dst=(0, 0, mode.hdisplay, mode.vdisplay))
-
+    req = kms.AtomicReq(state.card)
+    req.add_plane(state.plane, state.fbs[state.next_fb], state.crtc, dst=(0, 0, state.mode.hdisplay, state.mode.vdisplay))
     req.commit(allow_modeset = False)
 
-    old_y = bar_y - len(fbs) * bar_step
+    old_y = state.bar_y - len(state.fbs) * state.bar_step
     if old_y < 0:
-        old_y = mode.vdisplay + old_y
+        old_y = state.mode.vdisplay + old_y
 
     if old_fb is not None:
         ts1 = time.perf_counter()
 
-        fb = fbs[old_fb]
-
-        m = mmaps[old_fb][0]
-        pitch = fb.planes[0].pitch
-
-        m[old_y * pitch:old_y * pitch + fb.width * 4] = line_0
-        m[bar_y * pitch:bar_y * pitch + fb.width * 4] = line_1
-
-        #b = numpybufs[old_fb]
-        #b[old_y, :] = 0
-        #b[bar_y, :] = 0xffffff
+        draw_fb_1(state, old_fb, old_y)
 
         ts2 = time.perf_counter()
 
-        print((ts2 - ts1) * 1000)
+        print(f'         {(ts2 - ts1) * 1000000:.4f} us')
 
-        bar_y += bar_step
-        if bar_y >= mode.vdisplay:
-            bar_y = 0
+        state.bar_y += state.bar_step
+        if state.bar_y >= state.mode.vdisplay:
+            state.bar_y = 0
 
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-c", "--connector", default="")
+    args = parser.parse_args()
 
-def readdrm():
-    for ev in card.read_events():
-        if ev.type == kms.DrmEventType.FLIP_COMPLETE:
-            handle_pageflip()
+    card = kms.Card()
 
-def readkey():
-    print("Done")
-    sys.stdin.readline()
-    sys.exit(0)
+    res = kms.ResourceManager(card)
+    conn = res.reserve_connector(args.connector)
+    crtc = res.reserve_crtc(conn)
+    plane = res.reserve_plane(crtc, kms.PixelFormats.XRGB8888)
+    mode = conn.get_default_mode()
 
-sel = selectors.DefaultSelector()
-sel.register(sys.stdin, selectors.EVENT_READ, readkey)
-sel.register(card.fd, selectors.EVENT_READ, readdrm)
+    state = State(card, conn, crtc, plane, mode)
 
-while True:
-    events = sel.select()
-    for key, mask in events:
-        callback = key.data
-        callback()
+    for _ in range(3):
+        fb = kms.DumbFramebuffer(card, mode.hdisplay, mode.vdisplay, kms.PixelFormats.XRGB8888)
+        state.fbs.append(fb)
+
+    init_fbs_1(state)
+
+    card.disable_planes()
+
+    req = kms.AtomicReq(card)
+
+    req.add_connector(conn, crtc)
+    req.add_crtc(crtc, state.modeb)
+    req.add_plane(plane, state.fbs[2], crtc, dst=(0, 0, mode.hdisplay, mode.vdisplay))
+
+    req.commit(allow_modeset = True)
+
+    def readdrm(state: State):
+        for ev in card.read_events():
+            if ev.type == kms.DrmEventType.FLIP_COMPLETE:
+                handle_pageflip(state)
+
+    def readkey(_: State):
+        print("Done")
+        sys.stdin.readline()
+        sys.exit(0)
+
+    sel = selectors.DefaultSelector()
+    sel.register(sys.stdin, selectors.EVENT_READ, readkey)
+    sel.register(card.fd, selectors.EVENT_READ, readdrm)
+
+    while True:
+        events = sel.select()
+        for key, _ in events:
+            callback = key.data
+            callback(state)
+
+if __name__ == '__main__':
+    sys.exit(main())
