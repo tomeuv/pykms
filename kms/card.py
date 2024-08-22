@@ -173,18 +173,17 @@ class Card:
         res.fb_id = id
         fcntl.ioctl(self.fd, kms.uapi.DRM_IOCTL_MODE_GETFB2, res, True)
 
-        format_info = kms.pixelformats.get_pixel_format_info(res.pixel_format)
+        format = kms.PixelFormats.find_v4l2_fourcc_unsupported(res.pixel_format)
 
         planes = []
-        for i in range(len(format_info.planes)):
+        for i in range(len(format.planes)):
             p = Framebuffer.FramebufferPlane()
             p.handle = res.handles[i]
             p.pitch = res.pitches[i]
             p.offset = res.offsets[i]
             planes.append(p)
 
-        return Framebuffer(self, res.fb_id, res.width, res.height, kms.PixelFormat(res.pixel_format),
-                           planes)
+        return Framebuffer(self, res.fb_id, res.width, res.height, format, planes)
 
     def read_events(self) -> list[DrmEvent]:
         assert(self.fio)

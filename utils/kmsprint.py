@@ -62,13 +62,11 @@ class Printer:
         self.print_props(p, indent + 4)
 
     def print_fb(self, fb: kms.Framebuffer, indent: int):
-        printi(indent, f'FB ({fb.id}) {fb.width}x{fb.height} {fb.format.name}')
-
-        format_info = kms.pixelformats.get_pixel_format_info(fb.format)
+        printi(indent, f'FB ({fb.id}) {fb.width}x{fb.height} {fb.format.name} bitsperpixel={fb.format.bitsperpixel} ')
 
         for idx, p in enumerate(fb.planes):
-            pi = format_info.planes[idx]
-            printi(indent + 2, f'Plane {idx}: offset={p.offset} pitch={p.pitch} bitspp={pi.bitspp} xsub={pi.xsub} ysub={pi.ysub}')
+            pi = fb.format.planes[idx]
+            printi(indent + 2, f'Plane {idx}: offset={p.offset} pitch={p.pitch} bytespergroup={pi.bytespergroup} verticalsubsampling={pi.verticalsubsampling}')
 
     def print_card(self, card: kms.Card):
         ver = card.get_version()
