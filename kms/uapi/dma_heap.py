@@ -5,10 +5,11 @@ import os
 import fcntl
 
 class struct_dma_heap_allocation_data(ctypes.Structure):
-    _fields_ = [("len", ctypes.c_uint64),
-                ("fd", ctypes.c_uint32),
-                ("fd_flags", ctypes.c_uint32),
-                ("heap_flags", ctypes.c_uint64)]
+    __slots__ = ['len', 'fd', 'fd_flags', 'heap_flags']
+    _fields_ = [('len', ctypes.c_uint64),
+                ('fd', ctypes.c_uint32),
+                ('fd_flags', ctypes.c_uint32),
+                ('heap_flags', ctypes.c_uint64)]
 
 DMA_HEAP_IOC_MAGIC = 'H'
 
