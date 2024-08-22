@@ -21,7 +21,7 @@ class TestCardMethods(unittest.TestCase):
         card = kms.Card()
         fd = card.fd
 
-        fb = kms.DumbFramebuffer(card, 640, 480, kms.PixelFormat.XRGB8888)
+        fb = kms.DumbFramebuffer(card, 640, 480, kms.PixelFormats.XRGB8888)
 
         map = fb.map(0)
         fb_fd = fb.fd(0)
