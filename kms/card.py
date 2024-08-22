@@ -3,11 +3,13 @@ from __future__ import annotations
 from enum import Enum, auto
 import ctypes
 import fcntl
+import glob
 import io
 import mmap
 import os
 import weakref
 
+import kms.atomicreq
 import kms.uapi
 
 __all__ = [
@@ -40,7 +42,6 @@ class Card:
 
     @staticmethod
     def __open_first_kms_device() -> str:
-        import glob
         for path in glob.glob('/dev/dri/card*'):
             try:
                 fd = os.open(path, os.O_RDWR | os.O_NONBLOCK)
@@ -334,15 +335,11 @@ class DrmPropObject(DrmObject):
         return self.prop_values[prop_id]
 
     def set_prop(self, prop, value):
-        import kms.atomicreq
-
         areq = kms.atomicreq.AtomicReq(self.card)
         areq.add(self, prop, value)
         areq.commit_sync()
 
     def set_props(self, map):
-        import kms.atomicreq
-
         areq = kms.atomicreq.AtomicReq(self.card)
         areq.add_many(self, map)
         areq.commit_sync()
