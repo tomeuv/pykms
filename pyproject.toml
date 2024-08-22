@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "pykms"
 version = "0.1"
 dependencies = [
-  "git+https://github.com/tomba/pixutils.git",
+  "pixutils @ git+https://github.com/tomba/pixutils.git",
 ]
 requires-python = ">=3.8"
 authors = [
@@ -29,3 +29,6 @@ classifiers = [
 Homepage = "https://github.com/tomba/pykms"
 Repository = "https://github.com/tomba/pykms.git"
 "Bug Tracker" = "https://github.com/tomba/pykms/issues"
+
+[tool.setuptools]
+packages = ["kms"]
