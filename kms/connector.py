@@ -71,6 +71,9 @@ class Connector(kms.DrmPropObject):
     def get_default_mode(self):
         return self.modes[0]
 
+    def get_mode(self, name: str):
+        raise NotImplementedError()
+
     @property
     def current_crtc(self):
         if self.connector_res.encoder_id == 0:
