@@ -1,0 +1,8 @@
+{
+	"exclude": [
+		"kms/uapi"
+	],
+	"extraPaths": [
+		"../pixutils"
+	],
+}
