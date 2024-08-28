@@ -1,4 +1,4 @@
-[![Lint Status](https://github.com/tomba/pykms/actions/workflows/pylint.yml/badge.svg)](https://github.com/tomba/pykms/actions/workflows/pylint.yml)
+[![Lint Status](https://github.com/tomba/pykms/actions/workflows/ci.yml/badge.svg)](https://github.com/tomba/pykms/actions/workflows/ci.yml)
 
 # Pure-Python Linux kernel mode setting (KMS) bindings
 
