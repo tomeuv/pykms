@@ -175,7 +175,7 @@ class Card:
         res.fb_id = id
         fcntl.ioctl(self.fd, kms.uapi.DRM_IOCTL_MODE_GETFB2, res, True)
 
-        format = kms.PixelFormats.find_v4l2_fourcc_unsupported(res.pixel_format)
+        format = kms.PixelFormats.find_drm_fourcc(res.pixel_format)
 
         planes = []
         for i in range(len(format.planes)):
