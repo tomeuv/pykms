@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from pixutils import PixelFormats, PixelFormat
+from pixutils.formats import PixelFormats, PixelFormat
 
 from .enums import *
 from .helpers import *
