@@ -8,8 +8,19 @@ import kms
 
 
 class TestCardMethods(unittest.TestCase):
+    def _get_card(self):
+        try:
+            card = kms.Card()
+        except FileNotFoundError as e:
+            self.skipTest(e)
+        except NotImplementedError as e:
+            self.skipTest(e)
+
+        return card
+
     def test_card(self):
-        card = kms.Card()
+        card = self._get_card()
+
         fd = card.fd
 
         card = None
@@ -18,7 +29,7 @@ class TestCardMethods(unittest.TestCase):
             fcntl.fcntl(fd, fcntl.F_GETFD)
 
     def test_card_fb_2(self):
-        card = kms.Card()
+        card = self._get_card()
         fd = card.fd
 
         fb = kms.DumbFramebuffer(card, 640, 480, kms.PixelFormats.XRGB8888)

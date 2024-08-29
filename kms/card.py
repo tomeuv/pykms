@@ -92,21 +92,24 @@ class Card:
     def set_defaults(self):
         try:
             fcntl.ioctl(self.fd, kms.uapi.DRM_IOCTL_SET_MASTER, 0, False)
+            self.is_master = True
         except OSError:
-            # Not master
-            pass
+            self.is_master = False
 
         cap = kms.uapi.drm_get_cap(kms.uapi.DRM_CAP_DUMB_BUFFER)
         fcntl.ioctl(self.fd, kms.uapi.DRM_IOCTL_GET_CAP, cap, True)
-        assert(cap.value)
+        if not cap.value:
+            raise NotImplementedError('Card does not support dumb buffers')
 
         client_cap = kms.uapi.drm_set_client_cap(kms.uapi.DRM_CLIENT_CAP_UNIVERSAL_PLANES, 1)
         fcntl.ioctl(self.fd, kms.uapi.DRM_IOCTL_SET_CLIENT_CAP, client_cap, True)
-        assert(client_cap.value)
+        if not cap.value:
+            raise NotImplementedError('Card does not support universal planes')
 
         client_cap = kms.uapi.drm_set_client_cap(kms.uapi.DRM_CLIENT_CAP_ATOMIC, 1)
         fcntl.ioctl(self.fd, kms.uapi.DRM_IOCTL_SET_CLIENT_CAP, client_cap, True)
-        assert(client_cap.value)
+        if not cap.value:
+            raise NotImplementedError('Card does not support atomic modesetting')
 
     # XXX deprecated
     @property
