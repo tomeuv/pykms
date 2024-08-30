@@ -5,7 +5,6 @@ import re
 import sys
 
 import kms
-import kms.uapi # XXX remove
 
 def printi(indent: int, *args):
     print(' ' * indent, end='')
@@ -38,7 +37,7 @@ class Printer:
     def print_crtc(self, crtc: kms.Crtc, indent: int):
         m = crtc.mode
 
-        refresh = (m.clock * 1000.0) / (m.htotal * m.vtotal) * (2 if (m.flags & kms.uapi.DRM_MODE_FLAG_INTERLACE) else 1)
+        refresh = (m.clock * 1000.0) / (m.htotal * m.vtotal) * (2 if m.interlace else 1)
         refresh = round(refresh, 2)
 
         printi(indent, f'Crtc {crtc.idx} ({crtc.id}) {m.hdisplay}x{m.vdisplay}@{refresh} {m.clock / 1000:.3f}')

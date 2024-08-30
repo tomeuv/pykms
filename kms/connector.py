@@ -58,7 +58,7 @@ class Connector(kms.DrmPropObject):
 
         self.connector_res = res
         self.encoder_ids = encoder_ids
-        self.modes = modes
+        self.modes = [kms.VideoMode(m) for m in modes]
 
         self.fullname = f'{Connector.connector_names[res.connector_type]}-{res.connector_type_id}'
 

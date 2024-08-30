@@ -20,7 +20,7 @@ class Screen:
         self.crtc = crtc
 
         self.mode = conn.get_default_mode()
-        self.modeb = kms.Blob(self.card, self.mode)
+        self.modeb = self.mode.to_blob(self.card)
 
     def setup(self, req: kms.AtomicReq):
         req.add_connector(self.conn, self.crtc)

@@ -52,7 +52,10 @@ def main():
     crtc = res.reserve_crtc(conn)
     plane = res.reserve_generic_plane(crtc)
     mode = conn.get_default_mode()
-    modeb = kms.Blob(card, mode)
+
+    print(mode)
+
+    modeb = mode.to_blob(card)
 
     fmt = kms.PixelFormats.XRGB8888
     width = mode.hdisplay

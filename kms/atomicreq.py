@@ -180,7 +180,7 @@ class AtomicReq:
 
     @staticmethod
     def set_mode(connector, crtc, fb, mode):
-        modeb = kms.Blob(crtc.card, mode)
+        modeb = mode.to_blob(crtc.card)
         plane = crtc.get_possible_planes()[0]
 
         req = kms.AtomicReq(crtc.card)

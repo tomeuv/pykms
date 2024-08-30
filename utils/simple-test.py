@@ -16,7 +16,7 @@ conn = res.reserve_connector(args.connector)
 crtc = res.reserve_crtc(conn)
 plane = res.reserve_plane(crtc, kms.PixelFormats.XRGB8888)
 mode = conn.get_default_mode()
-modeb = kms.Blob(card, mode)
+modeb = mode.to_blob(card)
 
 fb = kms.DumbFramebuffer(card, mode.hdisplay, mode.vdisplay, kms.PixelFormats.XRGB8888)
 kms.drawing.fill_rect(fb, 10, 10, 100, 100, kms.drawing.RGB(255, 255, 0, 0))

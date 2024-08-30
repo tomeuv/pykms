@@ -31,10 +31,9 @@ class Crtc(kms.DrmPropObject):
     def get_possible_planes(self):
         return [p for p in self.card.planes if p.supports_crtc(self)]
 
-    # XXX create our own mode class
     @property
-    def mode(self) -> kms.uapi.drm_mode_modeinfo:
-        return self.crtc_res.mode
+    def mode(self):
+        return kms.VideoMode(self.crtc_res.mode)
 
     @property
     def primary_plane(self):

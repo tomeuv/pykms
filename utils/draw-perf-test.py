@@ -16,7 +16,7 @@ class State:
         self.crtc = crtc
         self.plane = plane
         self.mode = mode
-        self.modeb = kms.Blob(card, mode)
+        self.modeb = mode.to_blob(card)
         self.fbs = []
         self.custom_state = {}
 

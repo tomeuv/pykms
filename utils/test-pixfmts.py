@@ -42,7 +42,7 @@ def tests(conn, crtc, plane, mode, formats):
 
     card = conn.card
 
-    modeb = kms.Blob(card, mode)
+    modeb = mode.to_blob(card)
 
     for fmt in formats:
         print(f'Test {fmt}')
