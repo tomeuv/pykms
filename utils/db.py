@@ -3,7 +3,7 @@
 import sys
 import selectors
 import kms
-from kms import drawing
+import kms.drawing
 
 bar_width = 20
 bar_speed = 8
@@ -18,6 +18,9 @@ class FlipHandler():
         self.flips = 0
         self.frames = 0
         self.time = 0
+
+        self.nfb1 = kms.drawing.NumpyFramebuffer(self.fb1, prepopulate=True)
+        self.nfb2 = kms.drawing.NumpyFramebuffer(self.fb2, prepopulate=True)
 
     def handle_page_flip(self, frame, time):
         self.flips += 1
@@ -37,8 +40,10 @@ class FlipHandler():
 
         if self.front_buf == 0:
             fb = self.fb2
+            nfb = self.nfb2
         else:
             fb = self.fb1
+            nfb = self.nfb1
 
         self.front_buf = self.front_buf ^ 1
 
@@ -48,7 +53,7 @@ class FlipHandler():
 
         self.bar_xpos = new_xpos
 
-        drawing.draw_color_bar(fb, old_xpos, new_xpos, bar_width)
+        nfb.draw_color_bar(old_xpos, new_xpos, bar_width)
 
         ctx = kms.AtomicReq(card)
         ctx.add(crtc.primary_plane, "FB_ID", fb.id)

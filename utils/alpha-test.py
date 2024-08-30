@@ -41,12 +41,13 @@ h = mode.vdisplay
 fbs=[]
 
 for i in range(max_planes):
-    fbs.append(kms.DumbFramebuffer(card, w, h, kms.PixelFormats.ARGB8888))
+    fb = kms.DumbFramebuffer(card, w, h, kms.PixelFormats.ARGB8888)
+    fbs.append(drawing.NumpyFramebuffer(fb))
 
-drawing.fill_rect(fbs[0], 50, 50, 200, 200, drawing.RGB(128, 255, 0, 0))
-drawing.fill_rect(fbs[1], 150, 50, 200, 200, drawing.RGB(128, 0, 255, 0))
-drawing.fill_rect(fbs[2], 50, 150, 200, 200, drawing.RGB(128, 0, 0, 255))
-drawing.fill_rect(fbs[3], 150, 150, 200, 200, drawing.RGB(128, 128, 128, 128))
+fbs[0].fill_rect(50, 50, 200, 200, drawing.RGB(128, 255, 0, 0))
+fbs[1].fill_rect(150, 50, 200, 200, drawing.RGB(128, 0, 255, 0))
+fbs[2].fill_rect(50, 150, 200, 200, drawing.RGB(128, 0, 0, 255))
+fbs[3].fill_rect(150, 150, 200, 200, drawing.RGB(128, 128, 128, 128))
 
 if args.resetcrtc:
     crtc.set_props({

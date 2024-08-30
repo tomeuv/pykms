@@ -1,44 +1,40 @@
 from __future__ import annotations
 
-# XXX deprecated
-def draw_color_bar(fb, old_xpos, new_xpos, bar_width):
-    bytespp = 4
+from typing import TYPE_CHECKING
 
-    m = fb.map(0)
-    empty = bytearray(bar_width * bytespp)
-    fill = bytearray([0xff] * (bar_width * bytespp))
+import numpy as np
 
-    pitch = fb.planes[0].pitch
+if TYPE_CHECKING:
+    from kms import Framebuffer
 
-    old_xoff = old_xpos * bytespp
-    new_xoff = new_xpos * bytespp
-
-    for y in range(fb.height):
-        yoff = y * pitch
-        m[yoff + old_xoff:yoff + old_xoff + len(empty)] = empty
-        m[yoff + new_xoff:yoff + new_xoff + len(fill)] = fill
-
-# XXX deprecated
 class RGB:
-    def __init__(self, a, r, g, b) -> None:
+    def __init__(self, a, r, g, b):
         self.a = a
         self.r = r
         self.b = b
         self.g = g
 
-# XXX deprecated
-def fill_rect(fb, x, y, w, h, color: RGB):
-    bytespp = 4
+    def to_rgba(self):
+        return (self.b << 0) | (self.g << 8) | (self.r << 16) | (self.a << 24)
 
-    # Pixels for a single line
-    line_data = bytearray([color.b, color.g, color.r, color.a] * w)
+class NumpyFramebuffer:
+    def __init__(self, fb: Framebuffer, prepopulate=False):
+        map = fb.map(0)
+        self.b = np.frombuffer(map, dtype=np.int32).reshape(fb.height, fb.width)
 
-    m = fb.map(0)
+        # Is there a better way to populate page tables
+        if prepopulate:
+            self.b[:,:] = 0
 
-    pitch = fb.planes[0].pitch
+    def fill_rect(self, x, y, w, h, c):
+        if isinstance(c, RGB):
+            c = c.to_rgba()
 
-    xoff = x * bytespp
+        self.b[y:y+h, x:x+w] = c
 
-    for l in range(y, y + h):
-        yoff = l * pitch
-        m[yoff + xoff:yoff + xoff + len(line_data)] = line_data
+    def draw_gradient(self, x, y, h, gradient):
+        self.b[y:y+h, x:x+len(gradient)] = gradient
+
+    def draw_color_bar(self, old_xpos, new_xpos, bar_width):
+        self.b[:, old_xpos:old_xpos+bar_width] = 0
+        self.b[:, new_xpos:new_xpos+bar_width] = 0xffffff

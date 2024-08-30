@@ -10,34 +10,26 @@ from pixutils.dmaheap import DMAHeap
 
 import kms
 import kms.uapi
-
-def fill_rect(b, x, y, c):
-    b[y:y+200, x:x+200] = c
-
-def draw_gradient(b, x, y, gradient):
-    b[y:y+200, x:x+len(gradient)] = gradient
+import kms.drawing
 
 def draw_test_pattern(fb):
-    map = fb.map(0)
-    b = np.frombuffer(map, dtype=np.uint32).reshape(fb.height, fb.width)
+    nfb = kms.drawing.NumpyFramebuffer(fb)
 
-    fill_rect(b, 2, 2, 0xff0000)
-    fill_rect(b, 202, 202, 0x00ff00)
-    fill_rect(b, 402, 402, 0x0000ff)
-
-    fill_rect(b, 202, 2, 0xffff00)
-    fill_rect(b, 402, 202, 0x00ffff)
-
-    fill_rect(b, 402, 2, 0xffffff)
+    nfb.fill_rect(2, 2, 200, 200, 0xff0000)
+    nfb.fill_rect(202, 202, 200, 200, 0x00ff00)
+    nfb.fill_rect(402, 402, 200, 200, 0x0000ff)
+    nfb.fill_rect(202, 2, 200, 200, 0xffff00)
+    nfb.fill_rect(402, 202, 200, 200, 0x00ffff)
+    nfb.fill_rect(402, 2, 200, 200, 0xffffff)
 
     gradient = np.arange(256 - 1, -1, -1, dtype=np.uint32)
 
-    draw_gradient(b, 800, 2, gradient << 16)
-    draw_gradient(b, 800, 202, gradient << 8)
-    draw_gradient(b, 800, 402, gradient << 0)
+    nfb.draw_gradient(800, 2, 200, gradient << 16)
+    nfb.draw_gradient(800, 202, 200, gradient << 8)
+    nfb.draw_gradient(800, 402, 200, gradient << 0)
 
-    b[0::fb.height-1, :] = 0xffffff
-    b[:, 0::fb.width-1] = 0xffffff
+    nfb.b[0::fb.height-1, :] = 0xffffff
+    nfb.b[:, 0::fb.width-1] = 0xffffff
 
 def main():
     parser = argparse.ArgumentParser()

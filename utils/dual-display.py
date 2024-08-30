@@ -31,7 +31,8 @@ class Overlay:
     def __init__(self, plane: kms.Plane) -> None:
         self.plane = plane
         self.fb = kms.DumbFramebuffer(plane.card, PLANE_WIDTH, PLANE_HEIGHT, kms.PixelFormats.XRGB8888)
-        kms.drawing.fill_rect(self.fb, 10, 10, 100, 100, kms.drawing.RGB(255, 255, 0, 0))
+        nfb = kms.drawing.NumpyFramebuffer(self.fb)
+        nfb.fill_rect(10, 10, 100, 100, kms.drawing.RGB(255, 255, 0, 0))
 
     def setup(self, req: kms.AtomicReq, screen: Screen):
         if self.plane.idx == 0:
