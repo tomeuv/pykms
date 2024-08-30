@@ -177,3 +177,16 @@ class AtomicReq:
             m.update(params)
 
         self.add(plane, m)
+
+    @staticmethod
+    def set_mode(connector, crtc, fb, mode):
+        modeb = kms.Blob(crtc.card, mode)
+        plane = crtc.get_possible_planes()[0]
+
+        req = kms.AtomicReq(crtc.card)
+
+        req.add_connector(connector, crtc)
+        req.add_crtc(crtc, modeb)
+        req.add_plane(plane, fb, crtc, dst=(0, 0, mode.hdisplay, mode.vdisplay))
+
+        req.commit_sync(allow_modeset = True)

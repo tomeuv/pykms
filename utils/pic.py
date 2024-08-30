@@ -18,7 +18,7 @@ conn = res.reserve_connector()
 crtc = res.reserve_crtc(conn)
 mode = conn.get_default_mode()
 fb = kms.DumbFramebuffer(card, mode.hdisplay, mode.vdisplay, format)
-crtc.set_mode(conn, fb, mode)
+kms.AtomicReq.set_mode(conn, crtc, fb, mode)
 
 image = Image.open(args.image)
 image = image.resize((mode.hdisplay, mode.vdisplay),

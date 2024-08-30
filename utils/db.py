@@ -67,7 +67,7 @@ mode = conn.get_default_mode()
 
 fliphandler = FlipHandler()
 
-crtc.set_mode(conn, fliphandler.fb1, mode)
+kms.AtomicReq.set_mode(conn, crtc, fliphandler.fb1, mode)
 
 fliphandler.handle_page_flip(0, 0)
 

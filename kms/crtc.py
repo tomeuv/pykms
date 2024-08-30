@@ -36,20 +36,6 @@ class Crtc(kms.DrmPropObject):
     def mode(self) -> kms.uapi.drm_mode_modeinfo:
         return self.crtc_res.mode
 
-    # XXX deprecated
-    def set_mode(self, connector, fb, mode):
-        modeb = kms.Blob(self.card, mode)
-        crtc = self
-        plane = crtc.get_possible_planes()[0]
-
-        req = kms.AtomicReq(self.card)
-
-        req.add_connector(connector, crtc)
-        req.add_crtc(crtc, modeb)
-        req.add_plane(plane, fb, crtc, dst=(0, 0, mode.hdisplay, mode.vdisplay))
-
-        req.commit_sync(allow_modeset = True)
-
     @property
     def primary_plane(self):
         plane = next((p for p in self.get_possible_planes() if p.type == kms.PlaneType.PRIMARY and p.crtc_id == self.id), None)
