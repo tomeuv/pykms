@@ -75,8 +75,6 @@ def main():
     ts2 = time.perf_counter()
     print(f'Drawing took {(ts2 - ts1) * 1000:.4f} ms')
 
-    card.disable_planes()
-
     req = kms.AtomicReq(card)
 
     req.add_connector(conn, crtc)

@@ -32,8 +32,6 @@ p3 = res.reserve_generic_plane(hdmi_crtc)
 p4 = res.reserve_generic_plane(hdmi_crtc)
 planes = [p1, p2, p3, p4]
 
-card.disable_planes()
-
 w = 500
 h = 500
 
@@ -46,8 +44,6 @@ drawing.fill_rect(fbs[0], 50, 50, 200, 200, drawing.RGB(128, 255, 0, 0))
 drawing.fill_rect(fbs[1], 150, 50, 200, 200, drawing.RGB(128, 0, 255, 0))
 drawing.fill_rect(fbs[2], 50, 150, 200, 200, drawing.RGB(128, 0, 0, 255))
 drawing.fill_rect(fbs[3], 150, 150, 200, 200, drawing.RGB(128, 128, 128, 128))
-
-card.disable_planes()
 
 req = kms.AtomicReq(card)
 

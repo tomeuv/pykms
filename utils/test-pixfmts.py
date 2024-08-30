@@ -74,8 +74,6 @@ def main():
     else:
         formats = plane.format_types
 
-    card.disable_planes()
-
     tests(conn, crtc, plane, mode, formats)
 
     print("all done")

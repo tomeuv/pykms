@@ -168,8 +168,6 @@ def main():
 
     init_fbs(state)
 
-    card.disable_planes()
-
     req = kms.AtomicReq(card)
 
     req.add_connector(conn, crtc)

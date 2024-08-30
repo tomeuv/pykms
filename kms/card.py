@@ -111,11 +111,6 @@ class Card:
         if not cap.value:
             raise NotImplementedError('Card does not support atomic modesetting')
 
-    # XXX deprecated
-    @property
-    def has_atomic(self):
-        return True
-
     def get_version(self):
         ver = kms.uapi.drm_version()
         fcntl.ioctl(self.fd, kms.uapi.DRM_IOCTL_VERSION, ver, True)
@@ -227,7 +222,3 @@ class Card:
             i += ev.length
 
         return events
-
-    # XXX Deprecated
-    def disable_planes(self):
-        pass
