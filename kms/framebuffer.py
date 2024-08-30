@@ -8,6 +8,8 @@ import weakref
 
 from typing import TYPE_CHECKING
 
+import pixutils.ioctl
+
 import kms
 import kms.uapi
 
@@ -50,6 +52,12 @@ class Framebuffer(kms.DrmObject):
             ptrtype = ctypes.c_ubyte * self.size(idx)
             ptr = ptrtype.from_buffer(self.map(idx))
             ctypes.memset(ptr, 0, self.size(idx))
+
+    def begin_cpu_access(self, access: str):
+        raise NotImplementedError()
+
+    def end_cpu_access(self):
+        raise NotImplementedError()
 
 
 class DumbFramebuffer(Framebuffer):
@@ -146,11 +154,32 @@ class DumbFramebuffer(Framebuffer):
 
         return p.prime_fd
 
+    def begin_cpu_access(self, access: str):
+        pass
+
+    def end_cpu_access(self):
+        pass
+
 
 class DmabufFramebuffer(Framebuffer):
+    class struct_dma_buf_sync(ctypes.Structure):
+        __slots__ = ['flags']
+        _fields_ = [('flags', ctypes.c_uint64)]
+
+    DMA_BUF_BASE = 'b'
+    DMA_BUF_IOCTL_SYNC = pixutils.ioctl.IOW(DMA_BUF_BASE, 0, struct_dma_buf_sync)
+
+    DMA_BUF_SYNC_READ = 1 << 0
+    DMA_BUF_SYNC_WRITE = 2 << 0
+    DMA_BUF_SYNC_RW = DMA_BUF_SYNC_READ | DMA_BUF_SYNC_WRITE
+    DMA_BUF_SYNC_START = 0 << 2
+    DMA_BUF_SYNC_END = 1 << 2
+
     def __init__(self, card: Card, width: int, height: int, format: kms.PixelFormat,
                  fds: list[int], pitches: list[int], offsets: list[int]) -> None:
         planes = []
+
+        self._sync_flags = 0
 
         for idx in range(len(format.planes)):
             args = kms.uapi.drm_prime_handle(fd=fds[idx])
@@ -213,3 +242,36 @@ class DmabufFramebuffer(Framebuffer):
         p = self.planes[plane_idx]
 
         return p.prime_fd
+
+    def begin_cpu_access(self, access: str):
+        if self._sync_flags != 0:
+            raise RuntimeError("begin_cpu sync already started")
+
+        if access == 'r':
+            self._sync_flags = DmabufFramebuffer.DMA_BUF_SYNC_READ
+        elif access == 'w':
+            self._sync_flags = DmabufFramebuffer.DMA_BUF_SYNC_WRITE
+        elif access == 'rw':
+            self._sync_flags = DmabufFramebuffer.DMA_BUF_SYNC_RW
+        else:
+            raise RuntimeError('Bad access type "{access}"')
+
+        dbs = DmabufFramebuffer.struct_dma_buf_sync()
+        # pylint: disable=attribute-defined-outside-init
+        dbs.flags = DmabufFramebuffer.DMA_BUF_SYNC_START | self._sync_flags
+
+        for p in self.planes:
+            fcntl.ioctl(p.prime_fd, DmabufFramebuffer.DMA_BUF_IOCTL_SYNC, dbs, False)
+
+    def end_cpu_access(self):
+        if self._sync_flags == 0:
+            raise RuntimeError("begin_cpu sync not started")
+
+        dbs = DmabufFramebuffer.struct_dma_buf_sync()
+        # pylint: disable=attribute-defined-outside-init
+        dbs.flags = DmabufFramebuffer.DMA_BUF_SYNC_END | self._sync_flags
+
+        for p in self.planes:
+            fcntl.ioctl(p.prime_fd, DmabufFramebuffer.DMA_BUF_IOCTL_SYNC, dbs, False)
+
+        self._sync_flags = 0

@@ -66,7 +66,9 @@ def main():
         fb = kms.DumbFramebuffer(card, width, height, fmt)
 
     ts1 = time.perf_counter()
+    fb.begin_cpu_access('w')
     draw_test_pattern(fb)
+    fb.end_cpu_access()
     ts2 = time.perf_counter()
     print(f'Drawing took {(ts2 - ts1) * 1000:.4f} ms')
 
