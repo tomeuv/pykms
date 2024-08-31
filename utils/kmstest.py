@@ -31,6 +31,11 @@ def draw_test_pattern(fb):
     nfb.b[0::fb.height-1, :] = 0xffffff
     nfb.b[:, 0::fb.width-1] = 0xffffff
 
+    # Diagonals
+    d1 = nfb.b.ravel()
+    d1[0::fb.width+1] = 0xffffff
+    d1[fb.width-1::fb.width-1] = 0xffffff
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('-c', '--connector', default='')
