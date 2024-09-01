@@ -31,4 +31,4 @@ Repository = "https://github.com/tomba/pykms.git"
 "Bug Tracker" = "https://github.com/tomba/pykms/issues"
 
 [tool.setuptools]
-packages = ["kms"]
+packages = ["kms", "kms.uapi"]
