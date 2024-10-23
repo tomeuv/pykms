@@ -68,6 +68,21 @@ class Connector(kms.DrmPropObject):
     def connected(self):
         return self.connector_res.connection in (kms.uapi.DRM_MODE_CONNECTED, kms.uapi.DRM_MODE_UNKNOWNCONNECTION)
 
+    def refresh_modes(self):
+        res = kms.uapi.drm_mode_get_connector(connector_id=self.id)
+
+        fcntl.ioctl(self.card.fd, kms.uapi.DRM_IOCTL_MODE_GETCONNECTOR, res, True)
+
+        modes = (kms.uapi.drm_mode_modeinfo * res.count_modes)()
+        res.modes_ptr = ctypes.addressof(modes)
+
+        res.count_props = 0
+        res.count_encoders = 0
+
+        fcntl.ioctl(self.card.fd, kms.uapi.DRM_IOCTL_MODE_GETCONNECTOR, res, True)
+
+        self.modes = [kms.VideoMode(m) for m in modes]
+
     def get_default_mode(self):
         return self.modes[0]
 
