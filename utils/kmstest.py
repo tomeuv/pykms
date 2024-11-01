@@ -40,6 +40,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('-c', '--connector', default='')
     parser.add_argument('--dmabuf', nargs='?', const='reserved', metavar='HEAP', help='use dmabuf')
+    parser.add_argument('-f', '--format', default='XRGB8888')
     args = parser.parse_args()
 
     card = kms.Card()
@@ -54,7 +55,8 @@ def main():
 
     modeb = mode.to_blob(card)
 
-    fmt = kms.PixelFormats.XRGB8888
+    fmt = kms.PixelFormats.find_by_name(args.format)
+
     width = mode.hdisplay
     height = mode.vdisplay
 
@@ -70,12 +72,13 @@ def main():
     else:
         fb = kms.DumbFramebuffer(card, width, height, fmt)
 
-    ts1 = time.perf_counter()
-    fb.begin_cpu_access('w')
-    draw_test_pattern(fb)
-    fb.end_cpu_access()
-    ts2 = time.perf_counter()
-    print(f'Drawing took {(ts2 - ts1) * 1000:.4f} ms')
+    if fmt == kms.PixelFormats.XRGB8888:
+        ts1 = time.perf_counter()
+        fb.begin_cpu_access('w')
+        draw_test_pattern(fb)
+        fb.end_cpu_access()
+        ts2 = time.perf_counter()
+        print(f'Drawing took {(ts2 - ts1) * 1000:.4f} ms')
 
     req = kms.AtomicReq(card)
 
