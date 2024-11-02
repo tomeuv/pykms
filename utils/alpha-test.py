@@ -7,11 +7,11 @@ from kms import drawing
 
 parser = argparse.ArgumentParser(description='Simple alpha blending test.')
 parser.add_argument('--resetcrtc', action='store_true',
-		    help='Reset legacy CRTC color properties')
+                    help='Reset legacy CRTC color properties')
 parser.add_argument('--connector', '-c', dest='connector', default='',
-		    required=False, help='connector to output')
+                    required=False, help='connector to output')
 parser.add_argument('--mode', '-m', dest='modename',
-		    required=False, help='Video mode name to use')
+                    required=False, help='Video mode name to use')
 args = parser.parse_args()
 
 max_planes = 4
