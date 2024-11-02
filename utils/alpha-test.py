@@ -6,9 +6,9 @@ import kms
 from kms import drawing
 
 parser = argparse.ArgumentParser(description='Simple alpha blending test.')
-parser.add_argument('--resetcrtc', action="store_true",
+parser.add_argument('--resetcrtc', action='store_true',
 		    help='Reset legacy CRTC color properties')
-parser.add_argument('--connector', '-c', dest='connector', default="",
+parser.add_argument('--connector', '-c', dest='connector', default='',
 		    required=False, help='connector to output')
 parser.add_argument('--mode', '-m', dest='modename',
 		    required=False, help='Video mode name to use')
@@ -33,7 +33,7 @@ for i in range(max_planes):
         break
     planes.append(p)
 
-print("Got {} planes. Test supports up to 4 planes.".format(len(planes)))
+print('Got {} planes. Test supports up to 4 planes.'.format(len(planes)))
 
 w = mode.hdisplay
 h = mode.vdisplay
@@ -51,27 +51,27 @@ fbs[3].fill_rect(150, 150, 200, 200, drawing.RGB(128, 128, 128, 128))
 
 if args.resetcrtc:
     crtc.set_props({
-        "trans-key-mode": 0,
-        "trans-key": 0,
-        "background": 0,
-        "alpha_blender": 1,
+        'trans-key-mode': 0,
+        'trans-key': 0,
+        'background': 0,
+        'alpha_blender': 1,
     })
 
 for i, plane in enumerate(planes):
     fb = fbs[i]
 
-    print("set crtc {}, plane {}, z {}, fb {}".format(crtc.id, plane.id, i, fb.id))
+    print('set crtc {}, plane {}, z {}, fb {}'.format(crtc.id, plane.id, i, fb.id))
 
     plane.set_props({
-        "FB_ID": fb.id,
-        "CRTC_ID": crtc.id,
-        "SRC_W": fb.width << 16,
-        "SRC_H": fb.height << 16,
-        "CRTC_W": fb.width,
-        "CRTC_H": fb.height,
-        "zpos": i,
+        'FB_ID': fb.id,
+        'CRTC_ID': crtc.id,
+        'SRC_W': fb.width << 16,
+        'SRC_H': fb.height << 16,
+        'CRTC_W': fb.width,
+        'CRTC_H': fb.height,
+        'zpos': i,
     })
 
     time.sleep(1)
 
-input("press enter to exit\n")
+input('press enter to exit\n')

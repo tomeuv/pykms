@@ -6,8 +6,8 @@ import kms
 import kms.drawing
 
 parser = argparse.ArgumentParser()
-parser.add_argument("-c1", "--connector1", default="")
-parser.add_argument("-c2", "--connector2", default="")
+parser.add_argument('-c1', '--connector1', default='')
+parser.add_argument('-c2', '--connector2', default='')
 args = parser.parse_args()
 
 PLANE_WIDTH = 300
@@ -72,33 +72,33 @@ def main():
     for o in ovls:
         o.disable(req)
     req.commit_sync(allow_modeset = True)
-    print("Planes disabled"); sys.stdin.readline()
+    print('Planes disabled'); sys.stdin.readline()
 
     req = kms.AtomicReq(card)
     ovls[0].setup(req, screen0)
     ovls[1].setup(req, screen0)
     req.commit_sync(allow_modeset = True)
-    print("Planes on Screen0"); sys.stdin.readline()
+    print('Planes on Screen0'); sys.stdin.readline()
 
     req = kms.AtomicReq(card)
     ovls[1].disable(req)
     req.commit_sync(allow_modeset = True)
-    print("Plane1 disabled"); sys.stdin.readline()
+    print('Plane1 disabled'); sys.stdin.readline()
 
     req = kms.AtomicReq(card)
     ovls[1].setup(req, screen1)
     req.commit_sync(allow_modeset = True)
-    print("Plane1 on Screen1"); sys.stdin.readline()
+    print('Plane1 on Screen1'); sys.stdin.readline()
 
     req = kms.AtomicReq(card)
     ovls[0].disable(req)
     req.commit_sync(allow_modeset = True)
-    print("Plane0 disabled"); sys.stdin.readline()
+    print('Plane0 disabled'); sys.stdin.readline()
 
     req = kms.AtomicReq(card)
     ovls[0].setup(req, screen1)
     req.commit_sync(allow_modeset = True)
-    print("Plane0 on Screen1"); sys.stdin.readline()
+    print('Plane0 on Screen1'); sys.stdin.readline()
 
 
 
@@ -107,22 +107,22 @@ def main():
     req = kms.AtomicReq(card)
     ovls[1].disable(req)
     req.commit_sync(allow_modeset = True)
-    print("Plane1 disabled"); sys.stdin.readline()
+    print('Plane1 disabled'); sys.stdin.readline()
 
     req = kms.AtomicReq(card)
     ovls[1].setup(req, screen0)
     req.commit_sync(allow_modeset = True)
-    print("Plane1 on Screen0"); sys.stdin.readline()
+    print('Plane1 on Screen0'); sys.stdin.readline()
 
     req = kms.AtomicReq(card)
     ovls[0].disable(req)
     req.commit_sync(allow_modeset = True)
-    print("Plane0 disabled"); sys.stdin.readline()
+    print('Plane0 disabled'); sys.stdin.readline()
 
     req = kms.AtomicReq(card)
     ovls[0].setup(req, screen0)
     req.commit_sync(allow_modeset = True)
-    print("Plane0 on Screen0"); sys.stdin.readline()
+    print('Plane0 on Screen0'); sys.stdin.readline()
 
 
 

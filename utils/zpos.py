@@ -72,7 +72,7 @@ def pr():
 pr()
 
 
-print("press enter"); sys.stdin.readline()
+print('press enter'); sys.stdin.readline()
 
 #req = kms.AtomicReq(card)
 #req.add(dp_crtc, 'ACTIVE', 0)
@@ -86,7 +86,7 @@ req.add_plane(planes[1], None, None)
 req.add_plane(planes[2], None, None)
 req.add_plane(planes[3], None, None)
 req.commit_sync(allow_modeset = False)
-print("press enter"); sys.stdin.readline()
+print('press enter'); sys.stdin.readline()
 
 
 req = kms.AtomicReq(card)
@@ -97,7 +97,7 @@ req.add_plane(planes[2], fbs[2], dp_crtc, zpos=0)
 req.add_plane(planes[3], fbs[3], dp_crtc, zpos=0)
 
 req.commit_sync(allow_modeset = False)
-print("press enter"); sys.stdin.readline()
+print('press enter'); sys.stdin.readline()
 
 #req = kms.AtomicReq(card)
 ##req.add(dp_crtc, 'ACTIVE', 1)

@@ -45,15 +45,15 @@ class Printer:
         self.print_props(crtc, indent + 4)
 
     def print_plane(self, p: kms.Plane, indent: int):
-        src_x = p.get_prop_value("SRC_X") >> 16
-        src_y = p.get_prop_value("SRC_Y") >> 16
-        src_w = p.get_prop_value("SRC_W") >> 16
-        src_h = p.get_prop_value("SRC_H") >> 16
+        src_x = p.get_prop_value('SRC_X') >> 16
+        src_y = p.get_prop_value('SRC_Y') >> 16
+        src_w = p.get_prop_value('SRC_W') >> 16
+        src_h = p.get_prop_value('SRC_H') >> 16
 
-        crtc_x = p.get_prop_value("CRTC_X")
-        crtc_y = p.get_prop_value("CRTC_Y")
-        crtc_w = p.get_prop_value("CRTC_W")
-        crtc_h = p.get_prop_value("CRTC_H")
+        crtc_x = p.get_prop_value('CRTC_X')
+        crtc_y = p.get_prop_value('CRTC_Y')
+        crtc_w = p.get_prop_value('CRTC_W')
+        crtc_h = p.get_prop_value('CRTC_H')
 
         printi(indent, f'Plane {p.idx} ({p.id}) fb-id {p.fb_id} ' +
               f'{src_x},{src_y} {src_w}x{src_h} -> {crtc_x},{crtc_y} {crtc_w}x{crtc_h} ')
@@ -98,8 +98,8 @@ class Printer:
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("-p", "--props", action='store_true')
-    parser.add_argument("-f", "--prop-filter", default="")
+    parser.add_argument('-p', '--props', action='store_true')
+    parser.add_argument('-f', '--prop-filter', default='')
     args = parser.parse_args()
 
     if args.prop_filter:

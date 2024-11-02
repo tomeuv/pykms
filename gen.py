@@ -5,7 +5,7 @@ import re
 
 CTYPESGEN_PATH = '/home/tomba/work/ctypesgen/'
 
-INCLUDE_PATH = "/usr/include"
+INCLUDE_PATH = '/usr/include'
 
 INCLUDES = (
     f'{INCLUDE_PATH}/drm/drm.h',
@@ -16,7 +16,7 @@ INCLUDES = (
 OUT = 'kms/uapi/kms.py'
 
 CTYPESGEN_OPTS = (
-    "--no-embed-preamble",
+    '--no-embed-preamble',
     '--no-macro-try-except',
     '--no-source-comments',
     '-D__volatile__=',
@@ -54,6 +54,6 @@ replace(OUT, [
 # Add pylint ignore comment
 
 replace('kms/uapi/ctypes_preamble.py', [
-        (r"^def POINTER\(obj\):$",
-         "def POINTER(obj): # pylint: disable=function-redefined:")
+        (r'^def POINTER\(obj\):$',
+         'def POINTER(obj): # pylint: disable=function-redefined:')
         ])

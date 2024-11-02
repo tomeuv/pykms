@@ -31,7 +31,7 @@ class FlipHandler():
         time_delta = time - self.time
         if time_delta >= 5:
             frame_delta = frame - self.frames
-            print("Frame rate: %f (%u/%u frames in %f s)" %
+            print('Frame rate: %f (%u/%u frames in %f s)' %
                   (frame_delta / time_delta, self.flips, frame_delta, time_delta))
 
             self.flips = 0
@@ -56,7 +56,7 @@ class FlipHandler():
         nfb.draw_color_bar(old_xpos, new_xpos, bar_width)
 
         ctx = kms.AtomicReq(card)
-        ctx.add(crtc.primary_plane, "FB_ID", fb.id)
+        ctx.add(crtc.primary_plane, 'FB_ID', fb.id)
         ctx.commit()
 
 if len(sys.argv) > 1:

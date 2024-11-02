@@ -6,7 +6,7 @@ ctypesgen --no-embed-preamble --no-macro-try-except --no-source-comments -D__vol
 Do not modify this file.
 """
 
-__docformat__ = "restructuredtext"
+__docformat__ = 'restructuredtext'
 
 # Begin preamble for Python
 

@@ -35,7 +35,7 @@ def test_fmt(conn, crtc, plane, mode, modeb, fmt):
 
     req.commit_sync(allow_modeset = True)
 
-    input("press enter to continue\n")
+    input('press enter to continue\n')
 
 def tests(conn, crtc, plane, mode, formats):
     print(f'Test formats: {list(fmt.name for fmt in formats)}')
@@ -76,7 +76,7 @@ def main():
 
     tests(conn, crtc, plane, mode, formats)
 
-    print("all done")
+    print('all done')
 
 if __name__ == '__main__':
     sys.exit(main())

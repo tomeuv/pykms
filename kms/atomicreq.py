@@ -100,14 +100,14 @@ class AtomicReq:
         elif isinstance(ob, kms.DrmPropObject):
             ob_id = ob.id
         else:
-            raise RuntimeError("Bad object")
+            raise RuntimeError('Bad object')
 
         if isinstance(prop, int):
             prop_id = prop
         elif isinstance(prop, str):
             prop_id = self.card.find_property_id(ob, prop)
         else:
-            raise RuntimeError("Bad prop")
+            raise RuntimeError('Bad prop')
 
         self.props.append((ob_id, prop_id, value))
 
@@ -121,16 +121,16 @@ class AtomicReq:
         elif len(argv) == 1:
             self.add_many(ob, *argv)
         else:
-            raise RuntimeError("Bad add() call")
+            raise RuntimeError('Bad add() call')
 
     def add_connector(self, connector: kms.Connector, crtc: kms.Crtc):
-        self.add(connector.id, "CRTC_ID", crtc.id if crtc else 0)
+        self.add(connector.id, 'CRTC_ID', crtc.id if crtc else 0)
 
     def add_crtc(self, crtc: kms.Crtc, mode_blob: kms.Blob | None):
         if mode_blob:
-            self.add(crtc.id, {"ACTIVE": 1, "MODE_ID": mode_blob.id})
+            self.add(crtc.id, {'ACTIVE': 1, 'MODE_ID': mode_blob.id})
         else:
-            self.add(crtc.id, {"ACTIVE": 0, "MODE_ID": 0})
+            self.add(crtc.id, {'ACTIVE': 0, 'MODE_ID': 0})
 
     def add_plane(self, plane: kms.Plane,
                   fb: kms.Framebuffer | None,
@@ -145,8 +145,8 @@ class AtomicReq:
         if not dst:
             dst = src
 
-        m = {"FB_ID": fb.id if fb else 0,
-             "CRTC_ID": crtc.id if crtc else 0}
+        m = {'FB_ID': fb.id if fb else 0,
+             'CRTC_ID': crtc.id if crtc else 0}
 
         if src is not None:
             src_x = int(round(src[0] * 0x10000))
@@ -154,10 +154,10 @@ class AtomicReq:
             src_w = int(round(src[2] * 0x10000))
             src_h = int(round(src[3] * 0x10000))
 
-            m["SRC_X"] = src_x
-            m["SRC_Y"] = src_y
-            m["SRC_W"] = src_w
-            m["SRC_H"] = src_h
+            m['SRC_X'] = src_x
+            m['SRC_Y'] = src_y
+            m['SRC_W'] = src_w
+            m['SRC_H'] = src_h
 
         if dst is not None:
             crtc_x = int(round(dst[0]))
@@ -165,13 +165,13 @@ class AtomicReq:
             crtc_w = int(round(dst[2]))
             crtc_h = int(round(dst[3]))
 
-            m["CRTC_X"] = crtc_x
-            m["CRTC_Y"] = crtc_y
-            m["CRTC_W"] = crtc_w
-            m["CRTC_H"] = crtc_h
+            m['CRTC_X'] = crtc_x
+            m['CRTC_Y'] = crtc_y
+            m['CRTC_W'] = crtc_w
+            m['CRTC_H'] = crtc_h
 
         if zpos is not None:
-            m["zpos"] = zpos
+            m['zpos'] = zpos
 
         if params:
             m.update(params)

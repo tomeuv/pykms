@@ -6,8 +6,8 @@ import numpy as np
 import kms
 
 parser = argparse.ArgumentParser()
-parser.add_argument("image")
-parser.add_argument("-f", "--format", default="XRGB8888")
+parser.add_argument('image')
+parser.add_argument('-f', '--format', default='XRGB8888')
 args = parser.parse_args()
 
 format = kms.PixelFormats.find_by_name(args.format)
@@ -29,7 +29,7 @@ map = fb.map(0)
 b = np.frombuffer(map, dtype=np.uint8).reshape(fb.height, fb.width, 4)
 b[:, :, :] = pixels
 
-print("Press enter to exit")
+print('Press enter to exit')
 input()
 
 # We need to release the numpy array, as it references the mmap

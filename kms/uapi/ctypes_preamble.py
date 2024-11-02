@@ -3,7 +3,7 @@ import sys
 from ctypes import *  # noqa: F401, F403
 
 _int_types = (ctypes.c_int16, ctypes.c_int32)
-if hasattr(ctypes, "c_int64"):
+if hasattr(ctypes, 'c_int64'):
     # Some builds of ctypes apparently do not have ctypes.c_int64
     # defined; it's a pretty good bet that these builds do not
     # have 64-bit pointers.
@@ -285,11 +285,11 @@ class MutableString(UserString):
 
     A faster and better solution is to rewrite your program using lists."""
 
-    def __init__(self, string=""):
+    def __init__(self, string=''):
         self.data = string
 
     def __hash__(self):
-        raise TypeError("unhashable type (it is mutable)")
+        raise TypeError('unhashable type (it is mutable)')
 
     def __setitem__(self, index, sub):
         if index < 0:
@@ -338,9 +338,9 @@ class MutableString(UserString):
 
 
 class String(MutableString, ctypes.Union):
-    _fields_ = [("raw", ctypes.POINTER(ctypes.c_char)), ("data", ctypes.c_char_p)]
+    _fields_ = [('raw', ctypes.POINTER(ctypes.c_char)), ('data', ctypes.c_char_p)]
 
-    def __init__(self, obj=b""):
+    def __init__(self, obj=b''):
         if isinstance(obj, (bytes, UserString)):
             self.data = bytes(obj)
         else:
@@ -401,7 +401,7 @@ def ReturnString(obj, func=None, arguments=None):
 # Non-primitive return values wrapped with UNCHECKED won't be
 # typechecked, and will be converted to ctypes.c_void_p.
 def UNCHECKED(type):
-    if hasattr(type, "_type_") and isinstance(type._type_, str) and type._type_ != "P":
+    if hasattr(type, '_type_') and isinstance(type._type_, str) and type._type_ != 'P':
         return type
     else:
         return ctypes.c_void_p

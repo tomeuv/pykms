@@ -58,7 +58,7 @@ class Card:
             finally:
                 os.close(fd)
 
-        raise FileNotFoundError("No KMS capable card found")
+        raise FileNotFoundError('No KMS capable card found')
 
     @property
     def fd(self):

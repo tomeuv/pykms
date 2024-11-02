@@ -46,4 +46,4 @@ class Crtc(kms.DrmPropObject):
         plane = next((p for p in self.get_possible_planes()), None)
         if plane:
             return plane
-        raise RuntimeError("No primary plane")
+        raise RuntimeError('No primary plane')

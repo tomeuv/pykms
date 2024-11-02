@@ -30,7 +30,7 @@ class DrmProperty(kms.DrmObject):
         prop = kms.uapi.drm_mode_get_property(prop_id=id)
         fcntl.ioctl(self.card.fd, kms.uapi.DRM_IOCTL_MODE_GETPROPERTY, prop, True)
 
-        self.name = prop.name.decode("ascii")
+        self.name = prop.name.decode('ascii')
 
         self.immutable = prop.flags & kms.uapi.DRM_MODE_PROP_IMMUTABLE
         self.atomic = prop.flags & kms.uapi.DRM_MODE_PROP_ATOMIC

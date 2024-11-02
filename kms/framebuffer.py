@@ -117,7 +117,7 @@ class DumbFramebuffer(Framebuffer):
                     # e.g. a numpy buffer.
                     p.map.close()
                 except BufferError:
-                    print("Warning: mmapped buffer still in use")
+                    print('Warning: mmapped buffer still in use')
                 finally:
                     p.map = None
 
@@ -229,7 +229,7 @@ class DmabufFramebuffer(Framebuffer):
                     # e.g. a numpy buffer.
                     p.map.close()
                 except BufferError:
-                    print("Warning: mmapped buffer still in use")
+                    print('Warning: mmapped buffer still in use')
                 finally:
                     p.map = None
 
@@ -254,7 +254,7 @@ class DmabufFramebuffer(Framebuffer):
 
     def begin_cpu_access(self, access: str):
         if self._sync_flags != 0:
-            raise RuntimeError("begin_cpu sync already started")
+            raise RuntimeError('begin_cpu sync already started')
 
         if access == 'r':
             self._sync_flags = DmabufFramebuffer.DMA_BUF_SYNC_READ
@@ -274,7 +274,7 @@ class DmabufFramebuffer(Framebuffer):
 
     def end_cpu_access(self):
         if self._sync_flags == 0:
-            raise RuntimeError("begin_cpu sync not started")
+            raise RuntimeError('begin_cpu sync not started')
 
         dbs = DmabufFramebuffer.struct_dma_buf_sync()
         # pylint: disable=attribute-defined-outside-init

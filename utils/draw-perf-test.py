@@ -182,7 +182,7 @@ def main():
                 handle_pageflip(state)
 
     def readkey(_: State):
-        print("Done")
+        print('Done')
         sys.stdin.readline()
         sys.exit(0)
 

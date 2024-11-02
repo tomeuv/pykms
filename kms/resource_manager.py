@@ -21,7 +21,7 @@ class ResourceManager:
 
             return c
 
-        raise RuntimeError("Available connector not found")
+        raise RuntimeError('Available connector not found')
 
     def resolve_connector(self, name: str):
         if name.startswith('@'):
@@ -29,7 +29,7 @@ class ResourceManager:
             conn = self.card.get_connector(id)
 
             if conn in self.reserved_connectors:
-                raise RuntimeError("Connector already reserved")
+                raise RuntimeError('Connector already reserved')
 
             return conn
 
@@ -39,12 +39,12 @@ class ResourceManager:
             pass
         else:
             if idx >= len(self.card.connectors):
-                raise RuntimeError("Connector idx too high")
+                raise RuntimeError('Connector idx too high')
 
             conn = self.card.connectors[idx]
 
             if conn in self.reserved_connectors:
-                raise RuntimeError("Connector already reserved")
+                raise RuntimeError('Connector already reserved')
 
             return conn
 
@@ -55,13 +55,13 @@ class ResourceManager:
                 continue
 
             if c in self.reserved_connectors:
-                raise RuntimeError("Connector already reserved")
+                raise RuntimeError('Connector already reserved')
 
             return c
 
         raise RuntimeError(f"Connector '{name}' not found")
 
-    def reserve_connector(self, name=""):
+    def reserve_connector(self, name=''):
         if not name:
             conn = self.find_connector()
         else:
@@ -83,7 +83,7 @@ class ResourceManager:
                 self.reserved_crtcs.add(crtc)
                 return crtc
 
-        raise RuntimeError("Crtc not found")
+        raise RuntimeError('Crtc not found')
 
     def reserve_plane(self, crtc: kms.Crtc, format: kms.PixelFormat | None=None, plane_type=None):
         for plane in crtc.get_possible_planes():
@@ -104,7 +104,7 @@ class ResourceManager:
 
             return plane
 
-        raise RuntimeError("Plane not found")
+        raise RuntimeError('Plane not found')
 
     # Deprecated
     def reserve_generic_plane(self, crtc: kms.Crtc, format: kms.PixelFormat | None=None):
