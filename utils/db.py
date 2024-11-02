@@ -8,7 +8,7 @@ import kms.drawing
 bar_width = 20
 bar_speed = 8
 
-class FlipHandler():
+class FlipHandler:
     def __init__(self):
         super().__init__()
         self.bar_xpos = 0

@@ -157,16 +157,16 @@ class Card:
         self.planes = [Plane(self, id, idx) for idx,id in enumerate(plane_ids)]
 
     def get_object(self, id):
-        return next((ob for ob in [*self.crtcs, *self.connectors, *self.encoders, *self.planes] if ob.id == id))
+        return next(ob for ob in [*self.crtcs, *self.connectors, *self.encoders, *self.planes] if ob.id == id)
 
     def get_connector(self, id):
-        return next((ob for ob in self.connectors if ob.id == id))
+        return next(ob for ob in self.connectors if ob.id == id)
 
     def get_crtc(self, id):
-        return next((ob for ob in self.crtcs if ob.id == id))
+        return next(ob for ob in self.crtcs if ob.id == id)
 
     def get_encoder(self, id):
-        return next((ob for ob in self.encoders if ob.id == id))
+        return next(ob for ob in self.encoders if ob.id == id)
 
     def get_framebuffer(self, id):
         res = kms.uapi.drm_mode_fb_cmd2()
