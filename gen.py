@@ -36,7 +36,7 @@ def replace(filename, replaces):
         pat = r[0]
         repl = r[1]
 
-        with open(filename, 'r', encoding='utf-8') as f:
+        with open(filename, encoding='utf-8') as f:
             content = f.read()
 
         content = re.sub(pat, repl, content, count=1, flags=re.MULTILINE)
