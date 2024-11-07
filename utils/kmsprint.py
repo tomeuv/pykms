@@ -61,7 +61,7 @@ class Printer:
         self.print_props(p, indent + 4)
 
     def print_fb(self, fb: kms.Framebuffer, indent: int):
-        printi(indent, f'FB ({fb.id}) {fb.width}x{fb.height} {fb.format.name} pixelspergroup={fb.format.pixelspergroup} ')
+        printi(indent, f'FB ({fb.id}) {fb.width}x{fb.height} {fb.format.name} group_size={fb.format.group_size} ')
 
         for idx, p in enumerate(fb.planes):
             pi = fb.format.planes[idx]

@@ -13,7 +13,7 @@ def draw_test_pattern(fb: kms.DumbFramebuffer):
     for pindex,pi in enumerate(format.planes):
         map = fb.map(pindex)
 
-        bpp = pi.bytespergroup // format.pixelspergroup[0]
+        bpp = pi.bytespergroup // format.group_size[0]
         w = fb.width
         h = fb.height // pi.linespergroup
 
