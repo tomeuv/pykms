@@ -5,7 +5,6 @@ import fcntl
 import mmap
 import os
 import weakref
-from math import ceil
 
 from typing import TYPE_CHECKING
 
@@ -67,19 +66,10 @@ class DumbFramebuffer(Framebuffer):
 
         assert width % format.group_size[0] == 0
 
-        # DRM_IOCTL_MODE_CREATE_DUMB takes a 'bpp' (bits-per-pixel) argument,
-        # which is then used with the width and height to allocate the buffer.
-        # This doesn't work for pixel formats where the average bits-per-pixel
-        # is not an integer (e.g. XV15)
-        #
-        # So, we instead use the number of bits per (horizontal) pixel group as
-        # the 'bpp' argument, and adjust the width accordingly.
-
-        for pi in format.planes:
+        for pi, _ in enumerate(format.planes):
             creq = kms.uapi.drm_mode_create_dumb()
-            creq.width = int(ceil(width / format.group_size[0]))
-            creq.height = int(ceil(height / format.group_size[1])) * pi.linespergroup
-            creq.bpp = pi.bytespergroup * 8
+
+            creq.width, creq.height, creq.bpp = format.dumb_size(width, height, pi)
 
             fcntl.ioctl(card.fd, kms.uapi.DRM_IOCTL_MODE_CREATE_DUMB, creq, True)
 
