@@ -64,12 +64,10 @@ class DumbFramebuffer(Framebuffer):
     def __init__(self, card: Card, width: int, height: int, format: kms.PixelFormat) -> None:
         planes = []
 
-        assert width % format.group_size[0] == 0
-
-        for pi, _ in enumerate(format.planes):
+        for idx, _ in enumerate(format.planes):
             creq = kms.uapi.drm_mode_create_dumb()
 
-            creq.width, creq.height, creq.bpp = format.dumb_size(width, height, pi)
+            creq.width, creq.height, creq.bpp = format.dumb_size(width, height, idx)
 
             fcntl.ioctl(card.fd, kms.uapi.DRM_IOCTL_MODE_CREATE_DUMB, creq, True)
 
