@@ -8,17 +8,9 @@ import numpy as np
 import kms
 
 def draw_test_pattern(fb: kms.DumbFramebuffer):
-    format = fb.format
-
-    for pindex,pi in enumerate(format.planes):
-        map = fb.map(pindex)
-
-        bpp = pi.bytespergroup // format.group_size[0]
-        w = fb.width
-        h = fb.height // pi.linespergroup
-
-        b = np.frombuffer(map, dtype=np.uint8).reshape(h, w, bpp)
-        b[:, :, :] = 0xff
+    for idx,_ in enumerate(fb.format.planes):
+        b = np.frombuffer(fb.map(idx), dtype=np.uint8)
+        b[:] = 0xff
 
 def test_fmt(conn, crtc, plane, mode, modeb, fmt):
     card = conn.card
