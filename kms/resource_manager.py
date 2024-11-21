@@ -86,18 +86,8 @@ class ResourceManager:
         raise RuntimeError('Crtc not found')
 
     def reserve_plane(self, crtc: kms.Crtc, format: kms.PixelFormat | None=None, plane_type=None):
-        for plane in crtc.get_possible_planes():
+        for plane in crtc.iter_planes(format, plane_type):
             if plane in self.reserved_planes:
-                continue
-
-            # Return Cursor planes only if specifically requested
-            if not plane_type and plane.plane_type == kms.PlaneType.CURSOR:
-                continue
-
-            if plane_type and plane_type != plane.plane_type:
-                continue
-
-            if format and not plane.supports_format(format):
                 continue
 
             self.reserved_planes.add(plane)

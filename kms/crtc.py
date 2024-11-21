@@ -47,3 +47,17 @@ class Crtc(kms.DrmPropObject):
         if plane:
             return plane
         raise RuntimeError('No primary plane')
+
+    def iter_planes(self, format: kms.PixelFormat | None=None, plane_type=None):
+        for plane in self.get_possible_planes():
+            # Return Cursor planes only if specifically requested
+            if not plane_type and plane.plane_type == kms.PlaneType.CURSOR:
+                continue
+
+            if plane_type and plane_type != plane.plane_type:
+                continue
+
+            if format and not plane.supports_format(format):
+                continue
+
+            yield plane
