@@ -185,7 +185,7 @@ class DmabufFramebuffer(Framebuffer):
             plane = Framebuffer.FramebufferPlane()
             plane.handle=args.handle
             plane.pitch=pitches[idx]
-            plane.size=height * pitches[idx]
+            plane.size=format.planesize(plane.pitch, height, idx)
             plane.prime_fd = fds[idx]
             plane.offset = offsets[idx]
             planes.append(plane)
