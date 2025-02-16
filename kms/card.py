@@ -55,6 +55,8 @@ class Card:
 
                 if res.count_crtcs > 0 and res.count_connectors > 0 and res.count_encoders > 0:
                     return path
+            except OSError:
+                pass
             finally:
                 os.close(fd)
 
