@@ -183,9 +183,9 @@ class DmabufFramebuffer(Framebuffer):
             fcntl.ioctl(card.fd, kms.uapi.DRM_IOCTL_PRIME_FD_TO_HANDLE, args, True)
 
             plane = Framebuffer.FramebufferPlane()
-            plane.handle=args.handle
-            plane.pitch=pitches[idx]
-            plane.size=format.planesize(plane.pitch, height, idx)
+            plane.handle = args.handle
+            plane.pitch = pitches[idx]
+            plane.size = format.planesize(plane.pitch, height, idx)
             plane.prime_fd = fds[idx]
             plane.offset = offsets[idx]
             planes.append(plane)
