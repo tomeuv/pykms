@@ -16,7 +16,7 @@ import kms.uapi
 if TYPE_CHECKING:
     from kms import Card
 
-__all__ = [ 'Framebuffer', 'DumbFramebuffer', 'DmabufFramebuffer' ]
+__all__ = [ 'Framebuffer', 'DumbFramebuffer', 'DmabufFramebuffer', 'ExtFramebuffer' ]
 
 class Framebuffer(kms.DrmObject):
     class FramebufferPlane:
@@ -272,3 +272,34 @@ class DmabufFramebuffer(Framebuffer):
             fcntl.ioctl(p.prime_fd, DmabufFramebuffer.DMA_BUF_IOCTL_SYNC, dbs, False)
 
         self._sync_flags = 0
+
+class ExtFramebuffer(Framebuffer):
+    def __init__(self, card: Card, width: int, height: int, format: kms.PixelFormat,
+                 handles: list[int], pitches: list[int], offsets: list[int]):
+        planes = []
+
+        for idx in range(len(format.planes)):
+            plane = Framebuffer.FramebufferPlane()
+            plane.handle = handles[idx]
+            plane.pitch = pitches[idx]
+            plane.size = format.planesize(plane.pitch, height, idx)
+            plane.offset = offsets[idx]
+            planes.append(plane)
+
+        fb2 = kms.uapi.struct_drm_mode_fb_cmd2()
+        fb2.width = width
+        fb2.height = height
+        fb2.pixel_format = format.drm_fourcc
+        fb2.handles = (ctypes.c_uint * 4)(*[p.handle for p in planes])
+        fb2.pitches = (ctypes.c_uint * 4)(*[p.pitch for p in planes])
+        fb2.offsets = (ctypes.c_uint * 4)(*[p.offset for p in planes])
+
+        fcntl.ioctl(card.fd, kms.uapi.DRM_IOCTL_MODE_ADDFB2, fb2, True)
+
+        super().__init__(card, fb2.fb_id, width, height, format, planes)
+
+        weakref.finalize(self, ExtFramebuffer.cleanup, self.card, self.id, self.planes)
+
+    @staticmethod
+    def cleanup(card: Card, fb_id: int, planes: list[Framebuffer.FramebufferPlane]):
+        fcntl.ioctl(card.fd, kms.uapi.DRM_IOCTL_MODE_RMFB, ctypes.c_uint32(fb_id), False)
