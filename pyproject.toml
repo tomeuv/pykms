@@ -1,40 +1,40 @@
 [build-system]
-requires = ["setuptools >= 61.0"]
-build-backend = "setuptools.build_meta"
+requires = ['setuptools >= 61.0']
+build-backend = 'setuptools.build_meta'
 
 [project]
-name = "pykms"
-version = "0.1"
+name = 'pykms'
+version = '0.1'
 
 dependencies = [
-  "pixutils @ git+https://github.com/tomba/pixutils.git",
+  'pixutils @ git+https://github.com/tomba/pixutils.git',
 ]
 
-requires-python = ">=3.8"
+requires-python = '>=3.8'
 authors = [
-  {name = "Tomi Valkeinen", email = "tomi.valkeinen@ideasonboard.com"},
+  {name = 'Tomi Valkeinen', email = 'tomi.valkeinen@ideasonboard.com'},
 ]
 maintainers = [
-  {name = "Tomi Valkeinen", email = "tomi.valkeinen@ideasonboard.com"},
+  {name = 'Tomi Valkeinen', email = 'tomi.valkeinen@ideasonboard.com'},
 ]
-description = "Pure-Python kms bindings"
-readme = "README.md"
-license = {file = "LICENSE.md"}
-keywords = ["linux", "kms", "drm"]
+description = 'Pure-Python kms bindings'
+readme = 'README.md'
+license = {file = 'LICENSE.md'}
+keywords = ['linux', 'kms', 'drm']
 classifiers = [
-  "Programming Language :: Python",
-  "License :: OSI Approved :: GNU Lesser General Public License v3 (LGPLv3)",
-  "Development Status :: 4 - Beta",
+  'Programming Language :: Python',
+  'License :: OSI Approved :: GNU Lesser General Public License v3 (LGPLv3)',
+  'Development Status :: 4 - Beta',
   'Operating System :: POSIX :: Linux',
 ]
 
 [project.urls]
-Homepage = "https://github.com/tomba/pykms"
-Repository = "https://github.com/tomba/pykms.git"
-"Bug Tracker" = "https://github.com/tomba/pykms/issues"
+Homepage = 'https://github.com/tomba/pykms'
+Repository = 'https://github.com/tomba/pykms.git'
+'Bug Tracker' = 'https://github.com/tomba/pykms/issues'
 
 [tool.setuptools]
-packages = ["kms", "kms.uapi"]
+packages = ['kms', 'kms.uapi']
 
 [tool.ruff]
 line-length = 100
@@ -56,10 +56,10 @@ quote-style = 'single'
 
 [project.optional-dependencies]
 extras = [
-    "pyopengl",
-    "numpy",
-    "Pillow",
-    "pyudev",
-    "xcffib",
-    "pygbm @ git+https://github.com/tomba/pygbm.git",
+    'pyopengl',
+    'numpy',
+    'Pillow',
+    'pyudev',
+    'xcffib',
+    'pygbm @ git+https://github.com/tomba/pygbm.git',
 ]
