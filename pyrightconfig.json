@@ -3,6 +3,7 @@
 		"kms/uapi"
 	],
 	"extraPaths": [
-		"../pixutils"
+		"../pixutils",
+		"../pygbm",
 	],
 }
