@@ -5,9 +5,11 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "pykms"
 version = "0.1"
+
 dependencies = [
   "pixutils @ git+https://github.com/tomba/pixutils.git",
 ]
+
 requires-python = ">=3.8"
 authors = [
   {name = "Tomi Valkeinen", email = "tomi.valkeinen@ideasonboard.com"},
@@ -51,3 +53,13 @@ multiline-quotes = 'single'
 
 [tool.ruff.format]
 quote-style = 'single'
+
+[project.optional-dependencies]
+extras = [
+    "pyopengl",
+    "numpy",
+    "Pillow",
+    "pyudev",
+    "xcffib",
+    "pygbm @ git+https://github.com/tomba/pygbm.git",
+]
