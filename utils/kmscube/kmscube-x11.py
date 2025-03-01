@@ -3,11 +3,13 @@
 from __future__ import annotations
 
 from ctypes import cdll
+import selectors
 import xcffib
 import xcffib.xproto
 
 import os
 import sys
+import time
 
 # It's hard to import from the current dir... So add the current directory to PYTHONPATH
 sys.path.append(os.path.dirname(__file__))
@@ -19,13 +21,15 @@ from cube_gl import GlScene
 
 class X11Window:
     def __init__(self, fullscreen: bool = False, num_frames: int | None = None):
+        self.need_exit = False
         self.fullscreen = fullscreen
         self.num_frames = num_frames
 
         # Connect to X server using XCB
-        self.conn = xcffib.connect()
+        self.conn = xcffib.Connection()
         self.setup = self.conn.get_setup()
         self.screen = self.setup.roots[0] # type: ignore
+        self.xcb_fd =  self.conn.get_file_descriptor()
 
         # Set up window dimensions
         if self.fullscreen:
@@ -108,47 +112,88 @@ class X11Window:
             [reply2.atom]
         )
 
+    def process_x11_events(self):
+        event = self.conn.poll_for_event()
+        while event:
+            if isinstance(event, xcffib.xproto.ExposeEvent):
+                pass  # Handle expose event if needed
+
+            elif isinstance(event, xcffib.xproto.KeyPressEvent):
+                if event.detail in (24, 9):  # Q or ESC key
+                    print('Exit due to keypress')
+                    self.need_exit = True
+
+            elif isinstance(event, xcffib.xproto.ConfigureNotifyEvent):
+                if (event.width != self.width or event.height != self.height):
+                    self.width = event.width
+                    self.height = event.height
+                    self.gl_scene.set_viewport(self.width, self.height)
+
+            elif isinstance(event, xcffib.xproto.ClientMessageEvent):
+                if event.data.data32[0] == self.wm_delete_window:
+                    print('Exit due to window close')
+                    self.need_exit = True
+
+            event = self.conn.poll_for_event()
+
+        if self.num_frames and self.framenum >= self.num_frames:
+            self.need_exit = True
+
+    def handle_key_event(self):
+        sys.stdin.readline()
+        print('Exiting...')
+        self.need_exit = True
+
+    def do_render(self):
+        self.gl_scene.draw(self.framenum)
+        self.egl_surface.swap_buffers()
+        self.framenum += 1
+
     def main_loop(self, egl_state, egl_surface, gl_scene):
         """Main event and render loop"""
-        framenum = 0
-        need_exit = False
+        self.framenum = 0
+        self.need_exit = False
+
+        self.gl_scene = gl_scene
+        self.egl_surface = egl_surface
 
         egl_surface.make_current()
         egl_surface.swap_buffers()
 
-        while True:
-            event = self.conn.poll_for_event()
-            while event:
-                if isinstance(event, xcffib.xproto.ExposeEvent):
-                    pass  # Handle expose event if needed
+        sel = selectors.DefaultSelector()
+        sel.register(self.xcb_fd, selectors.EVENT_READ, self.process_x11_events)
+        sel.register(sys.stdin, selectors.EVENT_READ, self.handle_key_event)
 
-                elif isinstance(event, xcffib.xproto.KeyPressEvent):
-                    if event.detail in (24, 9):  # Q or ESC key
-                        print('Exit due to keypress')
-                        need_exit = True
+        # This never reaches the target, but on the other hand, it doesn't block.
+        # A better way would be to get vblank events from the XCB connection, somehow.
+        target_fps = 60
+        frame_time = 1.0 / target_fps
 
-                elif isinstance(event, xcffib.xproto.ConfigureNotifyEvent):
-                    if (event.width != self.width or event.height != self.height):
-                        self.width = event.width
-                        self.height = event.height
-                        gl_scene.set_viewport(self.width, self.height)
+        try:
+            last_render_time = time.monotonic()
 
-                elif isinstance(event, xcffib.xproto.ClientMessageEvent):
-                    if event.data.data32[0] == self.wm_delete_window:
-                        print('Exit due to window close')
-                        need_exit = True
+            while not self.need_exit:
+                current_time = time.monotonic()
+                elapsed = current_time - last_render_time
 
-                event = self.conn.poll_for_event()
+                # Process events with minimal timeout
+                events = sel.select(timeout=max(0, frame_time - elapsed))
+                for key, mask in events:
+                    key.data()
 
-            if self.num_frames and framenum >= self.num_frames:
-                need_exit = True
+                # Render if it's time for a new frame
+                current_time = time.monotonic()
+                if current_time - last_render_time >= frame_time:
+                    self.do_render()
+                    last_render_time = current_time
 
-            if need_exit:
-                break
-
-            gl_scene.draw(framenum)
-            egl_surface.swap_buffers()
-            framenum += 1
+                    # If rendering is taking too long, don't try to catch up
+                    if time.monotonic() - last_render_time > frame_time:
+                        last_render_time = time.monotonic()
+        except KeyboardInterrupt:
+            pass
+        finally:
+            sel.close()
 
     def cleanup(self):
         """Clean up XCB resources"""
