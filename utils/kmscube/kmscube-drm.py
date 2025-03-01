@@ -99,15 +99,15 @@ class OutputHandler:
         self.flip_pending = False
         self.card = crtc.card
 
-        self.surface1 = GbmEglSurface(card, gbm_dev, egl_state, mode.hdisplay, mode.vdisplay)
-        self.scene1 = GlScene()
-        self.scene1.set_viewport(self.surface1.width, self.surface1.height)
+        self.surface = GbmEglSurface(card, gbm_dev, egl_state, mode.hdisplay, mode.vdisplay)
+        self.scene = GlScene()
+        self.scene.set_viewport(self.surface.width, self.surface.height)
 
     def setup(self):
         # Initial buffer setup
-        self.surface1.make_current()
-        self.surface1.swap_buffers()
-        fb = self.surface1.lock_next()
+        self.surface.make_current()
+        self.surface.swap_buffers()
+        fb = self.surface.lock_next()
 
         req = kms.AtomicReq(self.card)
         req.add_connector(self.connector, self.crtc)
@@ -118,17 +118,15 @@ class OutputHandler:
     def handle_page_flip(self, frame, cur_time):
         self.frame_num += 1
 
-        self.surface1.free_prev()
-
+        self.surface.free_prev()
         self.flip_pending = False
-
         self.queue_next()
 
     def queue_next(self):
-        self.surface1.make_current()
-        self.scene1.draw(int(self.frame_num * self.rotation_mult))
-        self.surface1.swap_buffers()
-        fb = self.surface1.lock_next()
+        self.surface.make_current()
+        self.scene.draw(int(self.frame_num * self.rotation_mult))
+        self.surface.swap_buffers()
+        fb = self.surface.lock_next()
 
         req = kms.AtomicReq(self.crtc.card)
         req.add(self.plane, 'FB_ID', fb.id)
