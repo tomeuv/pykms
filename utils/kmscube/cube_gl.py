@@ -4,6 +4,7 @@ import ctypes
 import math
 import numpy as np
 from OpenGL import GL as gl
+from pixutils.fpscounter import FPSCounter
 
 def check_shader_compile(shader, shader_type):
     if gl.glGetShaderiv(shader, gl.GL_COMPILE_STATUS) != gl.GL_TRUE:
@@ -23,6 +24,8 @@ def get_gl_string(name):
 
 class GlScene:
     def __init__(self):
+        self.fps = FPSCounter()
+
         self.width = 0
         self.height = 0
 
@@ -236,6 +239,8 @@ class GlScene:
         gl.glUniformMatrix4fv(self.projection_matrix, 1, gl.GL_FALSE, vp_matrix)
 
     def draw(self, frame_num: int):
+        self.fps.tick()
+
         gl.glClearColor(0.2, 0.3, 0.3, 1.0)
         gl.glClear(gl.GL_COLOR_BUFFER_BIT | gl.GL_DEPTH_BUFFER_BIT) # type: ignore
 

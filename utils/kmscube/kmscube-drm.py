@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import os
-import time
 import sys
 
 import selectors
@@ -97,8 +96,6 @@ class OutputHandler:
         self.plane = plane
         self.modeb = modeb
         self.rotation_mult = rotation_mult
-        self.start_time = time.time()
-        self.fps_frame_count = 0
         self.flip_pending = False
         self.card = crtc.card
 
@@ -120,18 +117,6 @@ class OutputHandler:
 
     def handle_page_flip(self, frame, cur_time):
         self.frame_num += 1
-        self.fps_frame_count += 1
-
-        #print(f'Frame {self.frame_num}')
-
-        if self.fps_frame_count == 100:
-            end_time = time.time()
-            duration = end_time - self.start_time
-            fps = self.fps_frame_count / duration
-            print(f'FPS: {fps:.2f}')
-
-            self.fps_frame_count = 0
-            self.start_time = end_time
 
         self.surface1.free_prev()
 
@@ -170,7 +155,6 @@ def main():
                         plane, rot_mult)
 
     out.setup()
-    out.start_time = time.time()
     out.queue_next()
 
     sel = selectors.DefaultSelector()
