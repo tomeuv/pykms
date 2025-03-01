@@ -57,7 +57,7 @@ class EglState:
             egl.EGL_GREEN_SIZE, 8,
             egl.EGL_BLUE_SIZE, 8,
             egl.EGL_ALPHA_SIZE, 8,
-            egl.EGL_RENDERABLE_TYPE, egl.EGL_OPENGL_ES3_BIT,
+            egl.EGL_RENDERABLE_TYPE, egl.EGL_OPENGL_ES2_BIT,
             egl.EGL_NONE
         ]
 
@@ -86,9 +86,9 @@ class EglState:
         if not self.config:
             raise RuntimeError('Failed to find matching EGL config')
 
-        # Create OpenGL ES 3.0 context
+        # Create OpenGL ES 2.0 context
         context_attribs = [
-            egl.EGL_CONTEXT_CLIENT_VERSION, 3,
+            egl.EGL_CONTEXT_CLIENT_VERSION, 2,
             egl.EGL_NONE
         ]
 

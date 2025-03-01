@@ -109,18 +109,18 @@ class GlScene:
         return vbo
 
     def _create_program(self) -> int:
-        vertex_shader = '''#version 300 es
+        vertex_shader = '''#version 100
         precision highp float;
 
-        layout(location = 0) in vec3 position;
-        layout(location = 1) in vec4 color;
+        attribute vec3 position;
+        attribute vec4 color;
 
         uniform mat4 projectionMatrix;
         uniform float rotationX;
         uniform float rotationY;
         uniform float rotationZ;
 
-        out vec4 vColor;
+        varying vec4 vColor;
 
         // Rotation matrices
         mat4 rotateX(float angle) {
@@ -163,14 +163,13 @@ class GlScene:
         }
         '''
 
-        fragment_shader = '''#version 300 es
+        fragment_shader = '''#version 100
         precision mediump float;
 
-        in vec4 vColor;
-        out vec4 fragColor;
+        varying vec4 vColor;
 
         void main() {
-            fragColor = vColor;
+            gl_FragColor = vColor;
         }
         '''
 
